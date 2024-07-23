@@ -1,0 +1,12 @@
+<SimSigTimetable ID="aston" Version="5.15">
+  <Name>None.WTT</Name>
+  <Description></Description>
+  <StartTime>0</StartTime>
+  <FinishTime>97200</FinishTime>
+  <VMajor>0</VMajor>
+  <VMinor>0</VMinor>
+  <VBuild>0</VBuild>
+  <TrainDescriptionTemplate>$originTime $originName-$destName $operator ($stock)</TrainDescriptionTemplate>
+  <SeedGroupSummary></SeedGroupSummary>
+  <ScenarioOptions></ScenarioOptions>
+</SimSigTimetable>
