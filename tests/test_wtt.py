@@ -10,8 +10,8 @@ from cajontime import CajonTime
 @pytest.fixture
 def aston_none():
     return Wtt(
-        sim=SimSigSim("aston", Version(5, 15)),
-        name="Empty timetable",
+        sim=SimSigSim("aston", Version(5, 23, 4)),
+        name="empty",
         start_time=CajonTime.from_str("00:00"),
         end_time=CajonTime.from_str("27:00"),
     )
@@ -19,7 +19,7 @@ def aston_none():
 
 def test_make_header(xml_test_tools, aston_none):
     sample = etree.parse(
-        "tests/sample/aston_none_TimetableHeader.xml",
+        "tests/sample/aston_empty_TimetableHeader.xml",
         parser=etree.XMLParser(remove_blank_text=True),
     )
 
@@ -32,7 +32,7 @@ def test_make_header(xml_test_tools, aston_none):
 
 def test_make_savedtimetable_xml(xml_test_tools, aston_none):
     sample = etree.parse(
-        "tests/sample/aston_none_SavedTimetable.xml",
+        "tests/sample/aston_empty_SavedTimetable.xml",
         parser=etree.XMLParser(remove_blank_text=True),
     )
 

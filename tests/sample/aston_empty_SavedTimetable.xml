@@ -1,5 +1,5 @@
-<SimSigTimetable ID="aston" Version="5.15">
-  <Name>Empty timetable</Name>
+<SimSigTimetable ID="aston" Version="5.23.4">
+  <Name>empty</Name>
   <Description></Description>
   <StartTime>0</StartTime>
   <FinishTime>97200</FinishTime>
@@ -9,4 +9,5 @@
   <TrainDescriptionTemplate>$originTime $originName-$destName $operator ($stock)</TrainDescriptionTemplate>
   <SeedGroupSummary></SeedGroupSummary>
   <ScenarioOptions></ScenarioOptions>
+  <Timetables/>
 </SimSigTimetable>
