@@ -4,7 +4,7 @@ import pytest
 from xmldiff import main as xd
 
 
-class XMLHelper:
+class XMLTestTools:
     @staticmethod
     def sort(data):
         data = copy.deepcopy(data)
@@ -36,5 +36,5 @@ class XMLHelper:
 
 
 @pytest.fixture
-def xml_helper():
-    return XMLHelper()
+def xml_test_tools():
+    return XMLTestTools()
