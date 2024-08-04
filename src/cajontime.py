@@ -3,11 +3,11 @@ from dataclasses import dataclass
 
 @dataclass
 class CajonTime:
-    value: int
+    seconds: int
 
     @classmethod
-    def from_hms(cls, hour: int = 0, minute: int = 0, second: int = 0):
-        return cls(value=second + 60 * minute + 3600 * hour)
+    def from_hms(cls, hours: int = 0, minutes: int = 0, seconds: int = 0):
+        return cls(seconds=seconds + 60 * minutes + 3600 * hours)
 
     @classmethod
     def from_str(cls, text):

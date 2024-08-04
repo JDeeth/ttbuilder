@@ -22,7 +22,7 @@ class Wtt:
     version: Version = Version(0)
     td_template: str = "$originTime $originName-$destName $operator ($stock)"
 
-    def header(self):
+    def xml_header(self):
         doc = etree.Element(
             "SimSigTimetable",
             ID=self.sim.name,
@@ -34,8 +34,8 @@ class Wtt:
 
         elem("Name", self.name)
         elem("Description", xml_escape(self.description))
-        elem("StartTime", self.start_time.value)
-        elem("FinishTime", self.end_time.value)
+        elem("StartTime", self.start_time.seconds)
+        elem("FinishTime", self.end_time.seconds)
         elem("VMajor", self.version.major)
         elem("VMinor", self.version.minor or 0)
         elem("VBuild", self.version.build or 0)
@@ -48,8 +48,8 @@ class Wtt:
 
         return doc
 
-    def saved_timetable(self):
-        result = self.header()
+    def xml(self):
+        result = self.xml_header()
         etree.SubElement(result, "Timetables")
         return result
 
@@ -57,9 +57,9 @@ class Wtt:
         with ZipFile(filename, "w") as zip:
             zip.writestr(
                 "TimetableHeader.xml",
-                etree.tostring(self.header(), pretty_print=True).decode(),
+                etree.tostring(self.xml_header(), pretty_print=True).decode(),
             )
             zip.writestr(
                 "SavedTimetable.xml",
-                etree.tostring(self.saved_timetable(), pretty_print=True).decode(),
+                etree.tostring(self.xml(), pretty_print=True).decode(),
             )

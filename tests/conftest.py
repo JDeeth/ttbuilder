@@ -2,9 +2,12 @@ import copy
 import pytest
 
 from xmldiff import main as xd
+from lxml import etree
 
 
 class XMLTestTools:
+    """Collection of test methods packaged for a Pytest fixture"""
+
     @staticmethod
     def sort(data):
         data = copy.deepcopy(data)
@@ -33,6 +36,18 @@ class XMLTestTools:
         right = cls.strip_empty_str(right)
         result = cls.unordered_diff(left, right)
         return result
+
+    @classmethod
+    def fromfile(cls, path: str, **parser_args):
+        parser_args.setdefault("remove_blank_text", True)
+        parser = etree.XMLParser(**parser_args)
+        return etree.parse(path, parser=parser)
+
+    @classmethod
+    def fromstr(cls, xml_text: str, **parser_args):
+        parser_args.setdefault("remove_blank_text", True)
+        parser = etree.XMLParser(**parser_args)
+        return etree.XML(xml_text, parser=parser)
 
 
 @pytest.fixture

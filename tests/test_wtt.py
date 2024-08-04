@@ -17,30 +17,30 @@ def aston_none():
     )
 
 
-def test_make_header(xml_test_tools, aston_none):
-    sample = etree.parse(
-        "tests/sample/aston_empty_TimetableHeader.xml",
-        parser=etree.XMLParser(remove_blank_text=True),
-    )
+def test_make_xml_header(xml_test_tools, aston_none):
+    xt = xml_test_tools
+    expected = xt.fromfile("tests/sample/aston_empty_TimetableHeader.xml")
+    header = aston_none.xml_header()
+    assert xt.agnostic_diff(expected, header) == []
 
-    header = aston_none.header()
-    assert xml_test_tools.agnostic_diff(sample, header) == []
+
+def test_make_xml_header(xml_test_tools, aston_none):
+    xt = xml_test_tools
+    header = aston_none.xml_header()
 
     header_str = etree.tostring(header, pretty_print=True).decode()
     assert "<Description></Description>" in header_str
 
 
 def test_make_savedtimetable_xml(xml_test_tools, aston_none):
-    sample = etree.parse(
-        "tests/sample/aston_empty_SavedTimetable.xml",
-        parser=etree.XMLParser(remove_blank_text=True),
-    )
+    xt = xml_test_tools
+    expected = xt.fromfile("tests/sample/aston_empty_SavedTimetable.xml")
 
-    saved_timetable = aston_none.saved_timetable()
-    assert xml_test_tools.agnostic_diff(sample, saved_timetable) == []
+    saved_timetable = aston_none.xml()
+    assert xt.agnostic_diff(expected, saved_timetable) == []
 
 
-def test_header_description_escaped(xml_test_tools):
+def test_header_description_escaped():
     description = """\
 <>"'&£ 
 (less than, greater than, double quote, single quote, ampersand, GBP, nbsp)"""
@@ -48,7 +48,7 @@ def test_header_description_escaped(xml_test_tools):
         sim=SimSigSim("aston", Version(5, 15)), name="asdf", description=description
     )
 
-    header = wtt.header()
+    header = wtt.xml_header()
     xml_description = header.find("./Description").text
     assert (
         xml_description
@@ -57,21 +57,18 @@ def test_header_description_escaped(xml_test_tools):
 
 
 def test_wtt_compilation(tmp_path, aston_none, xml_test_tools):
+    xt = xml_test_tools
     filename = f"{tmp_path}.wtt"
     aston_none.compile_wtt(filename)
     assert zipfile.is_zipfile(filename)
     with zipfile.ZipFile(filename) as wtt:
         assert sorted(wtt.namelist()) == ["SavedTimetable.xml", "TimetableHeader.xml"]
 
-        def parse(file):
-            parser = etree.XMLParser(remove_blank_text=True)
-            return etree.XML(file.read(), parser=parser)
-
         with wtt.open("TimetableHeader.xml") as header:
-            expected = aston_none.header()
-            result = parse(header)
-            assert xml_test_tools.agnostic_diff(expected, result) == []
+            expected = aston_none.xml_header()
+            result = xt.fromstr(header.read())
+            assert xt.agnostic_diff(expected, result) == []
         with wtt.open("SavedTimetable.xml") as timetable:
-            expected = aston_none.saved_timetable()
-            result = parse(timetable)
-            assert xml_test_tools.agnostic_diff(expected, result) == []
+            expected = aston_none.xml()
+            result = xt.fromstr(timetable.read())
+            assert xt.agnostic_diff(expected, result) == []
