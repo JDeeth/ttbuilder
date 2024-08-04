@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+import string
 from typing import Optional
 
 
@@ -33,3 +34,7 @@ def xml_escape(text: str) -> str:
             return c
 
     return "".join(escape_chr(c) for c in text)
+
+
+def pascal_case(snakecase: str):
+    return string.capwords(snakecase, sep="_").replace("_", "")

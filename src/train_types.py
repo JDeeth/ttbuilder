@@ -1,7 +1,8 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, fields
 from lxml import etree
 
 from cajontime import CajonTime
+from helper import pascal_case
 
 """
 # Train types
@@ -72,22 +73,9 @@ class DwellTimes:
 
     def xml(self):
         result = etree.Element("DwellTimes")
-        etree.SubElement(result, "RedSignalMoveOff").text = str(
-            self.red_signal_move_off.seconds
-        )
-        etree.SubElement(result, "StationForward").text = str(
-            self.station_forward.seconds
-        )
-        etree.SubElement(result, "StationReverse").text = str(
-            self.station_reverse.seconds
-        )
-        etree.SubElement(result, "TerminateForward").text = str(
-            self.terminate_forward.seconds
-        )
-        etree.SubElement(result, "TerminateReverse").text = str(
-            self.terminate_reverse.seconds
-        )
-        etree.SubElement(result, "Join").text = str(self.join.seconds)
-        etree.SubElement(result, "Divide").text = str(self.divide.seconds)
-        etree.SubElement(result, "CrewChange").text = str(self.crew_change.seconds)
+        for field in fields(self):
+            time = getattr(self, field.name)
+            text = str(time.seconds)
+            etree.SubElement(result, pascal_case(field.name)).text = text
+
         return result

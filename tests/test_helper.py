@@ -1,4 +1,4 @@
-from helper import Version, xml_escape
+from helper import Version, xml_escape, pascal_case
 import pytest
 
 
@@ -34,3 +34,19 @@ def test_version_full():
 )
 def test_xml_escape(test_input, expected):
     assert xml_escape(test_input) == expected
+
+
+@pytest.mark.parametrize(
+    "test_input,expected",
+    [
+        ("", ""),
+        ("a", "A"),
+        ("1", "1"),
+        ("1a", "1a"),
+        ("aa_bb", "AaBb"),
+        ("aaa_bbb_ccc", "AaaBbbCcc"),
+        ("aa_11_bb", "Aa11Bb"),
+    ],
+)
+def test_pascal(test_input, expected):
+    assert pascal_case(test_input) == expected
