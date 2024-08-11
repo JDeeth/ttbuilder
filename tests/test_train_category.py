@@ -1,7 +1,7 @@
 import pytest
 
 from cajontime import CajonTime
-from train_types import AccelBrake, DwellTimes, PowerType, SpeedClass, TrainType
+from train_category import AccelBrake, DwellTimes, PowerType, SpeedClass, TrainType
 
 empty_dt = """
 <DwellTimes>
