@@ -12,3 +12,8 @@ def test_from_hms():
 def test_from_str():
     time = CajonTime.from_str("27:00")
     assert time.seconds == 97200
+
+
+def test_truthy():
+    assert CajonTime(seconds=1)
+    assert not CajonTime(seconds=0)

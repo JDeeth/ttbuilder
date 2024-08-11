@@ -15,3 +15,6 @@ class CajonTime:
         text.extend(("0", "0", "0"))
         h, m, s, *_ = (int(x) for x in text if x.isdigit())
         return cls.from_hms(h, m, s)
+
+    def __bool__(self):
+        return self.seconds != 0

@@ -1,20 +1,15 @@
 import pytest
 
 from cajontime import CajonTime
-from train_category import AccelBrake, DwellTimes, PowerType, SpeedClass, TrainType
+from train_category import (
+    AccelBrake,
+    DwellTimes,
+    PowerType,
+    SpeedClass,
+    TrainType,
+    Weight,
+)
 
-empty_dt = """
-<DwellTimes>
-    <RedSignalMoveOff>0</RedSignalMoveOff>
-    <StationForward>0</StationForward>
-    <StationReverse>0</StationReverse>
-    <TerminateForward>0</TerminateForward>
-    <TerminateReverse>0</TerminateReverse>
-    <Join>0</Join>
-    <Divide>0</Divide>
-    <CrewChange>0</CrewChange>
-</DwellTimes>
-"""
 
 populated_dt = """
 <DwellTimes>
@@ -33,7 +28,7 @@ populated_dt = """
 def test_default_dwell_times(xml_test_tools):
     xt = xml_test_tools
     dt = DwellTimes()
-    expected = xt.fromstr(empty_dt)
+    expected = xt.fromstr("<DwellTimes/>")
     assert xt.agnostic_diff(expected, dt.xml()) == []
 
 
@@ -56,6 +51,80 @@ def test_populated_dwell_times(xml_test_tools):
     dt.crew_change = CajonTime.from_str("0:05")
     expected = xt.fromstr(populated_dt)
     assert xt.agnostic_diff(expected, dt.xml()) == []
+
+
+@pytest.mark.parametrize(
+    "ab,value",
+    [
+        (AccelBrake.VERY_LOW, 0),
+        (AccelBrake.LOW, 1),
+        (AccelBrake.MEDIUM, 2),
+        (AccelBrake.HIGH, 3),
+        (AccelBrake.VERY_HIGH, 4),
+    ],
+)
+def test_accel_brake(ab, value):
+    assert ab.value == value
+
+
+@pytest.mark.parametrize(
+    "pt,string",
+    [
+        (PowerType.AC_OVERHEAD, "O"),
+        (PowerType.DC_3RAIL, "3"),
+        (PowerType.DC_4RAIL, "4"),
+        (PowerType.DIESEL, "D"),
+        (PowerType.DC_OVERHEAD, "V"),
+        (PowerType.TRAMWAY, "T"),
+        (PowerType.SIM_1, "X1"),
+        (PowerType.SIM_2, "X2"),
+        (PowerType.SIM_3, "X3"),
+        (PowerType.SIM_4, "X4"),
+        (PowerType.DC_3RAIL | PowerType.AC_OVERHEAD | PowerType.DC_OVERHEAD, "O3V"),
+    ],
+)
+def test_power_type_string(pt, string):
+    assert pt.str() == string
+
+
+@pytest.mark.parametrize(
+    "sc,value",
+    [
+        (SpeedClass.EPS_E, 1),
+        (SpeedClass.EPS_D, 2),
+        (SpeedClass.HST, 4),
+        (SpeedClass.EMU, 8),
+        (SpeedClass.DMU, 16),
+        (SpeedClass.SPRINTER, 32),
+        (SpeedClass.CS_67, 64),
+        (SpeedClass.MGR, 128),
+        (SpeedClass.TGV_373, 256),
+        (SpeedClass.LOCO_H, 512),
+        (SpeedClass.METRO, 1024),
+        (SpeedClass.WES_442, 2048),
+        (SpeedClass.TRIPCOCK, 4096),
+        (SpeedClass.STEAM, 8192),
+        (SpeedClass.SIM_1, 16777216),
+        (SpeedClass.SIM_2, 33554432),
+        (SpeedClass.SIM_3, 67108864),
+        (SpeedClass.SIM_4, 134217728),
+        (SpeedClass.TGV_373 | SpeedClass.EMU | SpeedClass.HST, 4 + 8 + 256),
+    ],
+)
+def test_speedclass(sc, value):
+    assert sc.value == value
+
+
+@pytest.mark.parametrize(
+    "weight,value",
+    [
+        (Weight.LIGHT, 1),
+        (Weight.NORMAL, 0),
+        (Weight.HEAVY, 2),
+    ],
+)
+def test_weight(weight, value):
+    assert weight.value == value
 
 
 dmu_traintype = """
@@ -83,32 +152,62 @@ dmu_traintype = """
 """
 
 
-def test_power_type_string():
-    """This is not a complete test but good enough"""
-    pt = PowerType.DC_3RAIL | PowerType.AC_OVERHEAD | PowerType.DC_OVERHEAD
-
-    assert pt.str() == "O3V"
-
-
 def test_train_types_get_unique_default_ids():
     tt1 = TrainType()
     tt2 = TrainType()
     assert tt1.id != tt2.id
 
 
-# @pytest.mark.xfail
 def test_make_dmu_train_type(xml_test_tools):
     xt = xml_test_tools
     dmu_dwell_times = DwellTimes(10, 45, 180, 60, 240, 300, 120, 300)
     dmu = TrainType(
         id="23F09234",
         description="3-car DMU",
-        length=60,
+        length_m=60,
         accel=AccelBrake.HIGH,
-        max_speed=70,
+        max_speed_mph=70,
         speed_classes=SpeedClass.DMU,
         dwell_times=dmu_dwell_times,
         power_type=PowerType.DIESEL,
     )
     expected = xt.fromstr(dmu_traintype)
     assert xt.agnostic_diff(expected, dmu.xml()) == []
+
+
+no_power_traintype = """
+<TrainCategory ID="ED5BFABD">
+    <Description>No power</Description>
+    <AccelBrakeIndex>2</AccelBrakeIndex>
+    <IsFreight>0</IsFreight>
+    <CanUseGoodsLines>0</CanUseGoodsLines>
+    <MaxSpeed>90</MaxSpeed>
+    <TrainLength>20</TrainLength>
+    <SpeedClass>0</SpeedClass>
+    <PowerToWeightCategory>0</PowerToWeightCategory>
+    <DwellTimes/>
+</TrainCategory>
+"""
+
+
+def test_no_power_train_type(xml_test_tools):
+    xt = xml_test_tools
+    tt = TrainType(
+        id="ED5BFABD",
+        description="No power",
+        max_speed_mph=90,
+        length_m=20,
+        power_type=PowerType.NONE,
+    )
+    expected = xt.fromstr(no_power_traintype)
+    assert xt.agnostic_diff(expected, tt.xml()) == []
+
+
+def test_train_type_description_punctuation(xml_test_tools):
+    tt = TrainType(
+        description="""Punctuation "a" 'b' & £5""",
+    )
+    assert (
+        tt.xml().find("./Description").text
+        == "Punctuation &quot;a&quot; &apos;b&apos; &amp; &#x00A3;5"
+    )

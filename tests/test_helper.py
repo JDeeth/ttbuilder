@@ -30,6 +30,7 @@ def test_version_full():
         ("'", "&apos;"),
         ("£", "&#x00A3;"),
         ('"Hello,", he lied.', "&quot;Hello,&quot;, he lied."),
+        (""""a" 'b' & £5""", "&quot;a&quot; &apos;b&apos; &amp; &#x00A3;5"),
     ],
 )
 def test_xml_escape(test_input, expected):

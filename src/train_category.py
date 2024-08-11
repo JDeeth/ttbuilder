@@ -4,7 +4,7 @@ import secrets
 from lxml import etree
 
 from cajontime import CajonTime
-from helper import pascal_case
+from helper import pascal_case, xml_escape
 
 
 @dataclass
@@ -30,10 +30,11 @@ class DwellTimes:
     def xml(self):
         """Returns data in XML format"""
         result = etree.Element("DwellTimes")
-        for field in fields(self):
-            time = getattr(self, field.name)
-            text = str(time.seconds)
-            etree.SubElement(result, pascal_case(field.name)).text = text
+        if any(getattr(self, field.name) for field in fields(self)):
+            for field in fields(self):
+                time = getattr(self, field.name)
+                text = str(time.seconds)
+                etree.SubElement(result, pascal_case(field.name)).text = text
 
         return result
 
@@ -88,12 +89,13 @@ class SpeedClass(Flag):
 
     Combine with |"""
 
+    # EPS = Enhanced Permitted Speed - tilting trains
     EPS_E = 2**0
     EPS_D = 2**1
     HST = 2**2
     EMU = 2**3
     DMU = 2**4
-    SP = 2**5
+    SPRINTER = 2**5
     CS_67 = 2**6
     MGR = 2**7
     TGV_373 = 2**8
@@ -102,22 +104,18 @@ class SpeedClass(Flag):
     WES_442 = 2**11
     TRIPCOCK = 2**12
     STEAM = 2**13
-    SIM_1 = 2**14
-    SIM_2 = 2**15
-    SIM_3 = 2**16
-    SIM_4 = 2**17
-
-
-Mph = int
-Meters = int
+    SIM_1 = 2**24
+    SIM_2 = 2**25
+    SIM_3 = 2**26
+    SIM_4 = 2**27
 
 
 class Weight(Enum):
     """SimSig train weight"""
 
-    LIGHT = None
+    LIGHT = 1
     NORMAL = 0
-    HEAVY = None
+    HEAVY = 2
 
 
 @dataclass
@@ -125,8 +123,8 @@ class TrainType:
     """SimSig train category as represented in timetable files"""
 
     description: str = ""
-    length: Meters = 0
-    max_speed: Mph = 0
+    length_m: int = 0
+    max_speed_mph: int = 0
 
     id: str = None
 
@@ -155,15 +153,16 @@ class TrainType:
                 value = 1 if value else 0
             etree.SubElement(result, tag).text = str(value)
 
-        subelem("Description", self.description)
+        subelem("Description", xml_escape(self.description))
         subelem("AccelBrakeIndex", self.accel.value)
         subelem("IsFreight", self.use_freight_linespeeds)
         subelem("CanUseGoodsLines", self.can_use_freight_lines)
-        subelem("MaxSpeed", self.max_speed)
-        subelem("TrainLength", self.length)
+        subelem("MaxSpeed", self.max_speed_mph)
+        subelem("TrainLength", self.length_m)
         subelem("SpeedClass", self.speed_classes.value)
         subelem("PowerToWeightCategory", self.weight.value)
         result.append(self.dwell_times.xml())
-        subelem("Electrification", self.power_type.str())
+        if self.power_type != PowerType.NONE:
+            subelem("Electrification", self.power_type.str())
 
         return result
