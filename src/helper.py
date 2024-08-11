@@ -3,7 +3,7 @@ import string
 from typing import Optional
 
 
-@dataclass
+@dataclass(frozen=True)
 class Version:
     major: int
     minor: Optional[int] = None

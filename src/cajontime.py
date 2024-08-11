@@ -1,9 +1,9 @@
 from dataclasses import dataclass
 
 
-@dataclass
+@dataclass(frozen=True)
 class CajonTime:
-    seconds: int
+    seconds: int = 0
 
     @classmethod
     def from_hms(cls, hours: int = 0, minutes: int = 0, seconds: int = 0):

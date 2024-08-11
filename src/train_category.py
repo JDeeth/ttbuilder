@@ -1,5 +1,5 @@
 from enum import Enum, Flag, auto
-from dataclasses import dataclass, fields
+from dataclasses import dataclass, field, fields
 import secrets
 from lxml import etree
 
@@ -11,14 +11,14 @@ from helper import pascal_case
 class DwellTimes:
     """Collection of dwell times for a SimSig train category"""
 
-    red_signal_move_off: CajonTime = CajonTime(0)
-    station_forward: CajonTime = CajonTime(0)
-    station_reverse: CajonTime = CajonTime(0)
-    terminate_forward: CajonTime = CajonTime(0)
-    terminate_reverse: CajonTime = CajonTime(0)
-    join: CajonTime = CajonTime(0)
-    divide: CajonTime = CajonTime(0)
-    crew_change: CajonTime = CajonTime(0)
+    red_signal_move_off: CajonTime = field(default_factory=CajonTime)
+    station_forward: CajonTime = field(default_factory=CajonTime)
+    station_reverse: CajonTime = field(default_factory=CajonTime)
+    terminate_forward: CajonTime = field(default_factory=CajonTime)
+    terminate_reverse: CajonTime = field(default_factory=CajonTime)
+    join: CajonTime = field(default_factory=CajonTime)
+    divide: CajonTime = field(default_factory=CajonTime)
+    crew_change: CajonTime = field(default_factory=CajonTime)
 
     def __post_init__(self):
         """Assume plain-int values are seconds and convert"""
@@ -140,7 +140,7 @@ class TrainType:
     use_freight_linespeeds: bool = False
     can_use_freight_lines: bool = False
 
-    dwell_times: DwellTimes = DwellTimes()
+    dwell_times: DwellTimes = field(default_factory=DwellTimes)
 
     def __post_init__(self):
         if self.id is None:
