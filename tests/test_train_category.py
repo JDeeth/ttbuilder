@@ -83,6 +83,13 @@ dmu_traintype = """
 """
 
 
+def test_power_type_string():
+    """This is not a complete test but good enough"""
+    pt = PowerType.DC_3RAIL | PowerType.AC_OVERHEAD | PowerType.DC_OVERHEAD
+
+    assert pt.str() == "O3V"
+
+
 def test_train_types_get_unique_default_ids():
     tt1 = TrainType()
     tt2 = TrainType()

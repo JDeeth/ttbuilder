@@ -31,6 +31,18 @@
       </DwellTimes>
       <Electrification>D</Electrification>
     </TrainCategory>
+    <TrainCategory ID="DDC27CDC">
+      <Description>All power types</Description>
+      <AccelBrakeIndex>2</AccelBrakeIndex>
+      <IsFreight>0</IsFreight>
+      <CanUseGoodsLines>0</CanUseGoodsLines>
+      <MaxSpeed>90</MaxSpeed>
+      <TrainLength>20</TrainLength>
+      <SpeedClass>0</SpeedClass>
+      <PowerToWeightCategory>0</PowerToWeightCategory>
+      <DwellTimes/>
+      <Electrification>O34DVTX1X2X3X4</Electrification>
+    </TrainCategory>
   </TrainCategories>
   <Timetables>
     <Timetable>
@@ -95,6 +107,7 @@
           <Location>FOUROKS</Location>
           <DepPassTime>2100</DepPassTime>
           <Platform>3</Platform>
+          <PrevPathEndDown>-1</PrevPathEndDown>
         </Trip>
         <Trip>
           <Location>ASTON</Location>

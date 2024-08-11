@@ -67,12 +67,20 @@ class PowerType(Flag):
 
     def str(self):
         """Format as in timetable XML"""
-        if self not in (PowerType.NONE, PowerType.DIESEL):
-            raise NotImplementedError()
-        result = ""
-        if self & PowerType.DIESEL:
-            result += "D"
-        return result
+        powertype_str = {
+            PowerType.AC_OVERHEAD: "O",
+            PowerType.DC_3RAIL: "3",
+            PowerType.DC_4RAIL: "4",
+            PowerType.DIESEL: "D",
+            PowerType.DC_OVERHEAD: "V",
+            PowerType.TRAMWAY: "T",
+            PowerType.SIM_1: "X1",
+            PowerType.SIM_2: "X2",
+            PowerType.SIM_3: "X3",
+            PowerType.SIM_4: "X4",
+        }
+
+        return "".join(s for pt, s in powertype_str.items() if pt & self)
 
 
 class SpeedClass(Flag):
