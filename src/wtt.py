@@ -2,8 +2,8 @@ from dataclasses import dataclass
 from zipfile import ZipFile
 from lxml import etree
 
-from cajontime import CajonTime
-from helper import Version, xml_escape
+from elements import CajonTime, Version
+from helper import xml_escape
 
 
 @dataclass

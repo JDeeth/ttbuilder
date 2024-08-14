@@ -3,8 +3,7 @@ from lxml import etree
 import zipfile
 
 from wtt import Wtt, SimSigSim
-from helper import Version
-from cajontime import CajonTime
+from elements import CajonTime, Version
 
 
 @pytest.fixture

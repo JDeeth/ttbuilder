@@ -1,9 +1,9 @@
-from enum import Enum, Flag, auto
+from enum import Enum, Flag
 from dataclasses import dataclass, field, fields
 import secrets
 from lxml import etree
 
-from cajontime import CajonTime
+from elements import AccelBrake, CajonTime, PowerType
 from helper import pascal_case, xml_escape
 
 
@@ -22,66 +22,26 @@ class DwellTimes:
 
     def __post_init__(self):
         """Assume plain-int values are seconds and convert"""
-        for field in fields(self):
-            value = getattr(self, field.name)
+        for f in fields(self):
+            value = getattr(self, f.name)
             if isinstance(value, int):
-                setattr(self, field.name, CajonTime(value))
+                setattr(self, f.name, CajonTime(value))
+
+    def xml_values(self):
+        """Tag-value tuples for SimSig XML"""
+        if not any(getattr(self, field.name) for field in fields(self)):
+            return
+        for f in fields(self):
+            time = getattr(self, f.name)
+            yield (pascal_case(f.name), str(time.seconds))
 
     def xml(self):
         """Returns data in XML format"""
         result = etree.Element("DwellTimes")
-        if any(getattr(self, field.name) for field in fields(self)):
-            for field in fields(self):
-                time = getattr(self, field.name)
-                text = str(time.seconds)
-                etree.SubElement(result, pascal_case(field.name)).text = text
+        for tag, value in self.xml_values():
+            etree.SubElement(result, tag).text = value
 
         return result
-
-
-class AccelBrake(Enum):
-    """SimSig train acceleration/braking categories"""
-
-    VERY_LOW = 0
-    LOW = 1
-    MEDIUM = 2
-    HIGH = 3
-    VERY_HIGH = 4
-
-
-class PowerType(Flag):
-    """SimSig traction power categories
-
-    Combine with |"""
-
-    NONE = 0
-    AC_OVERHEAD = auto()
-    DC_3RAIL = auto()
-    DC_4RAIL = auto()
-    DIESEL = auto()
-    DC_OVERHEAD = auto()
-    TRAMWAY = auto()
-    SIM_1 = auto()
-    SIM_2 = auto()
-    SIM_3 = auto()
-    SIM_4 = auto()
-
-    def str(self):
-        """Format as in timetable XML"""
-        powertype_str = {
-            PowerType.AC_OVERHEAD: "O",
-            PowerType.DC_3RAIL: "3",
-            PowerType.DC_4RAIL: "4",
-            PowerType.DIESEL: "D",
-            PowerType.DC_OVERHEAD: "V",
-            PowerType.TRAMWAY: "T",
-            PowerType.SIM_1: "X1",
-            PowerType.SIM_2: "X2",
-            PowerType.SIM_3: "X3",
-            PowerType.SIM_4: "X4",
-        }
-
-        return "".join(s for pt, s in powertype_str.items() if pt & self)
 
 
 class SpeedClass(Flag):

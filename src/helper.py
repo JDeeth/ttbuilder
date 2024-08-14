@@ -1,22 +1,8 @@
-from dataclasses import dataclass
 import string
-from typing import Optional
-
-
-@dataclass(frozen=True)
-class Version:
-    major: int
-    minor: Optional[int] = None
-    build: Optional[int] = None
-
-    @property
-    def text(self):
-        return ".".join(
-            f"{x}" for x in (self.major, self.minor, self.build) if x is not None
-        )
 
 
 def xml_escape(text: str) -> str:
+    """To match style observed in SimSig native XML files"""
     escape = {
         "<": "&lt;",
         ">": "&gt;",
@@ -37,4 +23,5 @@ def xml_escape(text: str) -> str:
 
 
 def pascal_case(snakecase: str):
+    """Turns snake_case into PascalCase"""
     return string.capwords(snakecase, sep="_").replace("_", "")

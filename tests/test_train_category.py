@@ -1,8 +1,7 @@
 import pytest
 
-from cajontime import CajonTime
+from elements import AccelBrake, CajonTime
 from train_category import (
-    AccelBrake,
     DwellTimes,
     PowerType,
     SpeedClass,
@@ -51,20 +50,6 @@ def test_populated_dwell_times(xml_test_tools):
     dt.crew_change = CajonTime.from_str("0:05")
     expected = xt.fromstr(populated_dt)
     assert xt.agnostic_diff(expected, dt.xml()) == []
-
-
-@pytest.mark.parametrize(
-    "ab,value",
-    [
-        (AccelBrake.VERY_LOW, 0),
-        (AccelBrake.LOW, 1),
-        (AccelBrake.MEDIUM, 2),
-        (AccelBrake.HIGH, 3),
-        (AccelBrake.VERY_HIGH, 4),
-    ],
-)
-def test_accel_brake(ab, value):
-    assert ab.value == value
 
 
 @pytest.mark.parametrize(
