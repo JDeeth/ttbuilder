@@ -1,0 +1,37 @@
+<Timetable>
+    <ID>2A01</ID>
+    <UID>ZBB159</UID>
+    <AccelBrakeIndex>3</AccelBrakeIndex>
+    <AsRequiredPercent>50</AsRequiredPercent>
+    <Delay>3</Delay>
+    <DepartTime>60</DepartTime>
+    <Description>Entry with 3-car DMU type</Description>
+    <SeedingGap>15</SeedingGap>
+    <EntryPoint>EASTON</EntryPoint>
+    <MaxSpeed>70</MaxSpeed>
+    <SpeedClass>16</SpeedClass>
+    <TrainLength>60</TrainLength>
+    <Electrification>D</Electrification>
+    <StartTraction>D</StartTraction>
+    <Category>23F09234</Category>
+    <RedSignalMoveOff>10</RedSignalMoveOff>
+    <StationForward>45</StationForward>
+    <StationReverse>180</StationReverse>
+    <TerminateForward>60</TerminateForward>
+    <TerminateReverse>240</TerminateReverse>
+    <Join>300</Join>
+    <Divide>120</Divide>
+    <CrewChange>300</CrewChange>
+    <Trips>
+    <Trip>
+        <Location>FOUROKS</Location>
+        <DepPassTime>900</DepPassTime>
+        <Platform>3</Platform>
+    </Trip>
+    <Trip>
+        <Location>ASTON</Location>
+        <DepPassTime>1800</DepPassTime>
+        <IsPassTime>-1</IsPassTime>
+    </Trip>
+    </Trips>
+</Timetable>

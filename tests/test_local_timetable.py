@@ -4,47 +4,6 @@ from local_timetable import LocalTimetable, TimingPoint
 from train_category import DwellTimes, PowerType, SpeedClass, TrainType
 
 
-basic_tt_xml = """\
-<Timetable>
-    <ID>2A01</ID>
-    <UID>ZBB159</UID>
-    <AccelBrakeIndex>3</AccelBrakeIndex>
-    <AsRequiredPercent>50</AsRequiredPercent>
-    <Delay>3</Delay>
-    <DepartTime>60</DepartTime>
-    <Description>Entry with 3-car DMU type</Description>
-    <SeedingGap>15</SeedingGap>
-    <EntryPoint>EASTON</EntryPoint>
-    <MaxSpeed>70</MaxSpeed>
-    <SpeedClass>16</SpeedClass>
-    <TrainLength>60</TrainLength>
-    <Electrification>D</Electrification>
-    <StartTraction>D</StartTraction>
-    <Category>23F09234</Category>
-    <RedSignalMoveOff>10</RedSignalMoveOff>
-    <StationForward>45</StationForward>
-    <StationReverse>180</StationReverse>
-    <TerminateForward>60</TerminateForward>
-    <TerminateReverse>240</TerminateReverse>
-    <Join>300</Join>
-    <Divide>120</Divide>
-    <CrewChange>300</CrewChange>
-    <Trips>
-    <Trip>
-        <Location>FOUROKS</Location>
-        <DepPassTime>900</DepPassTime>
-        <Platform>3</Platform>
-    </Trip>
-    <Trip>
-        <Location>ASTON</Location>
-        <DepPassTime>1800</DepPassTime>
-        <IsPassTime>-1</IsPassTime>
-    </Trip>
-    </Trips>
-</Timetable>
-"""
-
-
 def test_stopping_timing_point(xml_test_tools):
     xt = xml_test_tools
 
@@ -87,7 +46,7 @@ def test_passing_timing_point(xml_test_tools):
     assert xt.agnostic_diff(expected, tp.xml()) == []
 
 
-def test_local_tt(xml_test_tools):
+def test_out_and_back_tt(xml_test_tools):
     xt = xml_test_tools
 
     dwell_times = DwellTimes(10, 45, 180, 60, 240, 300, 120, 300)
@@ -124,5 +83,5 @@ def test_local_tt(xml_test_tools):
         ],
     )
 
-    expected = xt.fromstr(basic_tt_xml)
+    expected = xt.fromfile("tests/sample/aston_2A01.xml")
     assert xt.agnostic_diff(expected, tt.xml()) == []
