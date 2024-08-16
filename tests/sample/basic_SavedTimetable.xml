@@ -40,7 +40,7 @@
       <AsRequiredPercent>50</AsRequiredPercent>
       <Delay>3</Delay>
       <DepartTime>60</DepartTime>
-      <Description>Entry with &apos;3-car DMU&apos; type</Description>
+      <Description>Entry with 3-car DMU type</Description>
       <SeedingGap>15</SeedingGap>
       <EntryPoint>EASTON</EntryPoint>
       <MaxSpeed>70</MaxSpeed>

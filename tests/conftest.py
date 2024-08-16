@@ -12,7 +12,9 @@ class XMLTestTools:
     def sort(data):
         data = copy.deepcopy(data)
         for parent in data.xpath("//*[./*]"):
-            parent[:] = sorted(parent, key=lambda x: x.tag)
+            parent[:] = sorted(
+                parent, key=lambda x: x.tag if isinstance(x.tag, str) else ""
+            )
         return data
 
     @staticmethod

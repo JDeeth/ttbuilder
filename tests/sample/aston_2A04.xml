@@ -1,0 +1,33 @@
+<Timetable>
+    <ID>2A04</ID>
+    <UID>ZDC316</UID>
+    <AccelBrakeIndex>3</AccelBrakeIndex>
+    <Description>$template</Description>
+    <AsRequiredPercent>50</AsRequiredPercent>
+    <SeedingGap>15</SeedingGap>
+    <MaxSpeed>70</MaxSpeed>
+    <SpeedClass>16</SpeedClass>
+    <TrainLength>60</TrainLength>
+    <Electrification>D</Electrification>
+    <StartTraction>D</StartTraction>
+    <Category>23F09234</Category>
+    <RedSignalMoveOff>10</RedSignalMoveOff>
+    <StationForward>45</StationForward>
+    <StationReverse>180</StationReverse>
+    <TerminateForward>60</TerminateForward>
+    <TerminateReverse>240</TerminateReverse>
+    <Join>300</Join>
+    <Divide>120</Divide>
+    <CrewChange>300</CrewChange>
+    <Trips>
+        <Trip>
+            <Location>FOUROKS</Location>
+            <DepPassTime>2100</DepPassTime>
+            <Platform>3</Platform>
+        </Trip>
+        <Trip>
+            <Location>ASTON</Location>
+            <IsPassTime>-1</IsPassTime>
+        </Trip>
+    </Trips>
+</Timetable>
