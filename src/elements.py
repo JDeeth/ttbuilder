@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from enum import Enum, Flag, auto
 from typing import Optional
+from lxml import etree
 
 
 @dataclass(frozen=True)
@@ -83,3 +84,19 @@ class PowerType(Flag):
         }
 
         return "".join(s for pt, s in powertype_str.items() if pt & self)
+
+
+@dataclass
+class TrainId:
+    id: str
+    uid: str = ""
+
+    def activity_xml(self):
+        if self.uid:
+            result = etree.Element("AssociatedUID")
+            result.text = self.uid
+            return result
+        else:
+            result = etree.Element("AssociatedTrain")
+            result.text = self.id
+            return result

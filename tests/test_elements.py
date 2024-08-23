@@ -1,5 +1,5 @@
 import pytest
-from elements import AccelBrake, CajonTime, Version
+from elements import AccelBrake, CajonTime, TrainId, Version
 
 
 def test_cajontime_from_hms():
@@ -47,3 +47,17 @@ def test_version_full():
 )
 def test_accel_brake(ab, value):
     assert ab.value == value
+
+
+@pytest.mark.parametrize(
+    "params,expected_xml",
+    [
+        ({"id": "1A01"}, "<AssociatedTrain>1A01</AssociatedTrain>"),
+        ({"id": "2A04", "uid": "ZDC316"}, "<AssociatedUID>ZDC316</AssociatedUID>"),
+    ],
+)
+def test_train_id(xml_test_tools, params, expected_xml):
+    xt = xml_test_tools
+    train = TrainId(**params)
+    expected = xt.fromstr(expected_xml)
+    assert xt.agnostic_diff(expected, train.activity_xml()) == []

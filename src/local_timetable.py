@@ -1,21 +1,9 @@
 from dataclasses import dataclass, field
 from lxml import etree
-from elements import CajonTime, Location, PowerType
+from activity import Activity
+from elements import CajonTime, Location, PowerType, TrainId
 from helper import xml_escape
 from train_category import TrainType
-
-
-@dataclass
-class Activity:
-    """this will need expanding on"""
-
-    next_uid: str
-
-    def xml(self):
-        result = etree.Element("Activity")
-        etree.SubElement(result, "Activity").text = "0"
-        etree.SubElement(result, "AssociatedUID").text = self.next_uid
-        return result
 
 
 @dataclass
@@ -56,8 +44,7 @@ class LocalTimetable:
     seeding_gap_m: distance from seeding point
     """
 
-    id: str
-    uid: str
+    train_id: TrainId
     train_type: TrainType
     timing_points: list[TimingPoint] = field(default_factory=list)
     entry_point: Location | None = None
@@ -84,8 +71,9 @@ class LocalTimetable:
                 value = 1 if value else 0
             etree.SubElement(result, tag).text = str(value)
 
-        subelem("ID", self.id)
-        subelem("UID", self.uid)
+        subelem("ID", self.train_id.id)
+        if self.train_id.uid:
+            subelem("UID", self.train_id.uid)
         subelem("AccelBrakeIndex", self.train_type.accel.value)
         subelem("AsRequiredPercent", self.as_required_pc)
         if self.delay_min is not None:
