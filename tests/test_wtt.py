@@ -1,9 +1,12 @@
+from activity import Activity, ActivityType
+from local_timetable import LocalTimetable, TimingPoint
 import pytest
 from lxml import etree
 import zipfile
 
+from train_category import DwellTimes, SpeedClass, TrainType
 from wtt import Wtt, SimSigSim
-from elements import CajonTime, Version
+from elements import AccelBrake, CajonTime, Location, PowerType, TrainId, Version
 
 
 @pytest.fixture
@@ -71,3 +74,86 @@ def test_wtt_compilation(tmp_path, aston_none, xml_test_tools):
             expected = aston_none.xml()
             result = xt.fromstr(timetable.read())
             assert xt.agnostic_diff(expected, result) == []
+
+
+def test_basic_wtt(xml_test_tools):
+    xt = xml_test_tools
+    expected = xt.fromfile("tests/sample/basic_SavedTimetable.xml")
+
+    dmu = TrainType(
+        id="23F09234",
+        description="3-car DMU",
+        accel=AccelBrake.HIGH,
+        max_speed_mph=70,
+        length_m=60,
+        speed_classes=SpeedClass.DMU,
+        dwell_times=DwellTimes(10, 45, 180, 60, 240, 300, 120, 300),
+        power_type=PowerType.DIESEL,
+    )
+
+    tt_2a04 = LocalTimetable(
+        train_id=TrainId("2A04", "ZDC316"),
+        train_type=dmu,
+        timing_points=[
+            TimingPoint(
+                location=Location(tiploc="FOUROKS"),
+                depart=CajonTime(2100),
+                platform="3",
+            ),
+            TimingPoint(
+                location=Location(tiploc="ASTON"),
+                passing=True,
+            ),
+        ],
+    )
+    tt_2a03 = LocalTimetable(
+        train_id=TrainId("2A03", "ZBD037"),
+        train_type=dmu,
+        entry_point=Location(tiploc="EASTON"),
+        depart_time=CajonTime(1200),
+        timing_points=[
+            TimingPoint(
+                location=Location(tiploc="FOUROKS"),
+                depart=CajonTime(2100),
+                platform=3,
+                activities=[
+                    Activity(
+                        activity_type=ActivityType.NEXT,
+                        associated_train_id=tt_2a04.train_id,
+                    ),
+                ],
+            )
+        ],
+    )
+    tt_2a01 = LocalTimetable(
+        train_id=TrainId("2A01", "ZBB159"),
+        train_type=dmu,
+        description="Entry with 3-car DMU type",
+        entry_point=Location(tiploc="EASTON"),
+        depart_time=CajonTime(60),
+        timing_points=[
+            TimingPoint(
+                location=Location(tiploc="FOUROKS"),
+                depart=CajonTime(900),
+                platform=3,
+            ),
+            TimingPoint(
+                location=Location(tiploc="ASTON"),
+                depart=CajonTime(1800),
+                passing=True,
+            ),
+        ],
+    )
+
+    tt = Wtt(
+        sim=SimSigSim("aston", Version(5, 23, 4)),
+        name="basic_tt",
+        description="",
+        train_types=[dmu],
+        workings=[tt_2a01, tt_2a03, tt_2a04],
+    )
+
+    tt_str = etree.tostring(tt.xml(), pretty_print=True).decode()
+    print(tt_str)
+
+    assert xt.agnostic_diff(expected, tt.xml()) == []

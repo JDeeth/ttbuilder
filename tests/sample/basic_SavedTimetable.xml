@@ -38,7 +38,6 @@
       <UID>ZBB159</UID>
       <AccelBrakeIndex>3</AccelBrakeIndex>
       <AsRequiredPercent>50</AsRequiredPercent>
-      <Delay>3</Delay>
       <DepartTime>60</DepartTime>
       <Description>Entry with 3-car DMU type</Description>
       <SeedingGap>15</SeedingGap>
@@ -76,7 +75,7 @@
       <AccelBrakeIndex>3</AccelBrakeIndex>
       <AsRequiredPercent>50</AsRequiredPercent>
       <DepartTime>1200</DepartTime>
-      <Description>Entry with customised &apos;3-car DMU&apos; type</Description>
+      <Description>$template</Description>
       <SeedingGap>15</SeedingGap>
       <EntryPoint>EASTON</EntryPoint>
       <MaxSpeed>70</MaxSpeed>

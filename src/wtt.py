@@ -1,9 +1,11 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from zipfile import ZipFile
+from local_timetable import LocalTimetable
 from lxml import etree
 
 from elements import CajonTime, Version
 from helper import xml_escape
+from train_category import TrainType
 
 
 @dataclass
@@ -21,6 +23,8 @@ class Wtt:
     description: str = ""
     version: Version = Version(0)
     td_template: str = "$originTime $originName-$destName $operator ($stock)"
+    train_types: list[TrainType] = field(default_factory=list)
+    workings: list[LocalTimetable] = field(default_factory=list)
 
     def xml_header(self):
         doc = etree.Element(
@@ -50,7 +54,15 @@ class Wtt:
 
     def xml(self):
         result = self.xml_header()
-        etree.SubElement(result, "Timetables")
+        if self.train_types:
+            tt_elem = etree.SubElement(result, "TrainCategories")
+            for t in self.train_types:
+                tt_elem.append(t.xml())
+        ltt_elem = etree.SubElement(result, "Timetables")
+        if self.workings:
+            for w in self.workings:
+                ltt_elem.append(w.xml())
+
         return result
 
     def compile_wtt(self, filename):
