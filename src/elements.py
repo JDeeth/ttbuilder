@@ -19,9 +19,14 @@ class CajonTime:
 
     @classmethod
     def from_str(cls, text):
+        ends_with_h = text[-1] == "H"
+        if ends_with_h:
+            text = text[:-1]
         text = text.split(":")
         text.extend(("0", "0", "0"))
         h, m, s, *_ = (int(x) for x in text if x.isdigit())
+        if ends_with_h:
+            s += 30
         return cls.from_hms(h, m, s)
 
     def __bool__(self):

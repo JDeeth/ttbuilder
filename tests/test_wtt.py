@@ -153,7 +153,4 @@ def test_basic_wtt(xml_test_tools):
         workings=[tt_2a01, tt_2a03, tt_2a04],
     )
 
-    tt_str = etree.tostring(tt.xml(), pretty_print=True).decode()
-    print(tt_str)
-
     assert xt.agnostic_diff(expected, tt.xml()) == []

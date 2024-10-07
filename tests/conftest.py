@@ -33,10 +33,12 @@ class XMLTestTools:
         return result
 
     @classmethod
-    def agnostic_diff(cls, left, right):
+    def agnostic_diff(cls, left, right, ignore_uid=False):
         left = cls.strip_empty_str(left)
         right = cls.strip_empty_str(right)
         result = cls.unordered_diff(left, right)
+        if ignore_uid:
+            result = [x for x in result if "UID" not in str(x)]
         return result
 
     @classmethod

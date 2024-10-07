@@ -14,6 +14,18 @@ class TimingPoint:
     passing: bool = False
     activities: list[Activity] = field(default_factory=list)
 
+    @classmethod
+    def from_str(cls, text):
+        elem = text.split()
+        location = Location(tiploc=elem[0])
+        platform = elem[1][1:] if elem[1].startswith("P") else ""
+        depart_str: str = elem[-1]
+        passing = "/" in depart_str
+        if passing:
+            depart_str = depart_str.replace("/", ":")
+        depart = CajonTime.from_str(depart_str)
+        return cls(location=location, depart=depart, passing=passing, platform=platform)
+
     def xml(self):
         result = etree.Element("Trip")
 

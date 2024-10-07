@@ -67,3 +67,15 @@ def test_agnostic_diff(xml_test_tools):
     etree.SubElement(right, "C")
 
     assert xml_test_tools.agnostic_diff(left, right) == []
+
+
+def test_ignore_uid_change_diff(xml_test_tools):
+    left = etree.Element("root")
+    etree.SubElement(left, "ID").text = "2A01"
+    etree.SubElement(left, "UID").text = "AAA111"
+
+    right = etree.Element("root")
+    etree.SubElement(right, "ID").text = "2A01"
+    etree.SubElement(right, "UID").text = "BBB222"
+
+    assert xml_test_tools.agnostic_diff(left, right, ignore_uid=True) == []
