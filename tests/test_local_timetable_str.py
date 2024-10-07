@@ -6,7 +6,7 @@ FOUROKS = Location(tiploc="FOUROKS")
 
 
 @pytest.mark.parametrize(
-    "left,right_text",
+    "expected,text",
     [
         (
             TimingPoint(
@@ -40,9 +40,9 @@ FOUROKS = Location(tiploc="FOUROKS")
         ),
     ],
 )
-def test_timing_point_from_text(xml_test_tools, left, right_text):
+def test_timing_point_from_text(xml_test_tools, expected, text):
     xt = xml_test_tools
 
-    right = TimingPoint.from_str(right_text)
+    result = TimingPoint.from_str(text)
 
-    assert xt.agnostic_diff(right.xml(), left.xml()) == []
+    assert xt.agnostic_diff(expected.xml(), result.xml()) == []
