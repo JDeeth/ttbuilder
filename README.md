@@ -18,7 +18,7 @@ the Derby, Aston and Stafford sims:
 
 ![Hand-written 1M45 timetables in each sim](img/1M45%20SimSig%20timetables.png "Popup timetables for 1M45 in each sim")
 
-Hand-written timetables for 1M45 are included in [tests/1M45](tests/1M45)
+Hand-written timetables for 1M45 are included in [tests/sample/1M45](tests/sample/1M45)
 
 The user input would be a description of the train and the same timing
 information as in the actual WTT. Something like this, using real-world TIPLOCs:
