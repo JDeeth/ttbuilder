@@ -53,7 +53,7 @@ class TimingPoint:
             subelem("EngAllowance", self.eng_perf_allowance.seconds // 30)
         if self.pathing_allowance:
             subelem("PathAllowance", self.pathing_allowance.seconds // 30)
-        if self.request_stop_percent in range(0, 100): # excludes 100%
+        if self.request_stop_percent in range(0, 100):  # excludes 100%
             subelem("RequestPercent", self.request_stop_percent)
 
         return result

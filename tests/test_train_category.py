@@ -26,9 +26,11 @@ populated_dt = """
 
 def test_default_dwell_times(xml_test_tools):
     xt = xml_test_tools
-    dt = DwellTimes()
     expected = xt.fromstr("<DwellTimes/>")
-    assert xt.agnostic_diff(expected, dt.xml()) == []
+
+    dt = DwellTimes()
+
+    xt.assert_equivalent(expected, dt.xml())
 
 
 def test_dwell_time_can_populate_from_int():
@@ -38,6 +40,8 @@ def test_dwell_time_can_populate_from_int():
 
 def test_populated_dwell_times(xml_test_tools):
     xt = xml_test_tools
+    expected = xt.fromstr(populated_dt)
+
     dt = DwellTimes(
         red_signal_move_off=CajonTime.from_str("0:00:10"),
         station_forward=CajonTime.from_hms(seconds=45),
@@ -48,8 +52,8 @@ def test_populated_dwell_times(xml_test_tools):
     dt.join = CajonTime.from_hms(minutes=5)
     dt.divide = CajonTime(120)
     dt.crew_change = CajonTime.from_str("0:05")
-    expected = xt.fromstr(populated_dt)
-    assert xt.agnostic_diff(expected, dt.xml()) == []
+
+    xt.assert_equivalent(expected, dt.xml())
 
 
 @pytest.mark.parametrize(
@@ -145,6 +149,8 @@ def test_train_types_get_unique_default_ids():
 
 def test_make_dmu_train_type(xml_test_tools):
     xt = xml_test_tools
+    expected = xt.fromstr(dmu_traintype)
+
     dmu_dwell_times = DwellTimes(10, 45, 180, 60, 240, 300, 120, 300)
     dmu = TrainType(
         id="23F09234",
@@ -156,8 +162,7 @@ def test_make_dmu_train_type(xml_test_tools):
         dwell_times=dmu_dwell_times,
         power_type=PowerType.DIESEL,
     )
-    expected = xt.fromstr(dmu_traintype)
-    assert xt.agnostic_diff(expected, dmu.xml()) == []
+    xt.assert_equivalent(expected, dmu.xml())
 
 
 no_power_traintype = """
@@ -177,6 +182,8 @@ no_power_traintype = """
 
 def test_no_power_train_type(xml_test_tools):
     xt = xml_test_tools
+    expected = xt.fromstr(no_power_traintype)
+
     tt = TrainType(
         id="ED5BFABD",
         description="No power",
@@ -184,8 +191,8 @@ def test_no_power_train_type(xml_test_tools):
         length_m=20,
         power_type=PowerType.NONE,
     )
-    expected = xt.fromstr(no_power_traintype)
-    assert xt.agnostic_diff(expected, tt.xml()) == []
+
+    xt.assert_equivalent(expected, tt.xml())
 
 
 def test_train_type_description_punctuation(xml_test_tools):

@@ -53,6 +53,10 @@ class XMLTestTools:
         parser = etree.XMLParser(**parser_args)
         return etree.XML(xml_text, parser=parser)
 
+    @classmethod
+    def assert_equivalent(cls, left, right, ignore_uid=False):
+        assert cls.agnostic_diff(left, right, ignore_uid) == []
+
 
 @pytest.fixture
 def xml_test_tools():

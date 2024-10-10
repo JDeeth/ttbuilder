@@ -45,4 +45,4 @@ def test_timing_point_from_text(xml_test_tools, expected, text):
 
     result = TimingPoint.from_str(text)
 
-    assert xt.agnostic_diff(expected.xml(), result.xml()) == []
+    xt.assert_equivalent(expected.xml(), result.xml())

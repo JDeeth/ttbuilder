@@ -8,12 +8,6 @@ from train_category import DwellTimes, PowerType, SpeedClass, TrainType
 def test_stopping_timing_point(xml_test_tools):
     xt = xml_test_tools
 
-    tp = TimingPoint(
-        location=Location("FOUROKS"),
-        depart=CajonTime.from_str("00:15"),
-        platform="3",
-    )
-
     expected_str = """
     <Trip>
         <Location>FOUROKS</Location>
@@ -23,17 +17,17 @@ def test_stopping_timing_point(xml_test_tools):
     """
     expected = xt.fromstr(expected_str)
 
-    assert xt.agnostic_diff(expected, tp.xml()) == []
+    tp = TimingPoint(
+        location=Location("FOUROKS"),
+        depart=CajonTime.from_str("00:15"),
+        platform="3",
+    )
+
+    xt.assert_equivalent(expected, tp.xml())
 
 
 def test_passing_timing_point(xml_test_tools):
     xt = xml_test_tools
-
-    tp = TimingPoint(
-        location=Location("ASTON"),
-        depart=CajonTime.from_str("00:30"),
-        passing=True,
-    )
 
     expected_str = """
     <Trip>
@@ -44,20 +38,17 @@ def test_passing_timing_point(xml_test_tools):
     """
     expected = xt.fromstr(expected_str)
 
-    assert xt.agnostic_diff(expected, tp.xml()) == []
+    tp = TimingPoint(
+        location=Location("ASTON"),
+        depart=CajonTime.from_str("00:30"),
+        passing=True,
+    )
+
+    xt.assert_equivalent(expected, tp.xml())
 
 
 def test_perf_path_times_in_timing_point(xml_test_tools):
     xt = xml_test_tools
-
-    tp = TimingPoint(
-        location=Location("LCHC"),
-        depart=CajonTime.from_str("00:35"),
-        passing=True,
-        platform="2",
-        eng_perf_allowance=CajonTime.from_hms(minutes=1),
-        pathing_allowance=CajonTime.from_hms(minutes=2, seconds=30),
-    )
 
     # Allowance times recorded in multiples of 30 seconds
     expected_str = """
@@ -72,7 +63,16 @@ def test_perf_path_times_in_timing_point(xml_test_tools):
         """
     expected = xt.fromstr(expected_str)
 
-    assert xt.agnostic_diff(expected, tp.xml()) == []
+    tp = TimingPoint(
+        location=Location("LCHC"),
+        depart=CajonTime.from_str("00:35"),
+        passing=True,
+        platform="2",
+        eng_perf_allowance=CajonTime.from_hms(minutes=1),
+        pathing_allowance=CajonTime.from_hms(minutes=2, seconds=30),
+    )
+
+    xt.assert_equivalent(expected, tp.xml())
 
 
 def test_request_stop_percent(xml_test_tools):
@@ -93,7 +93,7 @@ def test_request_stop_percent(xml_test_tools):
         request_stop_percent=25,
     )
 
-    assert xt.agnostic_diff(expected, tp.xml()) == []
+    xt.assert_equivalent(expected, tp.xml())
 
 
 @pytest.fixture
@@ -137,11 +137,11 @@ def args_2a01(dmu_train_type):
 
 def test_out_and_back_tt(xml_test_tools, args_2a01):
     xt = xml_test_tools
+    expected = xt.fromfile("tests/sample/aston_2A01.xml")
 
     tt = LocalTimetable(**args_2a01)
 
-    expected = xt.fromfile("tests/sample/aston_2A01.xml")
-    assert xt.agnostic_diff(expected, tt.xml()) == []
+    xt.assert_equivalent(expected, tt.xml())
 
 
 def test_starting_power_inferred_if_unambiguous():
@@ -162,6 +162,7 @@ def test_starting_power_assumed_if_ambiguous():
 
 def test_train_starting_in_sim(xml_test_tools, dmu_train_type):
     xt = xml_test_tools
+    expected = xt.fromfile("tests/sample/aston_2A04.xml")
 
     tt = LocalTimetable(
         train_id=TrainId(id="2A04", uid="ZDC316"),
@@ -178,12 +179,12 @@ def test_train_starting_in_sim(xml_test_tools, dmu_train_type):
             ),
         ],
     )
-    expected = xt.fromfile("tests/sample/aston_2A04.xml")
-    assert xt.agnostic_diff(expected, tt.xml()) == []
+    xt.assert_equivalent(expected, tt.xml())
 
 
 def test_train_terminating_in_sim(xml_test_tools, dmu_train_type):
     xt = xml_test_tools
+    expected = xt.fromfile("tests/sample/aston_2A03.xml")
 
     train_id = TrainId(id="2A03", uid="ZBD037")
     next_id = TrainId(id="2A04", uid="ZDC316")
@@ -207,5 +208,4 @@ def test_train_terminating_in_sim(xml_test_tools, dmu_train_type):
         ],
     )
 
-    expected = xt.fromfile("tests/sample/aston_2A03.xml")
-    assert xt.agnostic_diff(expected, tt.xml()) == []
+    xt.assert_equivalent(expected, tt.xml())

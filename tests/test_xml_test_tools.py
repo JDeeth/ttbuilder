@@ -67,6 +67,7 @@ def test_agnostic_diff(xml_test_tools):
     etree.SubElement(right, "C")
 
     assert xml_test_tools.agnostic_diff(left, right) == []
+    xml_test_tools.assert_equivalent(left, right)
 
 
 def test_ignore_uid_change_diff(xml_test_tools):
@@ -79,3 +80,4 @@ def test_ignore_uid_change_diff(xml_test_tools):
     etree.SubElement(right, "UID").text = "BBB222"
 
     assert xml_test_tools.agnostic_diff(left, right, ignore_uid=True) == []
+    xml_test_tools.assert_equivalent(left, right, ignore_uid=True)

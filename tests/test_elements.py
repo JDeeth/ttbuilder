@@ -75,6 +75,8 @@ def test_accel_brake(ab, value):
 )
 def test_train_id(xml_test_tools, params, expected_xml):
     xt = xml_test_tools
-    train = TrainId(**params)
     expected = xt.fromstr(expected_xml)
-    assert xt.agnostic_diff(expected, train.activity_xml()) == []
+
+    train = TrainId(**params)
+
+    xt.assert_equivalent(expected, train.activity_xml())

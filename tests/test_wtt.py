@@ -22,8 +22,10 @@ def aston_none():
 def test_make_xml_header(xml_test_tools, aston_none):
     xt = xml_test_tools
     expected = xt.fromfile("tests/sample/aston_empty_TimetableHeader.xml")
+
     header = aston_none.xml_header()
-    assert xt.agnostic_diff(expected, header) == []
+
+    xt.assert_equivalent(expected, header)
 
 
 def test_make_xml_header(xml_test_tools, aston_none):
@@ -39,7 +41,7 @@ def test_make_savedtimetable_xml(xml_test_tools, aston_none):
     expected = xt.fromfile("tests/sample/aston_empty_SavedTimetable.xml")
 
     saved_timetable = aston_none.xml()
-    assert xt.agnostic_diff(expected, saved_timetable) == []
+    xt.assert_equivalent(expected, saved_timetable)
 
 
 def test_header_description_escaped():
@@ -60,6 +62,7 @@ def test_header_description_escaped():
 
 def test_wtt_compilation(tmp_path, aston_none, xml_test_tools):
     xt = xml_test_tools
+
     filename = f"{tmp_path}.wtt"
     aston_none.compile_wtt(filename)
     assert zipfile.is_zipfile(filename)
@@ -69,11 +72,11 @@ def test_wtt_compilation(tmp_path, aston_none, xml_test_tools):
         with wtt.open("TimetableHeader.xml") as header:
             expected = aston_none.xml_header()
             result = xt.fromstr(header.read())
-            assert xt.agnostic_diff(expected, result) == []
+            xt.assert_equivalent(expected, result)
         with wtt.open("SavedTimetable.xml") as timetable:
             expected = aston_none.xml()
             result = xt.fromstr(timetable.read())
-            assert xt.agnostic_diff(expected, result) == []
+            xt.assert_equivalent(expected, result)
 
 
 def test_basic_wtt(xml_test_tools):
@@ -153,4 +156,4 @@ def test_basic_wtt(xml_test_tools):
         workings=[tt_2a01, tt_2a03, tt_2a04],
     )
 
-    assert xt.agnostic_diff(expected, tt.xml()) == []
+    xt.assert_equivalent(expected, tt.xml())
