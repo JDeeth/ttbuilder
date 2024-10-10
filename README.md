@@ -18,8 +18,10 @@ the Derby, Aston and Stafford sims:
 
 ![Hand-written 1M45 timetables in each sim](img/1M45%20SimSig%20timetables.png "Popup timetables for 1M45 in each sim")
 
+Hand-written timetables for 1M45 are included in [tests/1M45](tests/1M45)
+
 The user input would be a description of the train and the same timing
-information as in the actual WTT. **This is WIP:**
+information as in the actual WTT. Something like this, using real-world TIPLOCs:
 
 ```
 Parcels:
@@ -28,27 +30,25 @@ Dwell times 0:05, 3:00, 1:00, 1:00, 1:00, 1:00, 5:00, 2:00
 
 1M45
 22:30 Peterborough-Carlisle (Parcels)
-TRENTJN 23/55H
-SHTSHJN 23/56
-SPONDON 00/01
-DERBY   00:13 [4] <4> 6 Runround
-DERBY   00:40
-STNSNJN 00/47H [0H]
-NSTAFJN 00/48H
-BRTNTNT 00/53
+TRENTJ  23/55H
+SHEETSJ 23/56
+SPDN    00/01
+DRBY    00:13 [4] <4> 6 Runround
+DRBY    00:40
+STSNJN  00/47H [0H]
+NSJDRBY 00/48H
+BURTNOT 00/53
 WICHNRJ 00/58H
-LICHTVJ 01/06H
-LICHFTV 01/09 FL
-ARMTGEJ 01/14H
+LCHTTVJ 01/06H
+LCHTTVL 01/09 FL
+ARMITAG 01/14H
 COLWICH 01/19H
-MILFRDJ 01/21H SL
+MILFDY  01/21H SL
 STAFFRD 01/25 5
-NORTNBG 01/29H
+NTNB    01/29H
 MADELEY 01/37H
-CRWBSHJ 01/46 [3]
+CREWBHJ 01/46 [3]
 ```
-
-*todo: insert actual TIPLOCs*
 
 The user/admin would also provide a mapping between the real WTT timing point
 sequence and the required SimSig locations, e.g. estimating times for North
@@ -76,3 +76,7 @@ location (e.g. signal Derby 404 for 1M45 at 00:00) would be nice.
 - Terminal-style TUI interface to show entire timetable
 - SimSig Gateway integration for timing performance
 - Make new/altered workings in TUI and generate .wtt files for host to import?
+
+## Development notes
+
+- Configure your computer to [open .WTT files as .zip](https://superuser.com/a/1858317/677515)
