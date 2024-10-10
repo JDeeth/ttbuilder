@@ -47,6 +47,55 @@ def test_passing_timing_point(xml_test_tools):
     assert xt.agnostic_diff(expected, tp.xml()) == []
 
 
+def test_perf_path_times_in_timing_point(xml_test_tools):
+    xt = xml_test_tools
+
+    tp = TimingPoint(
+        location=Location("LCHC"),
+        depart=CajonTime.from_str("00:35"),
+        passing=True,
+        platform="2",
+        eng_perf_allowance=CajonTime.from_hms(minutes=1),
+        pathing_allowance=CajonTime.from_hms(minutes=2, seconds=30),
+    )
+
+    # Allowance times recorded in multiples of 30 seconds
+    expected_str = """
+        <Trip>
+          <Location>LCHC</Location>
+          <DepPassTime>2100</DepPassTime>
+          <Platform>2</Platform>
+          <EngAllowance>2</EngAllowance>
+          <PathAllowance>5</PathAllowance>
+          <IsPassTime>-1</IsPassTime>
+        </Trip>
+        """
+    expected = xt.fromstr(expected_str)
+
+    assert xt.agnostic_diff(expected, tp.xml()) == []
+
+
+def test_request_stop_percent(xml_test_tools):
+    xt = xml_test_tools
+
+    expected_str = """
+        <Trip>
+          <Location>BLKST</Location>
+          <DepPassTime>2400</DepPassTime>
+          <RequestPercent>25</RequestPercent>
+        </Trip>
+        """
+    expected = xt.fromstr(expected_str)
+
+    tp = TimingPoint(
+        location=Location("BLKST"),
+        depart=CajonTime.from_str("00:40"),
+        request_stop_percent=25,
+    )
+
+    assert xt.agnostic_diff(expected, tp.xml()) == []
+
+
 @pytest.fixture
 def dmu_train_type():
     dwell_times = DwellTimes(10, 45, 180, 60, 240, 300, 120, 300)

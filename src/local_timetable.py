@@ -13,6 +13,9 @@ class TimingPoint:
     platform: str = ""
     passing: bool = False
     activities: list[Activity] = field(default_factory=list)
+    eng_perf_allowance: CajonTime | None = None
+    pathing_allowance: CajonTime | None = None
+    request_stop_percent: int = 100
 
     @classmethod
     def from_str(cls, text):
@@ -45,6 +48,13 @@ class TimingPoint:
             acts = etree.SubElement(result, "Activities")
             for a in self.activities:
                 acts.append(a.xml())
+        # allowances are recorded as multiples of 30 seconds
+        if self.eng_perf_allowance:
+            subelem("EngAllowance", self.eng_perf_allowance.seconds // 30)
+        if self.pathing_allowance:
+            subelem("PathAllowance", self.pathing_allowance.seconds // 30)
+        if self.request_stop_percent in range(0, 100): # excludes 100%
+            subelem("RequestPercent", self.request_stop_percent)
 
         return result
 
