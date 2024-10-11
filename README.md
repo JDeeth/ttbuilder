@@ -80,3 +80,4 @@ location (e.g. signal Derby 404 for 1M45 at 00:00) would be nice.
 ## Development notes
 
 - Configure your computer to [open .WTT files as .zip](https://superuser.com/a/1858317/677515)
+- To activate virtual environment in Powershell: `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned`
