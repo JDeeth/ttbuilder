@@ -61,3 +61,11 @@ class XMLTestTools:
 @pytest.fixture
 def xml_test_tools():
     return XMLTestTools()
+
+
+def xfail(*args, reason=None):
+    if reason:
+        mark = pytest.mark.xfail(reason=reason)
+    else:
+        mark = pytest.mark.xfail
+    return pytest.param(*args, marks=mark)
