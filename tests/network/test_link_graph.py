@@ -40,20 +40,14 @@ def aston():
     return LinkGraph(routes, mandatory_points)
 
 
-def test_mandatory_points_parsed(aston):
-    assert aston.mandatory_points() == set(
-        "ALRWAS LCHTTVJ LCHTTVH LCHC BLKST FOUROKS".split()
-    )
-
-
 @pytest.mark.parametrize(
     "dep,dest,path,expectation",
     [
-        ("LCHTTVH", "SUTCO", "LCHTTVH LCHC BLKST FOUROKS SUTCO", does_not_raise()),
-        ("LCHTTVH", "WYGN", "LCHTTVH LCHC BLKST FOUROKS WYGN", does_not_raise()),
-        ("SUTCO", "ASTON", "SUTCO ASTON", does_not_raise()),
-        ("ELCHTTVL", "WICHNRJ", "ELCHTTVL LCHTTVJ ALRWAS WICHNRJ", does_not_raise()),
-        ("WYGN", "WYGN", "WYGN", does_not_raise()),
+        ("LCHTTVH", "SUTCO", "LCHC BLKST FOUROKS", does_not_raise()),
+        ("LCHTTVH", "WYGN", "LCHC BLKST FOUROKS", does_not_raise()),
+        ("SUTCO", "ASTON", "", does_not_raise()),
+        ("ELCHTTVL", "WICHNRJ", "LCHTTVJ ALRWAS", does_not_raise()),
+        ("WYGN", "WYGN", "", does_not_raise()),
         ("WYGN", "ATLANTIS", "", pytest.raises(LocationNotFound)),
         ("WYGN", "DISJOINT", "", pytest.raises(NoPath)),
         xfail(
@@ -65,6 +59,6 @@ def test_mandatory_points_parsed(aston):
         ),
     ],
 )
-def test_find_minimal_path(aston, dep, dest, path, expectation):
+def test_find_min_via_points(aston, dep, dest, path, expectation):
     with expectation:
-        assert aston.min_path(dep, dest) == path.split()
+        assert aston.min_via_points(dep, dest) == path.split()

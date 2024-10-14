@@ -4,8 +4,10 @@ import networkx as nx
 class NoPath(Exception):
     pass
 
+
 class LocationNotFound(Exception):
     pass
+
 
 class LinkGraph:
     def __init__(self, routes: set[list[str]], mandatory_points: set[str]):
@@ -18,23 +20,17 @@ class LinkGraph:
             (a, b) for rt in routes for a, b in zip(rt, rt[1:])
         )
 
-    def mandatory_points(self):
-        graph = self._route_graph
-        return {pt for pt in graph.nodes if graph.nodes[pt].get("mandatory")}
-
-    def full_path(self, from_pt, to_pt):
+    def all_via_points(self, from_pt, to_pt):
         try:
-            return nx.shortest_path(self._route_graph, from_pt, to_pt)
+            result = nx.shortest_path(self._route_graph, from_pt, to_pt)
+            return result[1:-1]
         except nx.exception.NetworkXNoPath as error:
             raise NoPath(error)
         except nx.exception.NodeNotFound as error:
             raise LocationNotFound(error)
 
-    def min_path(self, from_pt, to_pt):
-        result = self.full_path(from_pt, to_pt)
-        result = [
-            pt
-            for i, pt in enumerate(result)
-            if i == 0 or i == len(result) - 1 or pt in self.mandatory_points()
-        ]
+    def min_via_points(self, from_pt, to_pt):
+        result = self.all_via_points(from_pt, to_pt)
+        mandatory = lambda pt: self._route_graph.nodes[pt].get("mandatory")
+        result = [pt for pt in result if mandatory(pt)]
         return result
