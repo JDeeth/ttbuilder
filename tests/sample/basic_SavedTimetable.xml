@@ -135,6 +135,7 @@
         </Trip>
         <Trip>
           <Location>ASTON</Location>
+          <DepPassTime>2700</DepPassTime>
           <IsPassTime>-1</IsPassTime>
         </Trip>
       </Trips>

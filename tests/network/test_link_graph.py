@@ -1,3 +1,4 @@
+from local_timetable import TimingPoint
 import pytest
 from contextlib import nullcontext as does_not_raise
 
@@ -62,3 +63,39 @@ def aston():
 def test_find_min_via_points(aston, dep, dest, path, expectation):
     with expectation:
         assert aston.min_via_points(dep, dest) == path.split()
+
+
+TRAIN_1M49 = """
+TRENTJ      23/55H
+SHEETSJ     23/56
+SPDN        00/01
+DRBY.6      00:13  [4] <4> Runround
+DRBY.6      00:40
+STSNJN      00/47H [0H]
+NSJDRBY     00/48H
+BURTNOT     00/53
+WICHNRJ     00/58H
+LCHTTVJ     01/06H
+LCHTTVL     01/09  FL
+ARMITAG     01/14H
+COLWICH     01/19H
+MILFDY      01/21H SL
+STAFFRD.5   01/25
+NTNB        01/29H
+MADELEY     01/37H
+CREWBHJ     01/46  [3]
+""".strip()
+
+
+def test_extract_sim_timing_points(aston):
+    expected = """
+WICHNRJ    00/58H
+ALRWAS     01/02H
+LCHTTVJ    01/06H
+LCHTTVL    01/09
+""".strip()
+    # 01/02H is a simple average of the times before and after
+
+    aston_path = aston.extract(TRAIN_1M49)
+
+    assert expected == aston_path

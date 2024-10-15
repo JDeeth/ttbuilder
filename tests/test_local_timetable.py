@@ -40,8 +40,7 @@ def test_passing_timing_point(xml_test_tools):
 
     tp = TimingPoint(
         location=Location("ASTON"),
-        depart=CajonTime.from_str("00:30"),
-        passing=True,
+        depart=CajonTime.from_str("00/30"),
     )
 
     xt.assert_equivalent(expected, tp.xml())
@@ -65,10 +64,9 @@ def test_perf_path_times_in_timing_point(xml_test_tools):
 
     tp = TimingPoint(
         location=Location("LCHC"),
-        depart=CajonTime.from_str("00:35"),
-        passing=True,
+        depart=CajonTime.from_str("00/35"),
         platform="2",
-        eng_perf_allowance=CajonTime.from_hms(minutes=1),
+        engineering_allowance=CajonTime.from_hms(minutes=1),
         pathing_allowance=CajonTime.from_hms(minutes=2, seconds=30),
     )
 
@@ -128,8 +126,7 @@ def args_2a01(dmu_train_type):
             ),
             TimingPoint(
                 location=Location("ASTON"),
-                depart=CajonTime.from_str("00:30"),
-                passing=True,
+                depart=CajonTime.from_str("00/30"),
             ),
         ],
     )
@@ -175,7 +172,7 @@ def test_train_starting_in_sim(xml_test_tools, dmu_train_type):
             ),
             TimingPoint(
                 location=Location("ASTON"),
-                passing=True,
+                depart=CajonTime.from_str("00/45"),
             ),
         ],
     )

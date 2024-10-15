@@ -104,8 +104,7 @@ def test_basic_wtt(xml_test_tools):
                 platform="3",
             ),
             TimingPoint(
-                location=Location(tiploc="ASTON"),
-                passing=True,
+                location=Location(tiploc="ASTON"), depart=CajonTime(2700, passing=True)
             ),
         ],
     )
@@ -142,8 +141,7 @@ def test_basic_wtt(xml_test_tools):
             ),
             TimingPoint(
                 location=Location(tiploc="ASTON"),
-                depart=CajonTime(1800),
-                passing=True,
+                depart=CajonTime(1800, passing=True),
             ),
         ],
     )

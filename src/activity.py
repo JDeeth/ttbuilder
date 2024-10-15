@@ -43,8 +43,23 @@ class Activity:
     """Timing point activity"""
 
     activity_type: ActivityType
-
     associated_train_id: TrainId
+
+    def __post_init__(self):
+        if isinstance(self.associated_train_id, str):
+            self.associated_train_id = TrainId(id=self.associated_train_id)
+
+    @classmethod
+    def next(cls, train_id: str | TrainId):
+        if isinstance(train_id, str):
+            train_id = TrainId(train_id)
+        return cls(ActivityType.NEXT, train_id)
+
+    def __str__(self):
+        code = {
+            ActivityType.NEXT: "N",
+        }
+        return f"{code.get(self.activity_type, '?')}:{self.associated_train_id.id}"
 
     def xml(self):
         result = etree.Element("Activity")

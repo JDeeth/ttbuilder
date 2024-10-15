@@ -1,3 +1,6 @@
+from dataclasses import dataclass
+from elements import CajonTime
+from local_timetable import TimingPoint
 import networkx as nx
 
 
@@ -34,3 +37,35 @@ class LinkGraph:
         mandatory = lambda pt: self._route_graph.nodes[pt].get("mandatory")
         result = [pt for pt in result if mandatory(pt)]
         return result
+
+    def has_tiploc(self, tiploc: str):
+        return tiploc in self._route_graph.nodes
+
+    def extract(self, path: str):
+        points = [TimingPoint.from_str(line) for line in path.strip().splitlines()]
+        result = []
+        for a, b in zip(points, points[1:]):
+            tiploc_a = a.location.tiploc
+            if not result:
+                # prepend E for entrypoint
+                tiploc_a = f"E{tiploc_a}"
+            if not self.has_tiploc(tiploc_a):
+                continue
+            if not result:
+                result.append(a)
+            try:
+                missing_tiplocs = self.min_via_points(tiploc_a, b.location.tiploc)
+            except LocationNotFound:
+                break
+            if missing_tiplocs:
+                start = a.depart.seconds
+                interval = (b.depart.seconds - a.depart.seconds) / (
+                    len(missing_tiplocs) + 1
+                )
+                for i, tiploc in enumerate(missing_tiplocs, start=1):
+                    depart = CajonTime(seconds=start + interval * i, passing=True)
+                    result.append(TimingPoint(location=tiploc, depart=depart))
+            if self.has_tiploc(b.location.tiploc):
+                result.append(b)
+
+        return "\n".join(str(pt) for pt in result)

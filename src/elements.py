@@ -12,22 +12,45 @@ class Location:
 @dataclass(frozen=True)
 class CajonTime:
     seconds: int = 0
+    passing: bool = False
 
     @classmethod
-    def from_hms(cls, hours: int = 0, minutes: int = 0, seconds: int = 0):
-        return cls(seconds=seconds + 60 * minutes + 3600 * hours)
+    def from_hms(
+        cls, hours: int = 0, minutes: int = 0, seconds: int = 0, passing: bool = False
+    ):
+        seconds = 3600 * hours + 60 * minutes + seconds
+        return cls(seconds, passing)
 
     @classmethod
-    def from_str(cls, text):
-        ends_with_h = text[-1] == "H"
+    def from_str(cls, text: str):
+        ends_with_h = text.endswith("H")
         if ends_with_h:
             text = text[:-1]
+        passing = "/" in text
+        if passing:
+            text = text.replace("/", ":")
         text = text.split(":")
         text.extend(("0", "0", "0"))
         h, m, s, *_ = (int(x) for x in text if x.isdigit())
         if ends_with_h:
             s += 30
-        return cls.from_hms(h, m, s)
+        return cls.from_hms(h, m, s, passing)
+
+    def __str__(self):
+        s = int(self.seconds)
+        h = s // 3600
+        m = (s // 60) % 60
+        s = s % 60
+        sep = "/" if self.passing else ":"
+        half = "H" if s >= 30 else ""
+        return f"{h:02}{sep}{m:02}{half}"
+
+    def __format__(self, spec):
+        if spec == "MH":
+            m = self.seconds // 60
+            half = "H" if (self.seconds % 60) >= 30 else ""
+            return f"{m}{half}"
+        return self.__str__()
 
     def __bool__(self):
         return self.seconds != 0
