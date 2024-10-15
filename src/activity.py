@@ -3,39 +3,22 @@ from enum import Enum
 from elements import TrainId
 from lxml import etree
 
-_ = """
-Activity types:
-- Next train
-- Divides (new rear)
-- Divides (new front)
-- Joins
-- Platform share
-- Drop coaches (at rear)
-- Drop coaches (at front)
-- Detach engine (new rear)
-- Detach engine (new front)
-- Crew change
-
-Params:
-- Train ID or UID
-- Duration
-- Crew arrive at
-- Decision
-- Choice
-"""
-
 
 class ActivityType(Enum):
-    NEXT = 0
-    DIVIDE_REAR = 1
-    DIVIDE_FRONT = 2
-    JOIN = 3
-    PLATFORM_SHARE = 9
-    DROP_COACHES_REAR = 6
-    DROP_COACHES_FRONT = 7
-    DETACH_ENGINE_REAR = 4
-    DETACH_ENGINE_FRONT = 5
-    CREW_CHANGE = 10
+    NEXT = 0, "N"
+    JOIN = 3, "J"
+    DIVIDE_REAR = 1, "DR"
+    DIVIDE_FRONT = 2, "DF"
+    DETACH_ENGINE_REAR = 4, "DER"
+    DETACH_ENGINE_FRONT = 5, "DEF"
+    DROP_COACHES_REAR = 6, "DCR"
+    DROP_COACHES_FRONT = 7, "DCF"
+    PLATFORM_SHARE = 9, "PS"
+    CREW_CHANGE = 10, "CC"
+
+    def __init__(self, xml_code, label):
+        self.xml_code = xml_code
+        self.label = label
 
 
 @dataclass
@@ -51,18 +34,60 @@ class Activity:
 
     @classmethod
     def next(cls, train_id: str | TrainId):
-        if isinstance(train_id, str):
-            train_id = TrainId(train_id)
         return cls(ActivityType.NEXT, train_id)
 
+    @classmethod
+    def join(cls, train_id: str | TrainId):
+        return cls(ActivityType.JOIN, train_id)
+
+    @classmethod
+    def divide_rear(cls, train_id: str | TrainId):
+        return cls(ActivityType.DIVIDE_REAR, train_id)
+
+    @classmethod
+    def divide_front(cls, train_id: str | TrainId):
+        return cls(ActivityType.DIVIDE_FRONT, train_id)
+
+    @classmethod
+    def detach_engine_front(cls, train_id: str | TrainId):
+        return cls(ActivityType.DETACH_ENGINE_FRONT, train_id)
+
+    @classmethod
+    def detach_engine_rear(cls, train_id: str | TrainId):
+        return cls(ActivityType.DETACH_ENGINE_REAR, train_id)
+
+    @classmethod
+    def drop_coaches_front(cls, train_id: str | TrainId):
+        return cls(ActivityType.DROP_COACHES_FRONT, train_id)
+
+    @classmethod
+    def drop_coaches_rear(cls, train_id: str | TrainId):
+        return cls(ActivityType.DROP_COACHES_REAR, train_id)
+
+    @classmethod
+    def platform_share(cls, train_id: str | TrainId):
+        return cls(ActivityType.PLATFORM_SHARE, train_id)
+
+    @classmethod
+    def crew_change(cls, train_id: str | TrainId):
+        return cls(ActivityType.CREW_CHANGE, train_id)
+
+    @classmethod
+    def from_str(cls, text: str):
+        text = text.upper()
+        label, _, train_id = text.partition(":")
+        try:
+            activity_type = next(t for t in ActivityType if t.label == label)
+        except StopIteration:
+            valid_labels = ", ".join(t.label for t in ActivityType)
+            raise ValueError(f"Valid activity strings start with {valid_labels}")
+        return cls(activity_type, train_id)
+
     def __str__(self):
-        code = {
-            ActivityType.NEXT: "N",
-        }
-        return f"{code.get(self.activity_type, '?')}:{self.associated_train_id.id}"
+        return f"{self.activity_type.label}:{self.associated_train_id.id}"
 
     def xml(self):
         result = etree.Element("Activity")
-        etree.SubElement(result, "Activity").text = str(self.activity_type.value)
+        etree.SubElement(result, "Activity").text = str(self.activity_type.xml_code)
         result.append(self.associated_train_id.activity_xml())
         return result

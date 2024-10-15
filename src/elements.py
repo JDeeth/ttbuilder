@@ -122,9 +122,9 @@ class TrainId:
     def activity_xml(self):
         if self.uid:
             result = etree.Element("AssociatedUID")
-            result.text = self.uid
+            result.text = self.uid.upper()
             return result
         else:
             result = etree.Element("AssociatedTrain")
-            result.text = self.id
+            result.text = self.id.upper()
             return result
