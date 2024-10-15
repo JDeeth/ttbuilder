@@ -5,6 +5,7 @@ from lxml import etree
 
 
 class ActivityType(Enum):
+    INVALID = None, ":"
     NEXT = 0, "N"
     JOIN = 3, "J"
     DIVIDE_REAR = 1, "DR"
@@ -79,9 +80,11 @@ class Activity:
         try:
             activity_type = next(t for t in ActivityType if t.label == label)
         except StopIteration:
-            valid_labels = ", ".join(t.label for t in ActivityType)
-            raise ValueError(f"Valid activity strings start with {valid_labels}")
+            return cls(ActivityType.INVALID, "")
         return cls(activity_type, train_id)
+
+    def __bool__(self):
+        return self.activity_type != ActivityType.INVALID
 
     def __str__(self):
         return f"{self.activity_type.label}:{self.associated_train_id.id}"

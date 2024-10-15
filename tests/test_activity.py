@@ -35,9 +35,8 @@ def test_activity_from_str(text, activity):
     assert Activity.from_str(text) == activity
 
 
-def test_activity_from_invalid_str_raises():
-    with pytest.raises(ValueError):
-        Activity.from_str("X:0A00")
+def test_invalid_str_makes_null_activity():
+    assert not Activity.from_str("X:0A00")
 
 
 @pytest.mark.parametrize(

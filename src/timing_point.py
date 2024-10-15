@@ -23,12 +23,38 @@ class TimingPoint:
 
     @classmethod
     def from_str(cls, text):
-        elem = text.split()
-        tiploc, _, platform = elem[0].partition(".")
-        location = Location(tiploc=tiploc)
-        depart_str: str = elem[1]
-        depart = CajonTime.from_str(depart_str)
-        return cls(location=location, depart=depart, platform=platform)
+        split_text = text.split()
+        params = {}
+
+        tiploc, _, platform = split_text[0].partition(".")
+        params["location"] = Location(tiploc=tiploc)
+        params["platform"] = platform
+        params["depart"] = CajonTime.from_str(split_text[1])
+        params["activities"] = []
+
+        def get_time(elem, a, z):
+            if elem.startswith(a) and elem.endswith(z):
+                m, h, _ = elem[1:-1].partition("H")
+                time = int(m or 0) * 60
+                time += 30 if h else 0
+            else:
+                time = 0
+            return CajonTime(time)
+
+        for elem in split_text[2:]:
+            for a, label, z in (
+                "[ engineering_allowance ]".split(),
+                "( pathing_allowance )".split(),
+                "< performance_allowance >".split(),
+            ):
+                time = get_time(elem, a, z)
+                if time:
+                    params[label] = time
+            activity = Activity.from_str(elem)
+            if activity:
+                params["activities"].append(activity)
+
+        return cls(**params)
 
     def __str__(self):
         location = self.location.tiploc

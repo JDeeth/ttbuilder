@@ -90,14 +90,56 @@ def test_request_stop_percent(xml_test_tools):
         (TimingPoint("FOUROKS", "12:05:30"), "FOUROKS 12:05H"),
         (TimingPoint("FOUROKS", "12/05"), "FOUROKS 12/05"),
         (TimingPoint("FOUROKS", "12:05", platform="3"), "FOUROKS.3 12:05"),
+        (
+            TimingPoint("FOUROKS", "12:05", engineering_allowance=CajonTime(90)),
+            "FOUROKS 12:05 [1H]",
+        ),
+        (
+            TimingPoint("FOUROKS", "12:05", pathing_allowance=CajonTime(30)),
+            "FOUROKS 12:05 (0H)",
+        ),
+        (
+            TimingPoint("FOUROKS", "12:05", performance_allowance=CajonTime(120)),
+            "FOUROKS 12:05 <2>",
+        ),
+        (TimingPoint("FOUROKS", "12:05"), "FOUROKS 12:05 <0> [0] (0)"),
+        (
+            TimingPoint(
+                "FOUROKS",
+                "12:05",
+                pathing_allowance=CajonTime(30),
+                engineering_allowance=CajonTime(90),
+            ),
+            "FOUROKS 12:05 [1H] (0H)",
+        ),
+        (
+            TimingPoint(
+                "FOUROKS",
+                "12:05",
+                pathing_allowance=CajonTime(30),
+                engineering_allowance=CajonTime(90),
+            ),
+            "FOUROKS 12:05 (0H) [1H]",
+        ),
+        (
+            TimingPoint("FOUROKS", "12:05", activities=[Activity.next("9Z99")]),
+            "FOUROKS 12:05 N:9Z99",
+        ),
+        (
+            TimingPoint(
+                "FOUROKS",
+                "12:05",
+                activities=[
+                    Activity.detach_engine_front("0A01"),
+                    Activity.join("0A01"),
+                ],
+            ),
+            "FOUROKS 12:05 DEF:0A01 J:0A01",
+        ),
     ],
 )
-def test_timing_point_from_text(xml_test_tools, expected, text):
-    xt = xml_test_tools
-
-    result = TimingPoint.from_str(text)
-
-    xt.assert_equivalent(expected.xml(), result.xml())
+def test_timing_point_from_text(expected, text):
+    assert expected == TimingPoint.from_str(text)
 
 
 @pytest.mark.parametrize(

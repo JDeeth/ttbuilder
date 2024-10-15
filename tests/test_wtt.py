@@ -28,7 +28,11 @@ def test_make_xml_header(xml_test_tools, aston_none):
     xt.assert_equivalent(expected, header)
 
 
-def test_make_xml_header(xml_test_tools, aston_none):
+def test_xml_header_empty_description_is_empty_element_not_empty_tag(
+    xml_test_tools, aston_none
+):
+    # empty element: <asdf></asdf>
+    # empty tag: <asdf />
     xt = xml_test_tools
     header = aston_none.xml_header()
 
@@ -118,12 +122,7 @@ def test_basic_wtt(xml_test_tools):
                 location=Location(tiploc="FOUROKS"),
                 depart=CajonTime(2100),
                 platform=3,
-                activities=[
-                    Activity(
-                        activity_type=ActivityType.NEXT,
-                        associated_train_id=tt_2a04.train_id,
-                    ),
-                ],
+                activities=[Activity.next(tt_2a04.train_id)],
             )
         ],
     )
