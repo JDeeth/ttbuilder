@@ -1,97 +1,9 @@
-from activity import ActivityType
+from activity import Activity
 import pytest
 from elements import AccelBrake, CajonTime, Location, TrainId
-from local_timetable import Activity, LocalTimetable, TimingPoint
+from local_timetable import LocalTimetable
+from timing_point import TimingPoint
 from train_category import DwellTimes, PowerType, SpeedClass, TrainType
-
-
-def test_stopping_timing_point(xml_test_tools):
-    xt = xml_test_tools
-
-    expected_str = """
-    <Trip>
-        <Location>FOUROKS</Location>
-        <DepPassTime>900</DepPassTime>
-        <Platform>3</Platform>
-    </Trip>
-    """
-    expected = xt.fromstr(expected_str)
-
-    tp = TimingPoint(
-        location=Location("FOUROKS"),
-        depart=CajonTime.from_str("00:15"),
-        platform="3",
-    )
-
-    xt.assert_equivalent(expected, tp.xml())
-
-
-def test_passing_timing_point(xml_test_tools):
-    xt = xml_test_tools
-
-    expected_str = """
-    <Trip>
-        <Location>ASTON</Location>
-        <DepPassTime>1800</DepPassTime>
-        <IsPassTime>-1</IsPassTime>
-    </Trip>
-    """
-    expected = xt.fromstr(expected_str)
-
-    tp = TimingPoint(
-        location=Location("ASTON"),
-        depart=CajonTime.from_str("00/30"),
-    )
-
-    xt.assert_equivalent(expected, tp.xml())
-
-
-def test_perf_path_times_in_timing_point(xml_test_tools):
-    xt = xml_test_tools
-
-    # Allowance times recorded in multiples of 30 seconds
-    expected_str = """
-        <Trip>
-          <Location>LCHC</Location>
-          <DepPassTime>2100</DepPassTime>
-          <Platform>2</Platform>
-          <EngAllowance>2</EngAllowance>
-          <PathAllowance>5</PathAllowance>
-          <IsPassTime>-1</IsPassTime>
-        </Trip>
-        """
-    expected = xt.fromstr(expected_str)
-
-    tp = TimingPoint(
-        location=Location("LCHC"),
-        depart=CajonTime.from_str("00/35"),
-        platform="2",
-        engineering_allowance=CajonTime.from_hms(minutes=1),
-        pathing_allowance=CajonTime.from_hms(minutes=2, seconds=30),
-    )
-
-    xt.assert_equivalent(expected, tp.xml())
-
-
-def test_request_stop_percent(xml_test_tools):
-    xt = xml_test_tools
-
-    expected_str = """
-        <Trip>
-          <Location>BLKST</Location>
-          <DepPassTime>2400</DepPassTime>
-          <RequestPercent>25</RequestPercent>
-        </Trip>
-        """
-    expected = xt.fromstr(expected_str)
-
-    tp = TimingPoint(
-        location=Location("BLKST"),
-        depart=CajonTime.from_str("00:40"),
-        request_stop_percent=25,
-    )
-
-    xt.assert_equivalent(expected, tp.xml())
 
 
 @pytest.fixture
@@ -184,10 +96,7 @@ def test_train_terminating_in_sim(xml_test_tools, dmu_train_type):
     expected = xt.fromfile("tests/sample/aston_2A03.xml")
 
     train_id = TrainId(id="2A03", uid="ZBD037")
-    next_id = TrainId(id="2A04", uid="ZDC316")
-    next_activity = Activity(
-        activity_type=ActivityType.NEXT, associated_train_id=next_id
-    )
+    next_activity = Activity.next(TrainId(id="2A04", uid="ZDC316"))
 
     tt = LocalTimetable(
         train_id=train_id,
