@@ -77,11 +77,12 @@ class Activity:
     def from_str(cls, text: str):
         text = text.upper()
         label, _, train_id = text.partition(":")
+        train_id, _, train_uid = train_id.partition("/")
         try:
             activity_type = next(t for t in ActivityType if t.label == label)
         except StopIteration:
             return cls(ActivityType.INVALID, "")
-        return cls(activity_type, train_id)
+        return cls(activity_type, TrainId(train_id, train_uid))
 
     def __bool__(self):
         return self.activity_type != ActivityType.INVALID

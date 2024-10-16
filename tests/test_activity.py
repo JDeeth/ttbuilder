@@ -39,6 +39,12 @@ def test_invalid_str_makes_null_activity():
     assert not Activity.from_str("X:0A00")
 
 
+def test_can_provide_uid():
+    activity = Activity.from_str("N:1A23/BCD456")
+    assert activity.associated_train_id.id == "1A23"
+    assert activity.associated_train_id.uid == "BCD456"
+
+
 @pytest.mark.parametrize(
     "activity,xml_str",
     [
