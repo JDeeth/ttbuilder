@@ -1,18 +1,21 @@
-from dataclasses import dataclass
-from elements import CajonTime
-from local_timetable import TimingPoint
 import networkx as nx
+
+from common import TTime, TimingPoint
 
 
 class NoPath(Exception):
+    # pylint: disable=missing-class-docstring
     pass
 
 
 class LocationNotFound(Exception):
+    # pylint: disable=missing-class-docstring
     pass
 
 
 class LinkGraph:
+    """Timing point network. Can represent a single SimSig sim or the wider network"""
+
     def __init__(self, routes: set[list[str]], mandatory_points: set[str]):
         self._route_graph = nx.MultiDiGraph()
         self._route_graph.add_nodes_from(
@@ -24,24 +27,31 @@ class LinkGraph:
         )
 
     def all_via_points(self, from_pt, to_pt):
+        """All points on shortest route by number of nodes omitting start and end. A-E = B,C,D"""
         try:
             result = nx.shortest_path(self._route_graph, from_pt, to_pt)
             return result[1:-1]
         except nx.exception.NetworkXNoPath as error:
-            raise NoPath(error)
+            raise NoPath(error) from error
         except nx.exception.NodeNotFound as error:
-            raise LocationNotFound(error)
+            raise LocationNotFound(error) from error
 
     def min_via_points(self, from_pt, to_pt):
+        """Just the mandatory points on the shortest route by number of nodes, omitting start and end nodes"""
         result = self.all_via_points(from_pt, to_pt)
-        mandatory = lambda pt: self._route_graph.nodes[pt].get("mandatory")
+
+        def mandatory(pt):
+            return self._route_graph.nodes[pt].get("mandatory")
+
         result = [pt for pt in result if mandatory(pt)]
         return result
 
     def has_tiploc(self, tiploc: str):
+        """Tiploc is in graph"""
         return tiploc in self._route_graph.nodes
 
     def extract(self, path: str):
+        """Pulls section of longer timetable where it overlaps this"""
         points = [TimingPoint.from_str(line) for line in path.strip().splitlines()]
         result = []
         for a, b in zip(points, points[1:]):
@@ -63,7 +73,7 @@ class LinkGraph:
                     len(missing_tiplocs) + 1
                 )
                 for i, tiploc in enumerate(missing_tiplocs, start=1):
-                    depart = CajonTime(seconds=start + interval * i, passing=True)
+                    depart = TTime(seconds=start + interval * i, passing=True)
                     result.append(TimingPoint(location=tiploc, depart=depart))
             if self.has_tiploc(b.location.tiploc):
                 result.append(b)

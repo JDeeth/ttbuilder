@@ -1,32 +1,39 @@
 from dataclasses import dataclass, field
 from zipfile import ZipFile
-from local_timetable import LocalTimetable
 from lxml import etree
 
-from elements import CajonTime, Version
-from helper import xml_escape
-from train_category import TrainType
+from common import TTime, xml_escape
+from train.train_category import TrainCategory
+from .local_timetable import LocalTimetable
+from .version import Version
 
 
 @dataclass
-class SimSigSim:
+class Sim:
+    """SimSig sim"""
+
     name: str
     version: Version
 
 
 @dataclass
 class Wtt:
-    sim: SimSigSim
+    """SimSig timetable file"""
+
+    # pylint: disable=too-many-instance-attributes
+
+    sim: Sim
     name: str
-    start_time: CajonTime = CajonTime.from_hms(0, 0, 0)
-    end_time: CajonTime = CajonTime.from_hms(27, 0, 0)
+    start_time: TTime = TTime.from_hms(0, 0, 0)
+    end_time: TTime = TTime.from_hms(27, 0, 0)
     description: str = ""
     version: Version = Version(0)
     td_template: str = "$originTime $originName-$destName $operator ($stock)"
-    train_types: list[TrainType] = field(default_factory=list)
+    train_types: list[TrainCategory] = field(default_factory=list)
     workings: list[LocalTimetable] = field(default_factory=list)
 
     def xml_header(self):
+        """Timetable header data"""
         doc = etree.Element(
             "SimSigTimetable",
             ID=self.sim.name,
@@ -53,6 +60,7 @@ class Wtt:
         return doc
 
     def xml(self):
+        """Full timetable data"""
         result = self.xml_header()
         if self.train_types:
             tt_elem = etree.SubElement(result, "TrainCategories")
@@ -66,12 +74,13 @@ class Wtt:
         return result
 
     def compile_wtt(self, filename):
-        with ZipFile(filename, "w") as zip:
-            zip.writestr(
+        """Create header and full file in a Zip archive"""
+        with ZipFile(filename, "w") as zipfile:
+            zipfile.writestr(
                 "TimetableHeader.xml",
                 etree.tostring(self.xml_header(), pretty_print=True).decode(),
             )
-            zip.writestr(
+            zipfile.writestr(
                 "SavedTimetable.xml",
                 etree.tostring(self.xml(), pretty_print=True).decode(),
             )

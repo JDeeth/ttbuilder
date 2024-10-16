@@ -13,11 +13,12 @@ def xml_escape(text: str) -> str:
 
     def escape_chr(c):
         if c in escape:
-            return escape[c]
+            result = escape[c]
         elif ord(c) > 127:
-            return f"&#x{ord(c):04X};"
+            result = f"&#x{ord(c):04X};"
         else:
-            return c
+            result = c
+        return result
 
     return "".join(escape_chr(c) for c in text)
 

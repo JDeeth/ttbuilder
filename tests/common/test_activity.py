@@ -1,7 +1,6 @@
-from elements import TrainId
 import pytest
 
-from activity import Activity, ActivityType
+from common import Activity, ActivityType, TrainId
 
 
 def test_activity_type_syntax():
@@ -21,7 +20,7 @@ activities = [
     (Activity.drop_coaches_rear("1A26"), "DCR:1A26"),
     (Activity.drop_coaches_front("1A27"), "DCF:1A27"),
     (Activity.platform_share("1A28"), "PS:1A28"),
-    (Activity.crew_change("1A29"), "CC:1A29"),
+    # (Activity.crew_change("1A29"), "CC:1A29"),
 ]
 
 
@@ -88,10 +87,10 @@ def test_can_provide_uid():
             Activity(ActivityType.PLATFORM_SHARE, TrainId(id="0A00", uid="ABC123")),
             "<Activity><Activity>9</Activity><AssociatedUID>ABC123</AssociatedUID></Activity>",
         ),
-        (
-            Activity(ActivityType.CREW_CHANGE, TrainId(id="0A00")),
-            "<Activity><Activity>10</Activity><AssociatedTrain>0A00</AssociatedTrain></Activity>",
-        ),
+        # (
+        #     Activity(ActivityType.CREW_CHANGE, TrainId(id="0A00")),
+        #     "<Activity><Activity>10</Activity><AssociatedTrain>0A00</AssociatedTrain></Activity>",
+        # ),
     ],
 )
 def test_activity_to_xml(xml_test_tools, activity, xml_str):

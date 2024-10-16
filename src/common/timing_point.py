@@ -1,35 +1,42 @@
 from dataclasses import dataclass, field
 from lxml import etree
-from activity import Activity
-from elements import CajonTime, Location
+
+from .activity import Activity
+from .location import Location
+from .ttime import TTime
 
 
 @dataclass
 class TimingPoint:
+    """One step in a timetabled path"""
+
+    # pylint: disable=too-many-instance-attributes
+
     location: Location | str
-    depart: CajonTime | str | None = None
+    depart: TTime | str | None = None
     platform: str = ""
     activities: list[Activity] = field(default_factory=list)
-    engineering_allowance: CajonTime = field(default_factory=CajonTime)
-    performance_allowance: CajonTime = field(default_factory=CajonTime)
-    pathing_allowance: CajonTime = field(default_factory=CajonTime)
+    engineering_allowance: TTime = field(default_factory=TTime)
+    performance_allowance: TTime = field(default_factory=TTime)
+    pathing_allowance: TTime = field(default_factory=TTime)
     request_stop_percent: int = 100
 
     def __post_init__(self):
         if isinstance(self.location, str):
             self.location = Location(tiploc=self.location)
         if isinstance(self.depart, str):
-            self.depart = CajonTime.from_str(self.depart)
+            self.depart = TTime.from_str(self.depart)
 
     @classmethod
     def from_str(cls, text):
+        """From timetable format e.g. DRBY.4 10/23H <2> J:1A23"""
         split_text = text.split()
         params = {}
 
         tiploc, _, platform = split_text[0].partition(".")
         params["location"] = Location(tiploc=tiploc)
         params["platform"] = platform
-        params["depart"] = CajonTime.from_str(split_text[1])
+        params["depart"] = TTime.from_str(split_text[1])
         params["activities"] = []
 
         def get_time(elem, a, z):
@@ -39,7 +46,7 @@ class TimingPoint:
                 time += 30 if h else 0
             else:
                 time = 0
-            return CajonTime(time)
+            return TTime(time)
 
         for elem in split_text[2:]:
             for a, label, z in (
@@ -57,6 +64,7 @@ class TimingPoint:
         return cls(**params)
 
     def __str__(self):
+        """To timetable format"""
         location = self.location.tiploc
         if self.platform:
             location += f".{self.platform}"
@@ -72,6 +80,7 @@ class TimingPoint:
         return f"{location:10} {self.depart:6} {rem}".strip()
 
     def xml(self):
+        """To SimSig .WTT format"""
         result = etree.Element("Trip")
 
         def subelem(tag, value):

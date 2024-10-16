@@ -1,10 +1,9 @@
 from dataclasses import dataclass, field
 from lxml import etree
-from elements import CajonTime, Location, PowerType, TrainId
-from helper import xml_escape
-from train_category import TrainType
 
-from timing_point import TimingPoint
+from common import xml_escape, Location, TimingPoint, TrainId, TTime
+from train.power_type import PowerType
+from train.train_category import TrainCategory
 
 
 @dataclass
@@ -14,11 +13,12 @@ class LocalTimetable:
     seeding_gap_m: distance from seeding point
     """
 
+    # pylint: disable=too-many-instance-attributes
     train_id: TrainId
-    train_type: TrainType
+    train_type: TrainCategory
     timing_points: list[TimingPoint] = field(default_factory=list)
     entry_point: Location | None = None
-    depart_time: CajonTime | None = None
+    depart_time: TTime | None = None
     initial_power: PowerType | None = None
     description: str = "$template"
     as_required_pc: int = 50

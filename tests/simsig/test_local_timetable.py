@@ -1,16 +1,21 @@
-from activity import Activity
 import pytest
-from elements import AccelBrake, CajonTime, Location, TrainId
-from local_timetable import LocalTimetable
-from timing_point import TimingPoint
-from train_category import DwellTimes, PowerType, SpeedClass, TrainType
+from common.location import Location
+from common.timing_point import TimingPoint
+from common.train_id import TrainId
+from common.ttime import TTime
+from simsig.local_timetable import LocalTimetable
+from train.accel_brake import AccelBrake
+from train.dwell_times import DwellTimes
+from train.power_type import PowerType
+from train.speed_class import SpeedClass
+from train.train_category import TrainCategory
 
 
-@pytest.fixture
-def dmu_train_type():
+@pytest.fixture(name="dmu_train_type")
+def fixture_dmu_train_type():
     dwell_times = DwellTimes(10, 45, 180, 60, 240, 300, 120, 300)
 
-    return TrainType(
+    return TrainCategory(
         id="23F09234",
         accel=AccelBrake.HIGH,
         max_speed_mph=70,
@@ -21,8 +26,8 @@ def dmu_train_type():
     )
 
 
-@pytest.fixture
-def args_2a01(dmu_train_type):
+@pytest.fixture(name="args_2a01")
+def fixture_args_2a01(dmu_train_type):
     tt_str = """
 EASTON    00:01
 FOUROKS.3 00:15
@@ -55,7 +60,7 @@ def test_out_and_back_tt(xml_test_tools, args_2a01):
 def test_starting_power_inferred_if_unambiguous():
     tt = LocalTimetable(
         train_id=TrainId(id="0A00", uid="AAA000"),
-        train_type=TrainType(power_type=PowerType.TRAMWAY),
+        train_type=TrainCategory(power_type=PowerType.TRAMWAY),
     )
     assert tt.initial_power == PowerType.TRAMWAY
 
@@ -63,7 +68,7 @@ def test_starting_power_inferred_if_unambiguous():
 def test_starting_power_assumed_if_ambiguous():
     tt = LocalTimetable(
         train_id=TrainId(id="0A00", uid="AAA000"),
-        train_type=TrainType(power_type=PowerType.TRAMWAY | PowerType.DIESEL),
+        train_type=TrainCategory(power_type=PowerType.TRAMWAY | PowerType.DIESEL),
     )
     assert tt.initial_power == PowerType.DIESEL
 
@@ -88,12 +93,11 @@ def test_train_terminating_in_sim(xml_test_tools, dmu_train_type):
     expected = xt.fromfile("tests/sample/aston_2A03.xml")
 
     train_id = TrainId(id="2A03", uid="ZBD037")
-    next_activity = Activity.next(TrainId(id="2A04", uid="ZDC316"))
 
     tt = LocalTimetable(
         train_id=train_id,
         train_type=dmu_train_type,
-        depart_time=CajonTime.from_str("00:20"),
+        depart_time=TTime.from_str("00:20"),
         entry_point=Location("EASTON"),
         description="Entry with 3-car DMU type",
         timing_points=[TimingPoint.from_str("FOUROKS.3 00:35 N:2A04/ZDC316")],

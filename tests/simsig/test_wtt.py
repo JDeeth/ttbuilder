@@ -1,21 +1,29 @@
-from activity import Activity, ActivityType
-from local_timetable import LocalTimetable, TimingPoint
 import pytest
 from lxml import etree
 import zipfile
 
-from train_category import DwellTimes, SpeedClass, TrainType
-from wtt import Wtt, SimSigSim
-from elements import AccelBrake, CajonTime, Location, PowerType, TrainId, Version
+from common.activity import Activity
+from common.location import Location
+from common.timing_point import TimingPoint
+from common.train_id import TrainId
+from common.ttime import TTime
+from simsig.local_timetable import LocalTimetable
+from simsig.version import Version
+from simsig.wtt import Sim, Wtt
+from train.accel_brake import AccelBrake
+from train.dwell_times import DwellTimes
+from train.power_type import PowerType
+from train.speed_class import SpeedClass
+from train.train_category import TrainCategory
 
 
-@pytest.fixture
-def aston_none():
+@pytest.fixture(name="aston_none")
+def fixture_aston_none():
     return Wtt(
-        sim=SimSigSim("aston", Version(5, 23, 4)),
+        sim=Sim("aston", Version(5, 23, 4)),
         name="empty",
-        start_time=CajonTime.from_str("00:00"),
-        end_time=CajonTime.from_str("27:00"),
+        start_time=TTime.from_str("00:00"),
+        end_time=TTime.from_str("27:00"),
     )
 
 
@@ -28,14 +36,10 @@ def test_make_xml_header(xml_test_tools, aston_none):
     xt.assert_equivalent(expected, header)
 
 
-def test_xml_header_empty_description_is_empty_element_not_empty_tag(
-    xml_test_tools, aston_none
-):
+def test_xml_header_empty_description_is_empty_element_not_empty_tag(aston_none):
     # empty element: <asdf></asdf>
     # empty tag: <asdf />
-    xt = xml_test_tools
     header = aston_none.xml_header()
-
     header_str = etree.tostring(header, pretty_print=True).decode()
     assert "<Description></Description>" in header_str
 
@@ -52,9 +56,7 @@ def test_header_description_escaped():
     description = """\
 <>"'&£ 
 (less than, greater than, double quote, single quote, ampersand, GBP, nbsp)"""
-    wtt = Wtt(
-        sim=SimSigSim("aston", Version(5, 15)), name="asdf", description=description
-    )
+    wtt = Wtt(sim=Sim("aston", Version(5, 15)), name="asdf", description=description)
 
     header = wtt.xml_header()
     xml_description = header.find("./Description").text
@@ -87,7 +89,7 @@ def test_basic_wtt(xml_test_tools):
     xt = xml_test_tools
     expected = xt.fromfile("tests/sample/basic_SavedTimetable.xml")
 
-    dmu = TrainType(
+    dmu = TrainCategory(
         id="23F09234",
         description="3-car DMU",
         accel=AccelBrake.HIGH,
@@ -104,11 +106,11 @@ def test_basic_wtt(xml_test_tools):
         timing_points=[
             TimingPoint(
                 location=Location(tiploc="FOUROKS"),
-                depart=CajonTime(2100),
+                depart=TTime(2100),
                 platform="3",
             ),
             TimingPoint(
-                location=Location(tiploc="ASTON"), depart=CajonTime(2700, passing=True)
+                location=Location(tiploc="ASTON"), depart=TTime(2700, passing=True)
             ),
         ],
     )
@@ -116,11 +118,11 @@ def test_basic_wtt(xml_test_tools):
         train_id=TrainId("2A03", "ZBD037"),
         train_type=dmu,
         entry_point=Location(tiploc="EASTON"),
-        depart_time=CajonTime(1200),
+        depart_time=TTime(1200),
         timing_points=[
             TimingPoint(
                 location=Location(tiploc="FOUROKS"),
-                depart=CajonTime(2100),
+                depart=TTime(2100),
                 platform=3,
                 activities=[Activity.next(tt_2a04.train_id)],
             )
@@ -131,22 +133,22 @@ def test_basic_wtt(xml_test_tools):
         train_type=dmu,
         description="Entry with 3-car DMU type",
         entry_point=Location(tiploc="EASTON"),
-        depart_time=CajonTime(60),
+        depart_time=TTime(60),
         timing_points=[
             TimingPoint(
                 location=Location(tiploc="FOUROKS"),
-                depart=CajonTime(900),
+                depart=TTime(900),
                 platform=3,
             ),
             TimingPoint(
                 location=Location(tiploc="ASTON"),
-                depart=CajonTime(1800, passing=True),
+                depart=TTime(1800, passing=True),
             ),
         ],
     )
 
     tt = Wtt(
-        sim=SimSigSim("aston", Version(5, 23, 4)),
+        sim=Sim("aston", Version(5, 23, 4)),
         name="basic_tt",
         description="",
         train_types=[dmu],

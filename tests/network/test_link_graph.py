@@ -1,13 +1,13 @@
-from local_timetable import TimingPoint
-import pytest
 from contextlib import nullcontext as does_not_raise
+import pytest
 
 from network.link_graph import LinkGraph, NoPath, LocationNotFound
-from conftest import xfail
+
+from tests.conftest import xfail
 
 
-@pytest.fixture
-def aston():
+@pytest.fixture(name="aston")
+def fixture_aston():
     routes = [
         # Wichnor Jn > Aston
         "EWICHNRJ ALRWAS LCHTTVJ LCHTTVH LCHC SHNS BLKST BTLRSLA FOUROKS SUTCO WYGN CHSRD ERDNGTN GRAVLYH ASTON",

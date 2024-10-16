@@ -1,7 +1,5 @@
-from activity import Activity
-from elements import CajonTime
-from local_timetable import TimingPoint
 import pytest
+from common import Activity, TTime, TimingPoint
 
 
 def test_stopping_timing_point(xml_test_tools):
@@ -55,8 +53,8 @@ def test_perf_path_times_in_timing_point(xml_test_tools):
         location="LCHC",
         depart="00/35",
         platform="2",
-        engineering_allowance=CajonTime.from_hms(minutes=1),
-        pathing_allowance=CajonTime.from_hms(minutes=2, seconds=30),
+        engineering_allowance=TTime.from_hms(minutes=1),
+        pathing_allowance=TTime.from_hms(minutes=2, seconds=30),
     )
 
     xt.assert_equivalent(expected, tp.xml())
@@ -76,7 +74,7 @@ def test_request_stop_percent(xml_test_tools):
 
     tp = TimingPoint(
         location="BLKST",
-        depart=CajonTime.from_str("00:40"),
+        depart=TTime.from_str("00:40"),
         request_stop_percent=25,
     )
 
@@ -91,15 +89,15 @@ def test_request_stop_percent(xml_test_tools):
         (TimingPoint("FOUROKS", "12/05"), "FOUROKS 12/05"),
         (TimingPoint("FOUROKS", "12:05", platform="3"), "FOUROKS.3 12:05"),
         (
-            TimingPoint("FOUROKS", "12:05", engineering_allowance=CajonTime(90)),
+            TimingPoint("FOUROKS", "12:05", engineering_allowance=TTime(90)),
             "FOUROKS 12:05 [1H]",
         ),
         (
-            TimingPoint("FOUROKS", "12:05", pathing_allowance=CajonTime(30)),
+            TimingPoint("FOUROKS", "12:05", pathing_allowance=TTime(30)),
             "FOUROKS 12:05 (0H)",
         ),
         (
-            TimingPoint("FOUROKS", "12:05", performance_allowance=CajonTime(120)),
+            TimingPoint("FOUROKS", "12:05", performance_allowance=TTime(120)),
             "FOUROKS 12:05 <2>",
         ),
         (TimingPoint("FOUROKS", "12:05"), "FOUROKS 12:05 <0> [0] (0)"),
@@ -107,8 +105,8 @@ def test_request_stop_percent(xml_test_tools):
             TimingPoint(
                 "FOUROKS",
                 "12:05",
-                pathing_allowance=CajonTime(30),
-                engineering_allowance=CajonTime(90),
+                pathing_allowance=TTime(30),
+                engineering_allowance=TTime(90),
             ),
             "FOUROKS 12:05 [1H] (0H)",
         ),
@@ -116,8 +114,8 @@ def test_request_stop_percent(xml_test_tools):
             TimingPoint(
                 "FOUROKS",
                 "12:05",
-                pathing_allowance=CajonTime(30),
-                engineering_allowance=CajonTime(90),
+                pathing_allowance=TTime(30),
+                engineering_allowance=TTime(90),
             ),
             "FOUROKS 12:05 (0H) [1H]",
         ),
@@ -149,15 +147,15 @@ def test_timing_point_from_text(expected, text):
         (TimingPoint("FOUROKS", "12:05", platform=3), "FOUROKS.3 12:05"),
         (TimingPoint("FOUROKS", "12:05H", platform=3), "FOUROKS.3 12:05H"),
         (
-            TimingPoint("FOUROKS", "25:05", engineering_allowance=CajonTime(150)),
+            TimingPoint("FOUROKS", "25:05", engineering_allowance=TTime(150)),
             "FOUROKS 25:05 [2H]",
         ),
         (
-            TimingPoint("FOUROKS", "25:05", pathing_allowance=CajonTime(270)),
+            TimingPoint("FOUROKS", "25:05", pathing_allowance=TTime(270)),
             "FOUROKS 25:05 (4H)",
         ),
         (
-            TimingPoint("FOUROKS", "25:05", performance_allowance=CajonTime(120)),
+            TimingPoint("FOUROKS", "25:05", performance_allowance=TTime(120)),
             "FOUROKS 25:05 <2>",
         ),
         (
@@ -167,10 +165,10 @@ def test_timing_point_from_text(expected, text):
         (
             TimingPoint(
                 location="FOUROKS",
-                depart=CajonTime.from_hms(25, 5),
-                engineering_allowance=CajonTime(150),
-                pathing_allowance=CajonTime(270),
-                performance_allowance=CajonTime(120),
+                depart=TTime.from_hms(25, 5),
+                engineering_allowance=TTime(150),
+                pathing_allowance=TTime(270),
+                performance_allowance=TTime(120),
                 activities=[Activity.next("2Z99")],
             ),
             "FOUROKS 25:05 [2H] (4H) <2> N:2Z99",

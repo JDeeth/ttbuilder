@@ -2,9 +2,9 @@ from lxml import etree
 
 
 def test_sort(xml_test_tools):
-    unsorted = etree.XML("<root><d/><b/><c/><a><a3/><a2>hi</a2><a1/></a></root>")
-    sorted = "<root><a><a1/><a2>hi</a2><a3/></a><b/><c/><d/></root>"
-    assert etree.tostring(xml_test_tools.sort(unsorted)).decode() == sorted
+    unsorted_xml = etree.XML("<root><d/><b/><c/><a><a3/><a2>hi</a2><a1/></a></root>")
+    sorted_str = "<root><a><a1/><a2>hi</a2><a3/></a><b/><c/><d/></root>"
+    assert etree.tostring(xml_test_tools.sort(unsorted_xml)).decode() == sorted_str
 
 
 def test_sort_does_not_mutate_in_place(xml_test_tools):
@@ -32,23 +32,23 @@ def test_strip(xml_test_tools):
 
 
 def test_xml_unordered_diff(xml_test_tools):
-    unsorted = etree.Element("root")
-    etree.SubElement(unsorted, "C")
-    b = etree.SubElement(unsorted, "B")
+    unsorted_xml = etree.Element("root")
+    etree.SubElement(unsorted_xml, "C")
+    b = etree.SubElement(unsorted_xml, "B")
     etree.SubElement(b, "B3")
     etree.SubElement(b, "B1")
     etree.SubElement(b, "B2").text = "hi"
-    etree.SubElement(unsorted, "A")
+    etree.SubElement(unsorted_xml, "A")
 
-    sorted = etree.Element("root")
-    etree.SubElement(sorted, "A")
-    b = etree.SubElement(sorted, "B")
+    sorted_xml = etree.Element("root")
+    etree.SubElement(sorted_xml, "A")
+    b = etree.SubElement(sorted_xml, "B")
     etree.SubElement(b, "B1")
     etree.SubElement(b, "B2").text = "hi"
     etree.SubElement(b, "B3")
-    etree.SubElement(sorted, "C")
+    etree.SubElement(sorted_xml, "C")
 
-    assert xml_test_tools.unordered_diff(sorted, unsorted) == []
+    assert xml_test_tools.unordered_diff(sorted_xml, unsorted_xml) == []
 
 
 def test_agnostic_diff(xml_test_tools):

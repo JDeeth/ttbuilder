@@ -1,16 +1,17 @@
 import pytest
 
-from elements import AccelBrake, CajonTime
-from train_category import (
-    DwellTimes,
-    PowerType,
-    SpeedClass,
-    TrainType,
-    Weight,
-)
+from common.ttime import TTime
+from train.accel_brake import AccelBrake
+from train.dwell_times import DwellTimes
+from train.power_type import PowerType
+from train.speed_class import SpeedClass
+from train.train_category import TrainCategory
+from train.weight import Weight
 
 
-populated_dt = """
+@pytest.fixture(name="populated_dt")
+def fixture_populated_dt():
+    return """
 <DwellTimes>
     <RedSignalMoveOff>10</RedSignalMoveOff>
     <StationForward>45</StationForward>
@@ -35,23 +36,23 @@ def test_default_dwell_times(xml_test_tools):
 
 def test_dwell_time_can_populate_from_int():
     dt = DwellTimes(terminate_forward=150)
-    assert dt.terminate_forward == CajonTime.from_hms(minutes=2, seconds=30)
+    assert dt.terminate_forward == TTime.from_hms(minutes=2, seconds=30)
 
 
-def test_populated_dwell_times(xml_test_tools):
+def test_populated_dwell_times(xml_test_tools, populated_dt):
     xt = xml_test_tools
     expected = xt.fromstr(populated_dt)
 
     dt = DwellTimes(
-        red_signal_move_off=CajonTime.from_str("0:00:10"),
-        station_forward=CajonTime.from_hms(seconds=45),
-        station_reverse=CajonTime.from_hms(minutes=3),
-        terminate_forward=CajonTime.from_hms(seconds=60),
-        terminate_reverse=CajonTime(240),
+        red_signal_move_off=TTime.from_str("0:00:10"),
+        station_forward=TTime.from_hms(seconds=45),
+        station_reverse=TTime.from_hms(minutes=3),
+        terminate_forward=TTime.from_hms(seconds=60),
+        terminate_reverse=TTime(240),
     )
-    dt.join = CajonTime.from_hms(minutes=5)
-    dt.divide = CajonTime(120)
-    dt.crew_change = CajonTime.from_str("0:05")
+    dt.join = TTime.from_hms(minutes=5)
+    dt.divide = TTime(120)
+    dt.crew_change = TTime.from_str("0:05")
 
     xt.assert_equivalent(expected, dt.xml())
 
@@ -118,7 +119,9 @@ def test_train_weight_xml_values_are_correct(weight, expected):
     assert weight.xml_value == expected
 
 
-dmu_traintype = """
+@pytest.fixture(name="dmu_traintype")
+def fixture_dmu_traintype():
+    return """
 <TrainCategory ID="23F09234">
     <Description>3-car DMU</Description>
     <AccelBrakeIndex>3</AccelBrakeIndex>
@@ -144,17 +147,17 @@ dmu_traintype = """
 
 
 def test_train_types_get_unique_default_ids():
-    tt1 = TrainType()
-    tt2 = TrainType()
+    tt1 = TrainCategory()
+    tt2 = TrainCategory()
     assert tt1.id != tt2.id
 
 
-def test_make_dmu_train_type(xml_test_tools):
+def test_make_dmu_train_type(xml_test_tools, dmu_traintype):
     xt = xml_test_tools
     expected = xt.fromstr(dmu_traintype)
 
     dmu_dwell_times = DwellTimes(10, 45, 180, 60, 240, 300, 120, 300)
-    dmu = TrainType(
+    dmu = TrainCategory(
         id="23F09234",
         description="3-car DMU",
         length_m=60,
@@ -167,7 +170,9 @@ def test_make_dmu_train_type(xml_test_tools):
     xt.assert_equivalent(expected, dmu.xml())
 
 
-no_power_traintype = """
+@pytest.fixture(name="no_power_traintype")
+def fixture_no_power_traintype():
+    return """
 <TrainCategory ID="ED5BFABD">
     <Description>No power</Description>
     <AccelBrakeIndex>2</AccelBrakeIndex>
@@ -182,11 +187,11 @@ no_power_traintype = """
 """
 
 
-def test_no_power_train_type(xml_test_tools):
+def test_no_power_train_type(xml_test_tools, no_power_traintype):
     xt = xml_test_tools
     expected = xt.fromstr(no_power_traintype)
 
-    tt = TrainType(
+    tt = TrainCategory(
         id="ED5BFABD",
         description="No power",
         max_speed_mph=90,
@@ -197,8 +202,8 @@ def test_no_power_train_type(xml_test_tools):
     xt.assert_equivalent(expected, tt.xml())
 
 
-def test_train_type_description_punctuation(xml_test_tools):
-    tt = TrainType(
+def test_train_type_description_punctuation():
+    tt = TrainCategory(
         description="""Punctuation "a" 'b' & £5""",
     )
     assert (

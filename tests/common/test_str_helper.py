@@ -1,5 +1,5 @@
-from helper import xml_escape, pascal_case
 import pytest
+from common import xml_escape, pascal_case
 
 
 @pytest.mark.parametrize(
