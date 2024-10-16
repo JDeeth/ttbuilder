@@ -1,6 +1,6 @@
 import pytest
 
-from train.accel_brake import AccelBrake
+from ttbuilder.train.accel_brake import AccelBrake
 
 
 @pytest.mark.parametrize(

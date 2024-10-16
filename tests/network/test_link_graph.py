@@ -1,7 +1,7 @@
 from contextlib import nullcontext as does_not_raise
 import pytest
 
-from network.link_graph import LinkGraph, NoPath, LocationNotFound
+from ttbuilder.network.link_graph import LinkGraph, NoPath, LocationNotFound
 
 from tests.conftest import xfail
 

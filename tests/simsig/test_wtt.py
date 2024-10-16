@@ -1,20 +1,20 @@
-import pytest
-from lxml import etree
 import zipfile
+from lxml import etree
+import pytest
 
-from common.activity import Activity
-from common.location import Location
-from common.timing_point import TimingPoint
-from common.train_id import TrainId
-from common.ttime import TTime
-from simsig.local_timetable import LocalTimetable
-from simsig.version import Version
-from simsig.wtt import Sim, Wtt
-from train.accel_brake import AccelBrake
-from train.dwell_times import DwellTimes
-from train.power_type import PowerType
-from train.speed_class import SpeedClass
-from train.train_category import TrainCategory
+from ttbuilder.common.activity import Activity
+from ttbuilder.common.location import Location
+from ttbuilder.common.timing_point import TimingPoint
+from ttbuilder.common.train_id import TrainId
+from ttbuilder.common.ttime import TTime
+from ttbuilder.simsig.local_timetable import LocalTimetable
+from ttbuilder.simsig.version import Version
+from ttbuilder.simsig.wtt import Sim, Wtt
+from ttbuilder.train.accel_brake import AccelBrake
+from ttbuilder.train.dwell_times import DwellTimes
+from ttbuilder.train.power_type import PowerType
+from ttbuilder.train.speed_class import SpeedClass
+from ttbuilder.train.train_category import TrainCategory
 
 
 @pytest.fixture(name="aston_none")

@@ -1,4 +1,4 @@
-from simsig.version import Version
+from ttbuilder.simsig.version import Version
 
 
 def test_version_major_only():

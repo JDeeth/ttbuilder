@@ -2,10 +2,11 @@ from dataclasses import dataclass, field
 from zipfile import ZipFile
 from lxml import etree
 
-from common import TTime, xml_escape
-from train.train_category import TrainCategory
-from .local_timetable import LocalTimetable
-from .version import Version
+from simsig.local_timetable import LocalTimetable
+from simsig.version import Version
+from ttbuilder.common.str_helper import xml_escape
+from ttbuilder.common.ttime import TTime
+from ttbuilder.train.train_category import TrainCategory
 
 
 @dataclass

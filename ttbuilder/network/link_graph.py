@@ -1,6 +1,7 @@
 import networkx as nx
 
-from common import TTime, TimingPoint
+from ttbuilder.common.timing_point import TimingPoint
+from ttbuilder.common.ttime import TTime
 
 
 class NoPath(Exception):
@@ -37,7 +38,7 @@ class LinkGraph:
             raise LocationNotFound(error) from error
 
     def min_via_points(self, from_pt, to_pt):
-        """Just the mandatory points on the shortest route by number of nodes, omitting start and end nodes"""
+        """Mandatory points only on the shortest route by number of nodes"""
         result = self.all_via_points(from_pt, to_pt)
 
         def mandatory(pt):

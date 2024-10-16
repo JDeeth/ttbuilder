@@ -1,5 +1,6 @@
 import pytest
-from common import xml_escape, pascal_case
+
+from ttbuilder.common.str_helper import pascal_case, xml_escape
 
 
 @pytest.mark.parametrize(

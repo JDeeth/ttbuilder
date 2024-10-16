@@ -1,9 +1,13 @@
 from dataclasses import dataclass, field
 from lxml import etree
 
-from common import xml_escape, Location, TimingPoint, TrainId, TTime
-from train.power_type import PowerType
-from train.train_category import TrainCategory
+from ttbuilder.common.location import Location
+from ttbuilder.common.str_helper import xml_escape
+from ttbuilder.common.timing_point import TimingPoint
+from ttbuilder.common.train_id import TrainId
+from ttbuilder.common.ttime import TTime
+from ttbuilder.train.power_type import PowerType
+from ttbuilder.train.train_category import TrainCategory
 
 
 @dataclass

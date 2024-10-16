@@ -1,6 +1,7 @@
 import pytest
 
-from common import Activity, ActivityType, TrainId
+from ttbuilder.common.activity import Activity, ActivityType
+from ttbuilder.common.train_id import TrainId
 
 
 def test_activity_type_syntax():

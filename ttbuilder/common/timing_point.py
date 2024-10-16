@@ -1,9 +1,9 @@
 from dataclasses import dataclass, field
 from lxml import etree
 
-from .activity import Activity
-from .location import Location
-from .ttime import TTime
+from ttbuilder.common.activity import Activity
+from ttbuilder.common.location import Location
+from ttbuilder.common.ttime import TTime
 
 
 @dataclass

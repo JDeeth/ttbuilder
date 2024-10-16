@@ -1,6 +1,6 @@
 import pytest
 
-from common import TTime
+from ttbuilder.common.ttime import TTime
 
 
 @pytest.mark.parametrize(
@@ -64,3 +64,9 @@ def test_time_passing_from_str():
 def test_time_truthy():
     assert TTime(seconds=1)
     assert not TTime(seconds=0)
+
+
+def test_equivalent_from_different_construction_methods():
+    a = TTime.from_hms(minutes=2, seconds=30)
+    b = TTime(seconds=150)
+    assert a == b

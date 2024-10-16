@@ -1,6 +1,6 @@
 import pytest
 
-from common import TrainId
+from ttbuilder.common.train_id import TrainId
 
 
 @pytest.mark.parametrize(

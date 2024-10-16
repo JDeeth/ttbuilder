@@ -52,3 +52,6 @@ class TTime:
 
     def __bool__(self):
         return self.seconds != 0
+
+    def __eq__(self, other):
+        return self.seconds, self.passing == other.seconds, other.passing

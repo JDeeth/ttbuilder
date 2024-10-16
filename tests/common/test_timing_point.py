@@ -1,5 +1,8 @@
 import pytest
-from common import Activity, TTime, TimingPoint
+
+from ttbuilder.common.activity import Activity
+from ttbuilder.common.timing_point import TimingPoint
+from ttbuilder.common.ttime import TTime
 
 
 def test_stopping_timing_point(xml_test_tools):

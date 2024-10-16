@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from enum import Enum
 from lxml import etree
 
-from .train_id import TrainId
+from ttbuilder.common.train_id import TrainId
 
 
 class ActivityType(Enum):
