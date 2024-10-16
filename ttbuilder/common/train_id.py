@@ -9,8 +9,21 @@ class TrainId:
     id: str
     uid: str = ""
 
-    def xml(self):
-        """To SimSig .WTT format"""
+    @classmethod
+    def from_str(cls, text):
+        """Construct ID from text. Optional UID after slash: 1A01 or 1A01/ABC123"""
+        id_, _, uid = text.partition("/")
+        return cls(id_, uid)
+
+    def __str__(self):
+        if self.uid:
+            result = f"{self.id}/{self.uid}"
+        else:
+            result = self.id
+        return result
+
+    def activity_xml(self):
+        """As seen in Activities"""
         if self.uid:
             result = etree.Element("AssociatedUID")
             result.text = self.uid.upper()

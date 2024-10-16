@@ -34,7 +34,7 @@ class Activity:
 
     def __post_init__(self):
         if isinstance(self.associated_train_id, str):
-            self.associated_train_id = TrainId(id=self.associated_train_id)
+            self.associated_train_id = TrainId.from_str(self.associated_train_id)
 
     @classmethod
     def next(cls, train_id: str | TrainId):
@@ -93,12 +93,12 @@ class Activity:
         """From timetable format e.g. J:1A23. Invalid strings form an invalid activity"""
         text = text.upper()
         label, _, train_id = text.partition(":")
-        train_id, _, train_uid = train_id.partition("/")
+        train_id = TrainId.from_str(train_id)
         try:
             activity_type = next(t for t in ActivityType if t.label == label)
         except StopIteration:
             return cls(ActivityType.INVALID, "")
-        return cls(activity_type, TrainId(train_id, train_uid))
+        return cls(activity_type, train_id)
 
     def __bool__(self):
         return self.activity_type != ActivityType.INVALID
@@ -110,5 +110,5 @@ class Activity:
         """SimSig .WTT format"""
         result = etree.Element("Activity")
         etree.SubElement(result, "Activity").text = str(self.activity_type.xml_code)
-        result.append(self.associated_train_id.xml())
+        result.append(self.associated_train_id.activity_xml())
         return result
