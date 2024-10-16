@@ -57,8 +57,9 @@ def test_populated_dwell_times(xml_test_tools):
 
 
 @pytest.mark.parametrize(
-    "pt,string",
+    "pt,expected",
     [
+        (PowerType.NONE, ""),
         (PowerType.AC_OVERHEAD, "O"),
         (PowerType.DC_3RAIL, "3"),
         (PowerType.DC_4RAIL, "4"),
@@ -70,14 +71,15 @@ def test_populated_dwell_times(xml_test_tools):
         (PowerType.SIM_3, "X3"),
         (PowerType.SIM_4, "X4"),
         (PowerType.DC_3RAIL | PowerType.AC_OVERHEAD | PowerType.DC_OVERHEAD, "O3V"),
+        (PowerType.DC_3RAIL | PowerType.AC_OVERHEAD | PowerType.DC_3RAIL, "O3"),
     ],
 )
-def test_power_type_string(pt, string):
-    assert pt.str() == string
+def test_power_type_xml_values_are_correct(pt, expected):
+    assert pt.xml_value() == expected
 
 
 @pytest.mark.parametrize(
-    "sc,value",
+    "sc,expected",
     [
         (SpeedClass.EPS_E, 1),
         (SpeedClass.EPS_D, 2),
@@ -100,20 +102,20 @@ def test_power_type_string(pt, string):
         (SpeedClass.TGV_373 | SpeedClass.EMU | SpeedClass.HST, 4 + 8 + 256),
     ],
 )
-def test_speedclass(sc, value):
-    assert sc.value == value
+def test_speedclass_xml_values_are_correct(sc, expected):
+    assert sc.xml_value == expected
 
 
 @pytest.mark.parametrize(
-    "weight,value",
+    "weight,expected",
     [
         (Weight.LIGHT, 1),
         (Weight.NORMAL, 0),
         (Weight.HEAVY, 2),
     ],
 )
-def test_weight(weight, value):
-    assert weight.value == value
+def test_train_weight_xml_values_are_correct(weight, expected):
+    assert weight.xml_value == expected
 
 
 dmu_traintype = """

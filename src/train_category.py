@@ -69,6 +69,10 @@ class SpeedClass(Flag):
     SIM_3 = 2**26
     SIM_4 = 2**27
 
+    @property
+    def xml_value(self):
+        return self.value
+
 
 class Weight(Enum):
     """SimSig train weight"""
@@ -76,6 +80,10 @@ class Weight(Enum):
     LIGHT = 1
     NORMAL = 0
     HEAVY = 2
+
+    @property
+    def xml_value(self):
+        return self.value
 
 
 @dataclass
@@ -114,15 +122,15 @@ class TrainType:
             etree.SubElement(result, tag).text = str(value)
 
         subelem("Description", xml_escape(self.description))
-        subelem("AccelBrakeIndex", self.accel.value)
+        subelem("AccelBrakeIndex", self.accel.xml_value)
         subelem("IsFreight", self.use_freight_linespeeds)
         subelem("CanUseGoodsLines", self.can_use_freight_lines)
         subelem("MaxSpeed", self.max_speed_mph)
         subelem("TrainLength", self.length_m)
-        subelem("SpeedClass", self.speed_classes.value)
-        subelem("PowerToWeightCategory", self.weight.value)
+        subelem("SpeedClass", self.speed_classes.xml_value)
+        subelem("PowerToWeightCategory", self.weight.xml_value)
         result.append(self.dwell_times.xml())
         if self.power_type != PowerType.NONE:
-            subelem("Electrification", self.power_type.str())
+            subelem("Electrification", self.power_type.xml_value())
 
         return result

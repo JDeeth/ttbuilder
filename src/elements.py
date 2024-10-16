@@ -78,6 +78,10 @@ class AccelBrake(Enum):
     HIGH = 3
     VERY_HIGH = 4
 
+    @property
+    def xml_value(self):
+        return self.value
+
 
 class PowerType(Flag):
     """SimSig traction power categories
@@ -85,33 +89,25 @@ class PowerType(Flag):
     Can be combined e.g. PowerType.DC_3RAIL | PowerType.AC_OVERHEAD"""
 
     NONE = 0
-    AC_OVERHEAD = auto()
-    DC_3RAIL = auto()
-    DC_4RAIL = auto()
-    DIESEL = auto()
-    DC_OVERHEAD = auto()
-    TRAMWAY = auto()
-    SIM_1 = auto()
-    SIM_2 = auto()
-    SIM_3 = auto()
-    SIM_4 = auto()
+    AC_OVERHEAD = auto(), "O"
+    DC_3RAIL = auto(), "3"
+    DC_4RAIL = auto(), "4"
+    DIESEL = auto(), "D"
+    DC_OVERHEAD = auto(), "V"
+    TRAMWAY = auto(), "T"
+    SIM_1 = auto(), "X1"
+    SIM_2 = auto(), "X2"
+    SIM_3 = auto(), "X3"
+    SIM_4 = auto(), "X4"
 
-    def str(self):
-        """Format as in timetable XML"""
-        powertype_str = {
-            PowerType.AC_OVERHEAD: "O",
-            PowerType.DC_3RAIL: "3",
-            PowerType.DC_4RAIL: "4",
-            PowerType.DIESEL: "D",
-            PowerType.DC_OVERHEAD: "V",
-            PowerType.TRAMWAY: "T",
-            PowerType.SIM_1: "X1",
-            PowerType.SIM_2: "X2",
-            PowerType.SIM_3: "X3",
-            PowerType.SIM_4: "X4",
-        }
+    def __new__(cls, flag, xml_code=""):
+        obj = object.__new__(cls)
+        obj._value_ = flag
+        obj._xml_code = xml_code
+        return obj
 
-        return "".join(s for pt, s in powertype_str.items() if pt & self)
+    def xml_value(self):
+        return "".join(pt._xml_code for pt in PowerType if pt & self)
 
 
 @dataclass
