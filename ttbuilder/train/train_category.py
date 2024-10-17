@@ -60,3 +60,29 @@ class TrainCategory:
             subelem("Electrification", self.power_type.xml_value())
 
         return result
+
+    @classmethod
+    def from_str(cls, text):
+        """Construct train type from text"""
+        params = {}
+        lines = text.strip().splitlines()
+        params["description"] = lines[0]
+        line2: list[str] = [x.strip() for x in lines[1].split(",")]
+        for s in line2:
+            if s[:-1].isnumeric() and s.endswith("m"):
+                params["length_m"] = int(s[:-1])
+            if s[:-3].isnumeric() and s.endswith("mph"):
+                params["max_speed_mph"] = int(s[:-3])
+            if s.upper() in PowerType.__members__:
+                pt = params.get("power_type", PowerType.NONE)
+                pt |= PowerType[s.upper()]
+                params["power_type"] = pt
+        line3 = lines[2] if len(lines) > 2 else ""
+        _, _, dwell_times = line3.upper().partition("DWELL TIMES")
+        if dwell_times:
+            dwell_times = [x.strip() for x in dwell_times.split(",")]
+            dwell_times = [x.rpartition(":") for x in dwell_times]
+            dwell_times = [int(m or 0) * 60 + int(s) for m, _, s in dwell_times]
+            params["dwell_times"] = DwellTimes(*dwell_times)
+
+        return cls(**params)

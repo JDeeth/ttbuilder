@@ -36,7 +36,7 @@ class DwellTimes:
             yield (pascal_case(f.name), str(time.seconds))
 
     def xml(self):
-        """Returns data in XML format"""
+        """As used in SimSig .WTT"""
         result = etree.Element("DwellTimes")
         for tag, value in self.xml_values():
             etree.SubElement(result, tag).text = value

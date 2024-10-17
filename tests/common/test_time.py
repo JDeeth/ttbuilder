@@ -70,3 +70,8 @@ def test_equivalent_from_different_construction_methods():
     a = TTime.from_hms(minutes=2, seconds=30)
     b = TTime(seconds=150)
     assert a == b
+
+
+def test_dissimilar_are_not_equal():
+    assert TTime(seconds=10, passing=True) != TTime(seconds=20, passing=True)
+    assert TTime(seconds=10, passing=False) != TTime(seconds=10, passing=True)
