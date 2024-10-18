@@ -61,8 +61,8 @@ class LocalTimetable:
         subelem("MaxSpeed", self.train_type.max_speed_mph)
         subelem("SpeedClass", self.train_type.speed_classes.value)
         subelem("TrainLength", self.train_type.length_m)
-        subelem("Electrification", self.train_type.power_type.xml_value())
-        subelem("StartTraction", self.initial_power.xml_value())
+        subelem("Electrification", self.train_type.power_type.xml_value)
+        subelem("StartTraction", self.initial_power.xml_value)
         subelem("Category", self.train_type.id)
         for elem, value in self.train_type.dwell_times.xml_values():
             subelem(elem, value)

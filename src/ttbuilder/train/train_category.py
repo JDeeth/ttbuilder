@@ -57,7 +57,7 @@ class TrainCategory:
         subelem("PowerToWeightCategory", self.weight.xml_value)
         result.append(self.dwell_times.xml())
         if self.power_type != PowerType.NONE:
-            subelem("Electrification", self.power_type.xml_value())
+            subelem("Electrification", self.power_type.xml_value)
 
         return result
 

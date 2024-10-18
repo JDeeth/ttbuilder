@@ -18,13 +18,18 @@ class PowerType(Flag):
     SIM_3 = auto(), "X3"
     SIM_4 = auto(), "X4"
 
-    def __new__(cls, flag, xml_code=""):
+    def __new__(cls, flag, xml_value=""):
         obj = object.__new__(cls)
         obj._value_ = flag
-        obj._xml_code = xml_code
+        obj._xml_value = xml_value
         return obj
 
+    @property
     def xml_value(self):
         """As used in SimSig .WTT"""
-        # pylint: disable=W0212
-        return "".join(pt._xml_code for pt in PowerType if pt & self)
+        code = getattr(self, "_xml_value", None)
+        if code is None:
+            # pylint: disable=protected-access
+            code = "".join(pt._xml_value for pt in self)
+            self._xml_value = code
+        return code

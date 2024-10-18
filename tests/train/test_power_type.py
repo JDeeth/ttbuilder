@@ -22,7 +22,7 @@ from ttbuilder.train.power_type import PowerType
     ],
 )
 def test_power_type_xml_values_are_correct(pt, expected):
-    assert pt.xml_value() == expected
+    assert pt.xml_value == expected
 
 
 def test_power_type_bitwise_and():
