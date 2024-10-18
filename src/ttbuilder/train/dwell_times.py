@@ -1,8 +1,8 @@
 from dataclasses import dataclass, field, fields
 from lxml import etree
 
-from ttbuilder.common.str_helper import pascal_case
-from ttbuilder.common.ttime import TTime
+from ..common.str_helper import pascal_case
+from ..common.ttime import TTime
 
 
 @dataclass
