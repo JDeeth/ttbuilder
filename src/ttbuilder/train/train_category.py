@@ -2,12 +2,12 @@ from dataclasses import dataclass, field
 import secrets
 from lxml import etree
 
-from ..common.str_helper import xml_escape
-from ..train.accel_brake import AccelBrake
-from ..train.dwell_times import DwellTimes
-from ..train.power_type import PowerType
-from ..train.speed_class import SpeedClass
-from ..train.weight import Weight
+from ttbuilder.common.str_helper import xml_escape
+from ttbuilder.train.accel_brake import AccelBrake
+from ttbuilder.train.dwell_times import DwellTimes
+from ttbuilder.train.power_type import PowerType
+from ttbuilder.train.speed_class import SpeedClass
+from ttbuilder.train.weight import Weight
 
 
 @dataclass

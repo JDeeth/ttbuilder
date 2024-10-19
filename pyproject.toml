@@ -32,6 +32,10 @@ dev = [
 Repository = "https://github.com/jdeeth/ttbuilder"
 Issues = "https://github.com/jdeeth/ttbuilder/issues"
 
+[project.scripts]
+ttbuilder = "ttbuilder.ttbuilder:main"
+
+
 [build-system]
 requires = ["setuptools"]
 
