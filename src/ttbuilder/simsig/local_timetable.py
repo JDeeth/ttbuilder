@@ -36,6 +36,21 @@ class LocalTimetable:
                     self.initial_power = pt
                     break
 
+    @classmethod
+    def from_xml(cls, xml_root):
+        """Read relevant bits from the XML within a .WTT or .SSG file"""
+
+        def findtext(match, default=""):
+            return xml_root.findtext(match, default=default)
+
+        return cls(
+            train_id=TrainId(findtext("ID"), findtext("UID")),
+            train_type=TrainCategory(),
+            description=findtext("Description"),
+            timing_points=[TimingPoint.from_xml(x) for x in xml_root.find("Trips")],
+            entry_point=Location(tiploc=findtext("EntryPoint")) or None,
+        )
+
     def xml(self):
         """XML as used in SimSig WTT files"""
         result = etree.Element("Timetable")

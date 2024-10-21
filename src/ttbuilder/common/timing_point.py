@@ -79,6 +79,15 @@ class TimingPoint:
         rem = " ".join(x for x in rem if x)
         return f"{location:10} {self.depart:6} {rem}".strip()
 
+    @classmethod
+    def from_xml(cls, xml_root):
+        """Read relevant bits from the XML within a .WTT or .SSG file"""
+
+        def findtext(match, default=""):
+            return xml_root.findtext(match, default=default)
+
+        return cls(location=Location(tiploc=findtext("Location")))
+
     def xml(self):
         """To SimSig .WTT format"""
         result = etree.Element("Trip")

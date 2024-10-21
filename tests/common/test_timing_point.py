@@ -181,3 +181,22 @@ def test_timing_point_from_text(expected, text):
 def test_timing_point_to_str(pt, expected):
     # ignoring whitespace
     assert str(pt).split() == expected.split()
+
+
+LCHC_TIMING_POINT = """\
+<Trip>
+    <Location>LCHC</Location>
+    <Platform>2</Platform>
+    <DownDirection>-1</DownDirection>
+    <PrevPathEndDown>-1</PrevPathEndDown>
+    <NextPathStartDown>-1</NextPathStartDown>
+</Trip>
+""".strip()
+
+
+def test_from_xml(xml_test_tools):
+    xt = xml_test_tools
+    xml_root = xt.fromstr(LCHC_TIMING_POINT)
+
+    tp = TimingPoint.from_xml(xml_root)
+    assert tp.location.tiploc == "LCHC"
