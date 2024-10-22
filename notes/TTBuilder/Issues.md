@@ -1,0 +1,4 @@
+- Converting .xml data to Python dataclasses might be a dead end
+- Local timetable expects to have a [[Train Category]] but it's valid to have an ad-hoc train definition
+- Maybe remove Train Category and only provide .WTT with ad-hoc train definitions?
+- Move text and XML translation to a separate layer maybe

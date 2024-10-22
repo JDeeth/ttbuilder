@@ -1,0 +1,5 @@
+There are a few use cases this software is meant to support:
+- Create an ad-hoc timetable for an individual train across multiple chained sims, producing a [[.WTT]] file for each host which can be imported and merged with the existing timetable
+- Import a [[.SSG]] (which contains all the sim's timing and entry points, and a set of valid train timetables) to determine the set of valid network links and mandatory timing points for that sim
+- Create a timetable for a whole region, and generate chainable .WTTs for sims within that region. This will require tools for timetable balancing e.g. ensure within each sim area, all incoming/terminating services are matched to an outgoing/originating service
+- Provide a [[TRUST]]-style interface to view complete timetables (vs in-game, where you can only easily see the timetable from a train's current location to where it leaves the sim), which can accept status updates from the SimSig [[Interface Gateway]] .
