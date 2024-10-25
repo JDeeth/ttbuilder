@@ -16,7 +16,7 @@ def test_stopping_timing_point(xml_test_tools):
     </Trip>
     """
     expected = xt.fromstr(expected_str)
-    tp = TimingPoint(location="FOUROKS", depart="00:15", platform="3")
+    tp = TimingPoint(location="FOUROKS", depart=TTime.from_hms(0, 15), platform="3")
     xt.assert_equivalent(expected, tp.xml())
 
 
@@ -31,7 +31,7 @@ def test_passing_timing_point(xml_test_tools):
     </Trip>
     """
     expected = xt.fromstr(expected_str)
-    tp = TimingPoint(location="ASTON", depart="00/30")
+    tp = TimingPoint(location="ASTON", depart=TTime.from_hms(0, 30, passing=True))
 
     xt.assert_equivalent(expected, tp.xml())
 
@@ -54,7 +54,7 @@ def test_perf_path_times_in_timing_point(xml_test_tools):
 
     tp = TimingPoint(
         location="LCHC",
-        depart="00/35",
+        depart=TTime.from_hms(0, 35, passing=True),
         platform="2",
         engineering_allowance=TTime.from_hms(minutes=1),
         pathing_allowance=TTime.from_hms(minutes=2, seconds=30),

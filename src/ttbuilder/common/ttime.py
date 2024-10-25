@@ -1,12 +1,44 @@
 from dataclasses import dataclass
+from enum import Enum, auto
+
+
+@dataclass(frozen=True)
+class TMin:
+    """Minutes to the halfminute"""
+
+    minute: int = 0
+    halfmin: bool = False
+
+    @property
+    def second(self):
+        """0 or 30 seconds"""
+        return 30 if self.halfmin else 0
 
 
 @dataclass(frozen=True)
 class TTime:
-    """Timetable time - stopping or passing"""
+    """Timetable time"""
+
+    class StopMode(Enum):
+        """Timing point stopping mode"""
+
+        STOPPING = auto()
+        PASSING = auto()
+        SET_DOWN = auto()
+        IF_REQUIRED = auto()
+        REQUEST_STOP = auto()
+        DWELL_TIME = auto()
+        THROUGH_LINE = auto()
 
     seconds: int = 0
-    passing: bool = False
+    stop_mode: StopMode = StopMode.STOPPING
+
+    _parser = None
+
+    @property
+    def passing(self):
+        """Temp function to be deprecated"""
+        return self.stop_mode == self.StopMode.PASSING
 
     @classmethod
     def from_hms(
@@ -14,7 +46,8 @@ class TTime:
     ):
         """Create time from arbitrary numbers of hours, minutes, and seconds"""
         seconds = 3600 * hours + 60 * minutes + seconds
-        return cls(seconds, passing)
+        stop_mode = cls.StopMode.PASSING if passing else cls.StopMode.STOPPING
+        return cls(seconds, stop_mode)
 
     @classmethod
     def from_str(cls, text: str):

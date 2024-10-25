@@ -44,8 +44,8 @@ def test_time_to_timetable_str(time_str):
 
 
 def test_float_seconds_are_converted_to_int():
-    time = TTime(seconds=3750.0, passing=True)
-    assert str(time) == "01/02H"
+    time = TTime(seconds=3750.0)
+    assert str(time) == "01:02H"
 
 
 def test_time_to_half_minutes():
@@ -70,8 +70,3 @@ def test_equivalent_from_different_construction_methods():
     a = TTime.from_hms(minutes=2, seconds=30)
     b = TTime(seconds=150)
     assert a == b
-
-
-def test_dissimilar_are_not_equal():
-    assert TTime(seconds=10, passing=True) != TTime(seconds=20, passing=True)
-    assert TTime(seconds=10, passing=False) != TTime(seconds=10, passing=True)

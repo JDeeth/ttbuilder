@@ -1,7 +1,7 @@
 [project]
 name = "ttbuilder"
 version = "0.1.0"
-dependencies = ["lxml", "networkx"]
+dependencies = ["lark", "lxml", "networkx"]
 requires-python = ">=3.10"
 authors = [{ name = "Jack Deeth" }]
 description = "Timetable builder for SimSig"

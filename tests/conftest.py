@@ -4,6 +4,8 @@ import pytest
 from xmldiff import main as xd
 from lxml import etree
 
+from ttbuilder.text_parser.ttime_parser import TTimeParser
+
 
 class XMLTestTools:
     """Collection of test methods packaged for a Pytest fixture"""
@@ -69,3 +71,8 @@ def xfail(*args, reason=None):
     else:
         mark = pytest.mark.xfail
     return pytest.param(*args, marks=mark)
+
+
+@pytest.fixture(name="ttime_parser")
+def fixture_ttime_parser():
+    return TTimeParser()

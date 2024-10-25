@@ -1,0 +1,24 @@
+// Timetable time and minutes
+?start          : ttime | tmin
+
+?ttime        : HOUR stopmode tmin
+?tmin         : MINUTE [HALFMINUTE]
+
+HOUR            : ("0".."2")? DIGIT
+MINUTE          : ("0".."5")? DIGIT
+HALFMINUTE      : "h" | "H" | "½"
+
+stopmode:       STOPPING | PASSING | SET_DOWN | IF_REQUIRED
+                | REQUEST_STOP | DWELL_TIME | THROUGH_LINE
+
+STOPPING        : ":"
+PASSING         : "/"
+SET_DOWN        : "d"
+IF_REQUIRED     : "*"
+REQUEST_STOP    : "r"
+DWELL_TIME      : "w"
+THROUGH_LINE    : "t"
+
+%import common.DIGIT
+%import common.WS
+%ignore WS
