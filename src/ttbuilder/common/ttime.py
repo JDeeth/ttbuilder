@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import Enum, auto
 
 
@@ -13,6 +13,19 @@ class TMin:
     def second(self):
         """0 or 30 seconds"""
         return 30 if self.halfmin else 0
+
+
+@dataclass(frozen=True)
+class Allowance:
+    """Timetable allowance times"""
+
+    class Type(Enum):
+        ENGINEERING = auto()
+        PATHING = auto()
+        PERFORMANCE = auto()
+
+    time: TMin
+    type: Type
 
 
 @dataclass(frozen=True)
@@ -33,7 +46,7 @@ class TTime:
     seconds: int = 0
     stop_mode: StopMode = StopMode.STOPPING
 
-    _parser = None
+    allowances: list[Allowance] = field(default_factory=list)
 
     @property
     def passing(self):

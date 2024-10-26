@@ -1,5 +1,5 @@
 from lark import Lark, Transformer
-from ttbuilder.common.ttime import TMin, TTime
+from ttbuilder.common.ttime import Allowance, TMin, TTime
 
 
 class TransformTTime(Transformer):
@@ -29,6 +29,21 @@ class TransformTTime(Transformer):
 
     def HALFMINUTE(self, _):
         return True
+
+    def allowances(self, args):
+        return args
+
+    def eng_allowance(self, args):
+        (m,) = args
+        return Allowance(m, Allowance.Type.ENGINEERING)
+
+    def path_allowance(self, args):
+        (m,) = args
+        return Allowance(m, Allowance.Type.PATHING)
+
+    def perf_allowance(self, args):
+        (m,) = args
+        return Allowance(m, Allowance.Type.PERFORMANCE)
 
 
 class TTimeParser:

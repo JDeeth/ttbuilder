@@ -1,8 +1,15 @@
 // Timetable time and minutes
-?start          : ttime | tmin
+?start          : ttime | tmin | allowances
 
-?ttime        : HOUR stopmode tmin
-?tmin         : MINUTE [HALFMINUTE]
+allowances      : eng_allowance? path_allowance? perf_allowance?
+
+eng_allowance   : "[" tmin "]"
+path_allowance  : "(" tmin ")"
+perf_allowance  : "<" tmin ">"
+
+
+?ttime          : HOUR stopmode tmin
+?tmin           : MINUTE [HALFMINUTE]
 
 HOUR            : ("0".."2")? DIGIT
 MINUTE          : ("0".."5")? DIGIT

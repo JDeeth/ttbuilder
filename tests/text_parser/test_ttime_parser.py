@@ -1,6 +1,6 @@
 import pytest
 
-from ttbuilder.common.ttime import TTime
+from ttbuilder.common.ttime import Allowance, TMin, TTime
 
 
 @pytest.mark.parametrize(
@@ -15,4 +15,41 @@ from ttbuilder.common.ttime import TTime
     ],
 )
 def test_time_from_str(text, expected, ttime_parser):
+    assert expected == ttime_parser.parse(text)
+
+
+@pytest.mark.parametrize(
+    "text,expected",
+    [
+        ("0", TMin(0)),
+        ("0h", TMin(0, True)),
+        ("4", TMin(4, False)),
+        ("59½", TMin(59, True)),
+    ],
+)
+def test_tmin_from_str(text, expected, ttime_parser):
+    assert expected == ttime_parser.parse(text)
+
+
+@pytest.mark.parametrize(
+    "text,eng,path,perf",
+    [
+        ("[0]", "0", None, None),
+        ("[1]", "1", None, None),
+        ("(2½)", None, "2h", None),
+        ("<3½>", None, None, "3h"),
+        ("[4] <3½>", "4", None, "3h"),
+    ],
+)
+def test_allowance(text, eng, path, perf, ttime_parser):
+    p = ttime_parser
+    expected = []
+    for time, atype in (
+        (eng, Allowance.Type.ENGINEERING),
+        (path, Allowance.Type.PATHING),
+        (perf, Allowance.Type.PERFORMANCE),
+    ):
+        if time is None:
+            continue
+        expected.append(Allowance(p.parse(time), atype))
     assert expected == ttime_parser.parse(text)
