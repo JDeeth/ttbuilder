@@ -66,6 +66,7 @@ def xml_test_tools():
 
 
 def xfail(*args, reason=None):
+    """Wraps a pytest.mark.parametrize param as xfail"""
     if reason:
         mark = pytest.mark.xfail(reason=reason)
     else:

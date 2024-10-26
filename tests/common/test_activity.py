@@ -1,11 +1,11 @@
 import pytest
 
-from ttbuilder.common.activity import Activity, ActivityType
+from ttbuilder.common.activity import Activity
 from ttbuilder.common.train_id import TrainId
 
 
 def test_activity_type_syntax():
-    n = ActivityType.DETACH_ENGINE_REAR
+    n = Activity.AType.DETACH_ENGINE_REAR
     assert n.value == (4, "DER")
     assert n.xml_code == 4
     assert n.label == "DER"
@@ -49,47 +49,47 @@ def test_can_provide_uid():
     "activity,xml_str",
     [
         (
-            Activity(ActivityType.NEXT, TrainId(id="0A00")),
+            Activity.next(TrainId(id="0A00")),
             "<Activity><Activity>0</Activity><AssociatedTrain>0A00</AssociatedTrain></Activity>",
         ),
         (
-            Activity(ActivityType.NEXT, TrainId(id="0A00", uid="ABC123")),
+            Activity.next(TrainId(id="0A00", uid="ABC123")),
             "<Activity><Activity>0</Activity><AssociatedUID>ABC123</AssociatedUID></Activity>",
         ),
         (
-            Activity(ActivityType.JOIN, TrainId(id="0A00")),
+            Activity.join(TrainId(id="0A00")),
             "<Activity><Activity>3</Activity><AssociatedTrain>0A00</AssociatedTrain></Activity>",
         ),
         (
-            Activity(ActivityType.DIVIDE_REAR, TrainId(id="0A00", uid="ABC123")),
+            Activity.divide_rear(TrainId(id="0A00", uid="ABC123")),
             "<Activity><Activity>1</Activity><AssociatedUID>ABC123</AssociatedUID></Activity>",
         ),
         (
-            Activity(ActivityType.DIVIDE_FRONT, TrainId(id="0A00")),
+            Activity.divide_front(TrainId(id="0A00")),
             "<Activity><Activity>2</Activity><AssociatedTrain>0A00</AssociatedTrain></Activity>",
         ),
         (
-            Activity(ActivityType.DETACH_ENGINE_REAR, TrainId(id="0A00", uid="ABC123")),
+            Activity.detach_engine_rear(TrainId(id="0A00", uid="ABC123")),
             "<Activity><Activity>4</Activity><AssociatedUID>ABC123</AssociatedUID></Activity>",
         ),
         (
-            Activity(ActivityType.DETACH_ENGINE_FRONT, TrainId(id="0A00")),
+            Activity.detach_engine_front(TrainId(id="0A00")),
             "<Activity><Activity>5</Activity><AssociatedTrain>0A00</AssociatedTrain></Activity>",
         ),
         (
-            Activity(ActivityType.DROP_COACHES_REAR, TrainId(id="0A00", uid="ABC123")),
+            Activity.drop_coaches_rear(TrainId(id="0A00", uid="ABC123")),
             "<Activity><Activity>6</Activity><AssociatedUID>ABC123</AssociatedUID></Activity>",
         ),
         (
-            Activity(ActivityType.DROP_COACHES_FRONT, TrainId(id="0A00")),
+            Activity.drop_coaches_front(TrainId(id="0A00")),
             "<Activity><Activity>7</Activity><AssociatedTrain>0A00</AssociatedTrain></Activity>",
         ),
         (
-            Activity(ActivityType.PLATFORM_SHARE, TrainId(id="0A00", uid="ABC123")),
+            Activity.platform_share(TrainId(id="0A00", uid="ABC123")),
             "<Activity><Activity>9</Activity><AssociatedUID>ABC123</AssociatedUID></Activity>",
         ),
         # (
-        #     Activity(ActivityType.CREW_CHANGE, TrainId(id="0A00")),
+        #     Activity.crew_change(TrainId(id="0A00")),
         #     "<Activity><Activity>10</Activity><AssociatedTrain>0A00</AssociatedTrain></Activity>",
         # ),
     ],
