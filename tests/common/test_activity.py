@@ -5,7 +5,7 @@ from ttbuilder.common.train_id import TrainId
 
 
 def test_activity_type_syntax():
-    n = Activity.AType.DETACH_ENGINE_REAR
+    n = Activity.Type.DETACH_ENGINE_REAR
     assert n.value == (4, "DER")
     assert n.xml_code == 4
     assert n.label == "DER"
@@ -28,21 +28,6 @@ activities = [
 @pytest.mark.parametrize("activity,text", activities)
 def test_activity_to_str(activity, text):
     assert str(activity) == text
-
-
-@pytest.mark.parametrize("activity,text", activities)
-def test_activity_from_str(text, activity):
-    assert Activity.from_str(text) == activity
-
-
-def test_invalid_str_makes_null_activity():
-    assert not Activity.from_str("X:0A00")
-
-
-def test_can_provide_uid():
-    activity = Activity.from_str("N:1A23/BCD456")
-    assert activity.associated_train_id.id == "1A23"
-    assert activity.associated_train_id.uid == "BCD456"
 
 
 @pytest.mark.parametrize(

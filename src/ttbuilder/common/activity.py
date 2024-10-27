@@ -9,8 +9,8 @@ from ttbuilder.common.train_id import TrainId
 class Activity:
     """Timing point activity"""
 
-    class AType(Enum):
-        """Timing point activity type, with SimSig XML values and timetable abbreviation"""
+    class Type(Enum):
+        """Activity type, with SimSig XML values and timetable abbreviation"""
 
         INVALID = None, ":"
         NEXT = 0, "N"
@@ -28,8 +28,7 @@ class Activity:
             self.xml_code = xml_code
             self.label = label
 
-
-    activity_type: AType
+    activity_type: Type
     associated_train_id: TrainId
 
     def __post_init__(self):
@@ -39,49 +38,49 @@ class Activity:
     @classmethod
     def next(cls, train_id: str | TrainId):
         """This timetable ends, and the train continues with the designated ID and timetable"""
-        return cls(cls.AType.NEXT, train_id)
+        return cls(cls.Type.NEXT, train_id)
 
     @classmethod
     def join(cls, train_id: str | TrainId):
         """Train waits for and joins with other train. Both timetables should have Join
         activities, but only one should have subsequent timing points.
         The other timetable ends."""
-        return cls(cls.AType.JOIN, train_id)
+        return cls(cls.Type.JOIN, train_id)
 
     @classmethod
     def divide_rear(cls, train_id: str | TrainId):
         """A new train forms from the rear of this train"""
-        return cls(cls.AType.DIVIDE_REAR, train_id)
+        return cls(cls.Type.DIVIDE_REAR, train_id)
 
     @classmethod
     def divide_front(cls, train_id: str | TrainId):
         """A new train forms from the front of this train"""
-        return cls(cls.AType.DIVIDE_FRONT, train_id)
+        return cls(cls.Type.DIVIDE_FRONT, train_id)
 
     @classmethod
     def detach_engine_rear(cls, train_id: str | TrainId):
         """A new train forms from the rear of this train, and this train is left without power"""
-        return cls(cls.AType.DETACH_ENGINE_REAR, train_id)
+        return cls(cls.Type.DETACH_ENGINE_REAR, train_id)
 
     @classmethod
     def detach_engine_front(cls, train_id: str | TrainId):
         """A new train forms from the front of this train, and this train is left without power"""
-        return cls(cls.AType.DETACH_ENGINE_FRONT, train_id)
+        return cls(cls.Type.DETACH_ENGINE_FRONT, train_id)
 
     @classmethod
     def drop_coaches_rear(cls, train_id: str | TrainId):
         """A new train forms from the rear of this train, without power"""
-        return cls(cls.AType.DROP_COACHES_REAR, train_id)
+        return cls(cls.Type.DROP_COACHES_REAR, train_id)
 
     @classmethod
     def drop_coaches_front(cls, train_id: str | TrainId):
         """A new train forms from the front of this train, without power"""
-        return cls(cls.AType.DROP_COACHES_FRONT, train_id)
+        return cls(cls.Type.DROP_COACHES_FRONT, train_id)
 
     @classmethod
     def platform_share(cls, train_id: str | TrainId):
         """Permits ARS to signal this train into a platform occupied by the other or vice versa"""
-        return cls(cls.AType.PLATFORM_SHARE, train_id)
+        return cls(cls.Type.PLATFORM_SHARE, train_id)
 
     # @classmethod
     # def crew_change(cls, train_id: str | TrainId):
@@ -95,13 +94,13 @@ class Activity:
         label, _, train_id = text.partition(":")
         train_id = TrainId.from_str(train_id)
         try:
-            activity_type = next(t for t in cls.AType if t.label == label)
+            activity_type = next(t for t in cls.Type if t.label == label)
         except StopIteration:
-            return cls(cls.AType.INVALID, "")
+            return cls(cls.Type.INVALID, "")
         return cls(activity_type, train_id)
 
     def __bool__(self):
-        return self.activity_type != self.AType.INVALID
+        return self.activity_type != self.Type.INVALID
 
     def __str__(self):
         return f"{self.activity_type.label}:{self.associated_train_id.id}"

@@ -1,13 +1,23 @@
 // Timetable time and minutes
-?start          : ttime | tmin | allowances
+?start          : train_full_id | timing_point | ttime | tmin | allowances | activity
 
-allowances      : eng_allowance? path_allowance? perf_allowance?
+// Train ID
+train_full_id   : train_id ["/" train_uid]
+train_uid       : ALPHANUMERIC+
+?train_id       : BR_TRAIN_ID | LU_TRAIN_ID | MISC_TRAIN_ID
 
-eng_allowance   : "[" tmin "]"
-path_allowance  : "(" tmin ")"
-perf_allowance  : "<" tmin ">"
+BR_TRAIN_ID.1   : DIGIT LETTER DIGIT DIGIT
+LU_TRAIN_ID.1   : LETTER DIGIT DIGIT DIGIT
+MISC_TRAIN_ID   : ALPHANUMERIC~4
 
+// Timing point
+timing_point    : location ttime [allowances] activity*
 
+location        : TIPLOC ["." PLATFORM]
+TIPLOC          : LETTER ALPHANUMERIC*
+PLATFORM        : ALPHANUMERIC+
+
+// Times
 ?ttime          : HOUR stopmode tmin
 ?tmin           : MINUTE [HALFMINUTE]
 
@@ -26,6 +36,33 @@ REQUEST_STOP    : "r"
 DWELL_TIME      : "w"
 THROUGH_LINE    : "t"
 
-%import common.DIGIT
-%import common.WS
+// Allowances
+allowances      : (eng_allowance | path_allowance | perf_allowance)*
+
+eng_allowance   : "[" tmin "]"
+path_allowance  : "(" tmin ")"
+perf_allowance  : "<" tmin ">"
+
+// Activity
+activity        : activity_type ":" train_full_id
+
+activity_type:      NEXT | JOIN
+                    | DIVIDE_REAR | DIVIDE_FRONT
+                    | DETACH_ENGINE_REAR | DETACH_ENGINE_FRONT
+                    | DROP_COACHES_REAR | DROP_COACHES_FRONT
+                    | PLATFORM_SHARE
+
+NEXT                : "N"i
+JOIN                : "J"i
+DIVIDE_REAR         : "DR"i
+DIVIDE_FRONT        : "DF"i
+DETACH_ENGINE_REAR  : "DER"i
+DETACH_ENGINE_FRONT : "DEF"i
+DROP_COACHES_REAR   : "DCR"i
+DROP_COACHES_FRONT  : "DCF"i
+PLATFORM_SHARE      : "PS"i
+
+ALPHANUMERIC               : DIGIT | LETTER
+
+%import common (DIGIT, LETTER, WS)
 %ignore WS

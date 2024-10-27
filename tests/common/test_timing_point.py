@@ -1,6 +1,7 @@
 import pytest
 
 from ttbuilder.common.activity import Activity
+from ttbuilder.common.location import Location
 from ttbuilder.common.timing_point import TimingPoint
 from ttbuilder.common.ttime import TTime
 
@@ -16,7 +17,10 @@ def test_stopping_timing_point(xml_test_tools):
     </Trip>
     """
     expected = xt.fromstr(expected_str)
-    tp = TimingPoint(location="FOUROKS", depart=TTime.from_hms(0, 15), platform="3")
+    tp = TimingPoint(
+        location=Location("FOUROKS", platform="3"),
+        depart=TTime.from_hms(0, 15),
+    )
     xt.assert_equivalent(expected, tp.xml())
 
 
@@ -53,9 +57,8 @@ def test_perf_path_times_in_timing_point(xml_test_tools):
     expected = xt.fromstr(expected_str)
 
     tp = TimingPoint(
-        location="LCHC",
+        location=Location("LCHC", platform="2"),
         depart=TTime.from_hms(0, 35, passing=True),
-        platform="2",
         engineering_allowance=TTime.from_hms(minutes=1),
         pathing_allowance=TTime.from_hms(minutes=2, seconds=30),
     )
@@ -90,7 +93,7 @@ def test_request_stop_percent(xml_test_tools):
         (TimingPoint("FOUROKS", "12:05"), "FOUROKS 12:05"),
         (TimingPoint("FOUROKS", "12:05:30"), "FOUROKS 12:05H"),
         (TimingPoint("FOUROKS", "12/05"), "FOUROKS 12/05"),
-        (TimingPoint("FOUROKS", "12:05", platform="3"), "FOUROKS.3 12:05"),
+        (TimingPoint(Location("FOUROKS", platform="3"), "12:05"), "FOUROKS.3 12:05"),
         (
             TimingPoint("FOUROKS", "12:05", engineering_allowance=TTime(90)),
             "FOUROKS 12:05 [1H]",
@@ -146,9 +149,18 @@ def test_timing_point_from_text(expected, text):
 @pytest.mark.parametrize(
     "pt,expected",
     [
-        (TimingPoint("FOUROKS", "12:05"), "FOUROKS 12:05"),
-        (TimingPoint("FOUROKS", "12:05", platform=3), "FOUROKS.3 12:05"),
-        (TimingPoint("FOUROKS", "12:05H", platform=3), "FOUROKS.3 12:05H"),
+        (
+            TimingPoint("FOUROKS", "12:05"),
+            "FOUROKS 12:05",
+        ),
+        (
+            TimingPoint(Location("FOUROKS", platform="3"), "12:05"),
+            "FOUROKS.3 12:05",
+        ),
+        (
+            TimingPoint(Location("FOUROKS", platform="3"), "12:05H"),
+            "FOUROKS.3 12:05H",
+        ),
         (
             TimingPoint("FOUROKS", "25:05", engineering_allowance=TTime(150)),
             "FOUROKS 25:05 [2H]",

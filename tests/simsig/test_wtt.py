@@ -105,9 +105,8 @@ def test_basic_wtt(xml_test_tools, ttime_parser):
         train_type=dmu,
         timing_points=[
             TimingPoint(
-                location=Location(tiploc="FOUROKS"),
+                location=Location(tiploc="FOUROKS", platform="3"),
                 depart=TTime(2100),
-                platform="3",
             ),
             TimingPoint(
                 location=Location(tiploc="ASTON"),
@@ -122,9 +121,8 @@ def test_basic_wtt(xml_test_tools, ttime_parser):
         depart_time=TTime(1200),
         timing_points=[
             TimingPoint(
-                location=Location(tiploc="FOUROKS"),
+                location=Location(tiploc="FOUROKS", platform="3"),
                 depart=TTime(2100),
-                platform=3,
                 activities=[Activity.next(tt_2a04.train_id)],
             )
         ],
@@ -137,9 +135,8 @@ def test_basic_wtt(xml_test_tools, ttime_parser):
         depart_time=TTime(60),
         timing_points=[
             TimingPoint(
-                location=Location(tiploc="FOUROKS"),
+                location=Location(tiploc="FOUROKS", platform="3"),
                 depart=TTime(900),
-                platform=3,
             ),
             TimingPoint(
                 location=Location(tiploc="ASTON"),

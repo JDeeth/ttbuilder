@@ -14,7 +14,6 @@ class TimingPoint:
 
     location: Location | str
     depart: TTime | str | None = None
-    platform: str = ""
     activities: list[Activity] = field(default_factory=list)
     engineering_allowance: TTime = field(default_factory=TTime)
     performance_allowance: TTime = field(default_factory=TTime)
@@ -34,8 +33,7 @@ class TimingPoint:
         params = {}
 
         tiploc, _, platform = split_text[0].partition(".")
-        params["location"] = Location(tiploc=tiploc)
-        params["platform"] = platform
+        params["location"] = Location(tiploc=tiploc, platform=platform)
         params["depart"] = TTime.from_str(split_text[1])
         params["activities"] = []
 
@@ -66,8 +64,8 @@ class TimingPoint:
     def __str__(self):
         """To timetable format"""
         location = self.location.tiploc
-        if self.platform:
-            location += f".{self.platform}"
+        if self.location.platform:
+            location += f".{self.location.platform}"
         rem = []
         if self.engineering_allowance:
             rem.append(f"[{self.engineering_allowance:MH}]")
@@ -102,8 +100,8 @@ class TimingPoint:
             subelem("DepPassTime", self.depart.seconds)
             if self.depart.passing:
                 subelem("IsPassTime", "-1")
-        if self.platform:
-            subelem("Platform", self.platform)
+        if self.location.platform:
+            subelem("Platform", self.location.platform)
         if self.activities:
             acts = etree.SubElement(result, "Activities")
             for a in self.activities:

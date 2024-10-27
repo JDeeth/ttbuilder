@@ -20,6 +20,8 @@ class Allowance:
     """Timetable allowance times"""
 
     class Type(Enum):
+        """Allowance type"""
+
         ENGINEERING = auto()
         PATHING = auto()
         PERFORMANCE = auto()
@@ -61,6 +63,13 @@ class TTime:
         seconds = 3600 * hours + 60 * minutes + seconds
         stop_mode = cls.StopMode.PASSING if passing else cls.StopMode.STOPPING
         return cls(seconds, stop_mode)
+
+    @classmethod
+    def from_tmin(cls, tmin: TMin):
+        """Create time from TMin
+
+        TMin perhaps should be folded into TTime"""
+        return cls(seconds=tmin.minute * 60 + tmin.second)
 
     @classmethod
     def from_str(cls, text: str):

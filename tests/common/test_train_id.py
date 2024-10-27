@@ -3,11 +3,6 @@ import pytest
 from ttbuilder.common.train_id import TrainId
 
 
-def test_train_id_from_str():
-    assert TrainId.from_str("1A01") == TrainId(id="1A01")
-    assert TrainId.from_str("1A01/ABC234") == TrainId(id="1A01", uid="ABC234")
-
-
 def test_train_id_to_str():
     assert str(TrainId(id="1A01")) == "1A01"
     assert str(TrainId(id="1A01", uid="ABC234")) == "1A01/ABC234"
