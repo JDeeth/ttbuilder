@@ -21,8 +21,8 @@ def test_time_from_hms(args, seconds):
     "time_str",
     "00:00 00/00 01:00 01:01 01/01 27:00 01:00H 12:05H 12/05H 27:00 27/00".split(),
 )
-def test_time_to_timetable_str(time_str, ttime_parser):
-    assert str(ttime_parser.parse(time_str)) == time_str
+def test_time_to_timetable_str(time_str, ttparser):
+    assert str(ttparser.parse_ttime(time_str)) == time_str
 
 
 def test_float_seconds_are_converted_to_int():

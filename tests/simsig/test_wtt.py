@@ -85,7 +85,7 @@ def test_wtt_compilation(tmp_path, aston_none, xml_test_tools):
             xt.assert_equivalent(expected, result)
 
 
-def test_basic_wtt(xml_test_tools, ttime_parser):
+def test_basic_wtt(xml_test_tools, ttparser):
     xt = xml_test_tools
     expected = xt.fromfile("tests/sample/basic_SavedTimetable.xml")
 
@@ -110,7 +110,7 @@ def test_basic_wtt(xml_test_tools, ttime_parser):
             ),
             TimingPoint(
                 location=Location(tiploc="ASTON"),
-                depart=ttime_parser.parse("00/45"),
+                depart=ttparser.parse_ttime("00/45"),
             ),
         ],
     )
@@ -140,7 +140,7 @@ def test_basic_wtt(xml_test_tools, ttime_parser):
             ),
             TimingPoint(
                 location=Location(tiploc="ASTON"),
-                depart=ttime_parser.parse("00/30"),
+                depart=ttparser.parse_ttime("00/30"),
             ),
         ],
     )

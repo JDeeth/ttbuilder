@@ -9,5 +9,5 @@ from ttbuilder.common.train_id import TrainId
         ("1A01/ABC234", {"id": "1A01", "uid": "ABC234"}),
     ],
 )
-def test_train_id_from_str_with_parser(text, train_id_args, ttime_parser):
-    assert ttime_parser.parse(text) == TrainId(**train_id_args)
+def test_train_id_from_str_with_parser(text, train_id_args, ttparser):
+    assert ttparser.parse_train_full_id(text) == TrainId(**train_id_args)

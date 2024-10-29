@@ -7,8 +7,8 @@ from ttbuilder.common.train_id import TrainId
 from ttbuilder.common.ttime import Allowance, TMin, TTime
 
 
-class TransformTTime(Transformer):
-    """Transformer for ttime.lark"""
+class TransformTT(Transformer):
+    """Transformer for timetable.lark"""
 
     # pylint: disable=missing-function-docstring,invalid-name
 
@@ -87,17 +87,47 @@ class TransformTTime(Transformer):
         return Activity(*args)
 
 
-class TTimeParser:
-    """Parser for TTime/TMin objects"""
+class TTParser:
+    """Parser for timetable elements"""
 
-    # pylint: disable=too-few-public-methods
-    def __init__(self, rule: str = "start"):
-        valid_rules = "start tt_time tt_min".split()
-        if rule not in valid_rules:
-            raise ValueError(f"{rule} must be in {valid_rules}")
-        self._parser = Lark.open("ttime.lark", rel_to=__file__, start=rule)
+    def __init__(self):
+        self._parsers = {}
 
-    def parse(self, text):
-        """Convert text to TTime/TMin object"""
-        tree = self._parser.parse(text)
-        return TransformTTime().transform(tree)
+    def _get_parser(self, rule):
+        def _make_parser(rule):
+            return Lark.open(
+                grammar_filename="timetable.lark",
+                rel_to=__file__,
+                start=rule,
+                parser="lalr",
+                transformer=TransformTT(),
+            )
+
+        return self._parsers.setdefault(rule, _make_parser(rule))
+
+    def _parse(self, text, rule):
+        return self._get_parser(rule).parse(text)
+
+    def parse_train_full_id(self, text):
+        """Parse for train ID[/UID]"""
+        return self._parse(text, "train_full_id")
+
+    def parse_timing_point(self, text):
+        """Parse for timing point line"""
+        return self._parse(text, "timing_point")
+
+    def parse_ttime(self, text):
+        """Parse for timetable time e.g. 12/34½"""
+        return self._parse(text, "ttime")
+
+    def parse_tmin(self, text):
+        """Parse for timetable minute e.g. 4H"""
+        return self._parse(text, "tmin")
+
+    def parse_allowances(self, text):
+        """Parse for timing point allowances e.g. <3H>"""
+        return self._parse(text, "allowances")
+
+    def parse_activity(self, text):
+        """Parse for timing point activity e.g. N:1A01"""
+        return self._parse(text, "activity")

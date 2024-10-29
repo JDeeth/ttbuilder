@@ -14,8 +14,8 @@ from ttbuilder.common.ttime import Allowance, TMin, TTime
         ("29/59H", TTime.from_hms(hours=29, minutes=59, seconds=30, passing=True)),
     ],
 )
-def test_time_from_str(text, expected, ttime_parser):
-    assert expected == ttime_parser.parse(text)
+def test_time_from_str(text, expected, ttparser):
+    assert expected == ttparser.parse_ttime(text)
 
 
 @pytest.mark.parametrize(
@@ -27,8 +27,8 @@ def test_time_from_str(text, expected, ttime_parser):
         ("59½", TMin(59, True)),
     ],
 )
-def test_tmin_from_str(text, expected, ttime_parser):
-    assert expected == ttime_parser.parse(text)
+def test_tmin_from_str(text, expected, ttparser):
+    assert expected == ttparser.parse_tmin(text)
 
 
 @pytest.mark.parametrize(
@@ -41,8 +41,8 @@ def test_tmin_from_str(text, expected, ttime_parser):
         ("[4] <3½>", "4", None, "3h"),
     ],
 )
-def test_allowance(text, eng, path, perf, ttime_parser):
-    p = ttime_parser
+def test_allowance(text, eng, path, perf, ttparser):
+    p = ttparser
     expected = []
     for time, atype in (
         (eng, Allowance.Type.ENGINEERING),
@@ -51,5 +51,5 @@ def test_allowance(text, eng, path, perf, ttime_parser):
     ):
         if time is None:
             continue
-        expected.append(Allowance(p.parse(time), atype))
-    assert expected == ttime_parser.parse(text)
+        expected.append(Allowance(p.parse_tmin(time), atype))
+    assert expected == ttparser.parse_allowances(text)

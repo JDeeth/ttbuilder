@@ -17,15 +17,15 @@ activities = [
 
 
 @pytest.mark.parametrize("activity,text", activities)
-def test_activity_from_str_with_parser(text, activity, ttime_parser):
-    assert ttime_parser.parse(text) == activity
+def test_activity_from_str_with_parser(text, activity, ttparser):
+    assert ttparser.parse_activity(text) == activity
 
 
 def test_invalid_str_makes_null_activity():
     assert not Activity.from_str("X:0A00")
 
 
-def test_can_provide_uid(ttime_parser):
-    activity = ttime_parser.parse("N:1A23/BCD456")
+def test_can_provide_uid(ttparser):
+    activity = ttparser.parse_activity("N:1A23/BCD456")
     assert activity.associated_train_id.id == "1A23"
     assert activity.associated_train_id.uid == "BCD456"

@@ -74,5 +74,5 @@ from ttbuilder.common.ttime import TTime
         # ),
     ],
 )
-def test_parse_timing_point_from_text(expected, text, ttime_parser):
-    assert expected == ttime_parser.parse(text)
+def test_parse_timing_point_from_text(expected, text, ttparser):
+    assert expected == ttparser.parse_timing_point(text)
