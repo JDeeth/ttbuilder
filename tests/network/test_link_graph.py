@@ -69,17 +69,17 @@ TRAIN_1M49 = """
 TRENTJ      23/55H
 SHEETSJ     23/56
 SPDN        00/01
-DRBY.6      00:13  [4] <4> Runround
+DRBY.6      00:13  [4] <4>
 DRBY.6      00:40
 STSNJN      00/47H [0H]
 NSJDRBY     00/48H
 BURTNOT     00/53
 WICHNRJ     00/58H
 LCHTTVJ     01/06H
-LCHTTVL     01/09  FL
+LCHTTVL     01/09
 ARMITAG     01/14H
 COLWICH     01/19H
-MILFDY      01/21H SL
+MILFDY      01/21H
 STAFFRD.5   01/25
 NTNB        01/29H
 MADELEY     01/37H
@@ -87,7 +87,7 @@ CREWBHJ     01/46  [3]
 """.strip()
 
 
-def test_extract_sim_timing_points(aston):
+def test_extract_sim_timing_points(aston, ttparser):
     expected = """
 WICHNRJ    00/58H
 ALRWAS     01/02H
@@ -96,6 +96,9 @@ LCHTTVL    01/09
 """.strip()
     # 01/02H is a simple average of the times before and after
 
-    aston_path = aston.extract(TRAIN_1M49)
+    timing_points = [
+        ttparser.parse_timing_point(line) for line in TRAIN_1M49.strip().splitlines()
+    ]
+    aston_path = aston.extract(timing_points)
 
     assert expected == aston_path

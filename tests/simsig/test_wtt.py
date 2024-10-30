@@ -22,8 +22,8 @@ def fixture_aston_none():
     return Wtt(
         sim=Sim("aston", Version(5, 23, 4)),
         name="empty",
-        start_time=TTime.from_str("00:00"),
-        end_time=TTime.from_str("27:00"),
+        start_time=TTime.from_hms(0, 0),
+        end_time=TTime.from_hms(27, 0),
     )
 
 

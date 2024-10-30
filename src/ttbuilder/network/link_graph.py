@@ -51,11 +51,10 @@ class LinkGraph:
         """Tiploc is in graph"""
         return tiploc in self._route_graph.nodes
 
-    def extract(self, path: str):
+    def extract(self, timing_points: list[TimingPoint]):
         """Pulls section of longer timetable where it overlaps this"""
-        points = [TimingPoint.from_str(line) for line in path.strip().splitlines()]
         result = []
-        for a, b in zip(points, points[1:]):
+        for a, b in zip(timing_points, timing_points[1:]):
             tiploc_a = a.location.tiploc
             if not result:
                 # prepend E for entrypoint

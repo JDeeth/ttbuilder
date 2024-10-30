@@ -1,7 +1,6 @@
 import pytest
 
 from ttbuilder.common.location import Location
-from ttbuilder.common.timing_point import TimingPoint
 from ttbuilder.common.train_id import TrainId
 from ttbuilder.common.ttime import TTime
 from ttbuilder.simsig.local_timetable import LocalTimetable
@@ -28,14 +27,14 @@ def fixture_dmu_train_type():
 
 
 @pytest.fixture(name="args_2a01")
-def fixture_args_2a01(dmu_train_type):
+def fixture_args_2a01(dmu_train_type, ttparser):
     tt_str = """
 EASTON    00:01
 FOUROKS.3 00:15
 ASTON     00/30
     """.strip()
 
-    timing_points = [TimingPoint.from_str(line) for line in tt_str.splitlines()]
+    timing_points = [ttparser.parse_timing_point(line) for line in tt_str.splitlines()]
     initial, timing_points = timing_points[0], timing_points[1:]
 
     return {
@@ -74,7 +73,7 @@ def test_starting_power_assumed_if_ambiguous():
     assert tt.initial_power == PowerType.DIESEL
 
 
-def test_train_starting_in_sim(xml_test_tools, dmu_train_type):
+def test_train_starting_in_sim(xml_test_tools, dmu_train_type, ttparser):
     xt = xml_test_tools
     expected = xt.fromfile("tests/sample/aston_2A04.xml")
 
@@ -82,14 +81,14 @@ def test_train_starting_in_sim(xml_test_tools, dmu_train_type):
         train_id=TrainId(id="2A04", uid="ZDC316"),
         train_type=dmu_train_type,
         timing_points=[
-            TimingPoint.from_str("FOUROKS.3 00:35"),
-            TimingPoint.from_str("ASTON     00/45"),
+            ttparser.parse_timing_point("FOUROKS.3 00:35"),
+            ttparser.parse_timing_point("ASTON     00/45"),
         ],
     )
     xt.assert_equivalent(expected, tt.xml())
 
 
-def test_train_terminating_in_sim(xml_test_tools, dmu_train_type):
+def test_train_terminating_in_sim(xml_test_tools, dmu_train_type, ttparser):
     xt = xml_test_tools
     expected = xt.fromfile("tests/sample/aston_2A03.xml")
 
@@ -98,10 +97,10 @@ def test_train_terminating_in_sim(xml_test_tools, dmu_train_type):
     tt = LocalTimetable(
         train_id=train_id,
         train_type=dmu_train_type,
-        depart_time=TTime.from_str("00:20"),
+        depart_time=TTime.from_hms(0, 20),
         entry_point=Location("EASTON"),
         description="Entry with 3-car DMU type",
-        timing_points=[TimingPoint.from_str("FOUROKS.3 00:35 N:2A04/ZDC316")],
+        timing_points=[ttparser.parse_timing_point("FOUROKS.3 00:35 N:2A04/ZDC316")],
     )
 
     xt.assert_equivalent(expected, tt.xml())

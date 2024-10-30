@@ -22,7 +22,7 @@ class Activity:
         DROP_COACHES_REAR = 6, "DCR"
         DROP_COACHES_FRONT = 7, "DCF"
         PLATFORM_SHARE = 9, "PS"
-        # CREW_CHANGE = 10, "CC"
+        # CREW_CHANGE = 10, "CC" # does not use train ID, uses time instead
 
         def __init__(self, xml_code, label):
             self.xml_code = xml_code
@@ -33,7 +33,8 @@ class Activity:
 
     def __post_init__(self):
         if isinstance(self.associated_train_id, str):
-            self.associated_train_id = TrainId.from_str(self.associated_train_id)
+            _id, _, uid = self.associated_train_id.partition("/")
+            self.associated_train_id = TrainId(_id, uid)
 
     @classmethod
     def next(cls, train_id: str | TrainId):
@@ -81,23 +82,6 @@ class Activity:
     def platform_share(cls, train_id: str | TrainId):
         """Permits ARS to signal this train into a platform occupied by the other or vice versa"""
         return cls(cls.Type.PLATFORM_SHARE, train_id)
-
-    # @classmethod
-    # def crew_change(cls, train_id: str | TrainId):
-    #     """(unsure how this works actually)"""
-    #     return cls(cls.AType.CREW_CHANGE, train_id)
-
-    @classmethod
-    def from_str(cls, text: str):
-        """From timetable format e.g. J:1A23. Invalid strings form an invalid activity"""
-        text = text.upper()
-        label, _, train_id = text.partition(":")
-        train_id = TrainId.from_str(train_id)
-        try:
-            activity_type = next(t for t in cls.Type if t.label == label)
-        except StopIteration:
-            return cls(cls.Type.INVALID, "")
-        return cls(activity_type, train_id)
 
     def __bool__(self):
         return self.activity_type != self.Type.INVALID

@@ -56,6 +56,10 @@ class XMLTestTools:
         return etree.XML(xml_text, parser=parser)
 
     @classmethod
+    def pretty(cls, xml):
+        return etree.tostring(xml, pretty_print=True, encoding="unicode")
+
+    @classmethod
     def assert_equivalent(cls, left, right, ignore_uid=False):
         assert cls.agnostic_diff(left, right, ignore_uid) == []
 

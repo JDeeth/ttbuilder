@@ -11,7 +11,7 @@ LU_TRAIN_ID.1   : LETTER DIGIT DIGIT DIGIT
 MISC_TRAIN_ID   : ALPHANUMERIC~4
 
 // Timing point
-timing_point    : location ttime [allowances] activity*
+timing_point    : location ttime [allowances] [activities]
 
 location        : TIPLOC ["." PLATFORM]
 TIPLOC          : LETTER ALPHANUMERIC*
@@ -44,6 +44,7 @@ path_allowance  : "(" tmin ")"
 perf_allowance  : "<" tmin ">"
 
 // Activity
+activities          : activity+
 activity            : activity_type ":" train_full_id
 
 activity_type:      NEXT | JOIN

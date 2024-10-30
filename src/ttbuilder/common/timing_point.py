@@ -3,7 +3,7 @@ from lxml import etree
 
 from ttbuilder.common.activity import Activity
 from ttbuilder.common.location import Location
-from ttbuilder.common.ttime import TTime
+from ttbuilder.common.ttime import Allowance, TMin, TTime
 
 
 @dataclass
@@ -15,51 +15,11 @@ class TimingPoint:
     location: Location | str
     depart: TTime | str | None = None
     activities: list[Activity] = field(default_factory=list)
-    engineering_allowance: TTime = field(default_factory=TTime)
-    performance_allowance: TTime = field(default_factory=TTime)
-    pathing_allowance: TTime = field(default_factory=TTime)
     request_stop_percent: int = 100
 
     def __post_init__(self):
         if isinstance(self.location, str):
             self.location = Location(tiploc=self.location)
-        if isinstance(self.depart, str):
-            self.depart = TTime.from_str(self.depart)
-
-    @classmethod
-    def from_str(cls, text):
-        """From timetable format e.g. DRBY.4 10/23H <2> J:1A23"""
-        split_text = text.split()
-        params = {}
-
-        tiploc, _, platform = split_text[0].partition(".")
-        params["location"] = Location(tiploc=tiploc, platform=platform)
-        params["depart"] = TTime.from_str(split_text[1])
-        params["activities"] = []
-
-        def get_time(elem, a, z):
-            if elem.startswith(a) and elem.endswith(z):
-                m, h, _ = elem[1:-1].partition("H")
-                time = int(m or 0) * 60
-                time += 30 if h else 0
-            else:
-                time = 0
-            return TTime(time)
-
-        for elem in split_text[2:]:
-            for a, label, z in (
-                "[ engineering_allowance ]".split(),
-                "( pathing_allowance )".split(),
-                "< performance_allowance >".split(),
-            ):
-                time = get_time(elem, a, z)
-                if time:
-                    params[label] = time
-            activity = Activity.from_str(elem)
-            if activity:
-                params["activities"].append(activity)
-
-        return cls(**params)
 
     def __str__(self):
         """To timetable format"""
@@ -67,12 +27,12 @@ class TimingPoint:
         if self.location.platform:
             location += f".{self.location.platform}"
         rem = []
-        if self.engineering_allowance:
-            rem.append(f"[{self.engineering_allowance:MH}]")
-        if self.pathing_allowance:
-            rem.append(f"({self.pathing_allowance:MH})")
-        if self.performance_allowance:
-            rem.append(f"<{self.performance_allowance:MH}>")
+        if self.depart is not None and self.depart.allowances:
+            allowances = {x.type: x for x in self.depart.allowances}
+            for a in allowances.values():
+                start, _, end = a.type.value.partition("x")
+                ttime = TTime.from_tmin(a.time)
+                rem.append(f"{start}{ttime:MH}{end}")
         rem.extend(str(act) for act in self.activities)
         rem = " ".join(x for x in rem if x)
         return f"{location:10} {self.depart:6} {rem}".strip()
@@ -107,13 +67,15 @@ class TimingPoint:
             for a in self.activities:
                 acts.append(a.xml())
         # allowances are recorded as multiples of 30 seconds
-        eng_perf_allowance = (
-            self.engineering_allowance.seconds + self.performance_allowance.seconds
-        )
-        if eng_perf_allowance:
-            subelem("EngAllowance", eng_perf_allowance // 30)
-        if self.pathing_allowance:
-            subelem("PathAllowance", self.pathing_allowance.seconds // 30)
+        if self.depart is not None and self.depart.allowances:
+            allowances = {x.type: x.time for x in self.depart.allowances}
+            eng = allowances.get(Allowance.Type.ENGINEERING, TMin(0))
+            perf = allowances.get(Allowance.Type.PERFORMANCE, TMin(0))
+            path = allowances.get(Allowance.Type.PATHING, TMin(0))
+            if eng or perf:
+                subelem("EngAllowance", eng.thirty_sec + perf.thirty_sec)
+            if path:
+                subelem("PathAllowance", path.thirty_sec)
         if self.request_stop_percent in range(0, 100):  # excludes 100%
             subelem("RequestPercent", self.request_stop_percent)
 

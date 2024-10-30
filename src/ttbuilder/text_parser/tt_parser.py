@@ -13,17 +13,15 @@ class TransformTT(Transformer):
     # pylint: disable=missing-function-docstring,invalid-name
 
     def timing_point(self, args):
-        location, ttime, allowances, *_ = args
-        alw_param = {}
-        for x in allowances or []:
-            if x.type == Allowance.Type.ENGINEERING:
-                alw_param["engineering_allowance"] = TTime.from_tmin(x.time)
-            if x.type == Allowance.Type.PATHING:
-                alw_param["pathing_allowance"] = TTime.from_tmin(x.time)
-            if x.type == Allowance.Type.PERFORMANCE:
-                alw_param["performance_allowance"] = TTime.from_tmin(x.time)
+        location, ttime, allowances, activities = args
+        allowances = [x for x in allowances or [] if x.time]
+        ttime = TTime(ttime.seconds, ttime.stop_mode, allowances)
 
-        return TimingPoint(location=location, depart=ttime, **alw_param)
+        return TimingPoint(
+            location=location,
+            depart=ttime,
+            activities=list(activities or []),
+        )
 
     def location(self, args):
         tiploc, platform = args
@@ -85,6 +83,9 @@ class TransformTT(Transformer):
 
     def activity(self, args):
         return Activity(*args)
+
+    def activities(self, args):
+        return list(args)
 
 
 class TTParser:

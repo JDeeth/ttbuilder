@@ -14,20 +14,42 @@ class TMin:
         """0 or 30 seconds"""
         return 30 if self.halfmin else 0
 
+    @property
+    def thirty_sec(self):
+        """Duration in multiples of 30 seconds"""
+        return self.minute * 2 + (1 if self.halfmin else 0)
+
+    def __bool__(self):
+        return self.minute > 0 or self.halfmin
+
 
 @dataclass(frozen=True)
 class Allowance:
     """Timetable allowance times"""
 
+    # pylint: disable=missing-function-docstring
+
     class Type(Enum):
         """Allowance type"""
 
-        ENGINEERING = auto()
-        PATHING = auto()
-        PERFORMANCE = auto()
+        ENGINEERING = "[x]"
+        PATHING = "(x)"
+        PERFORMANCE = "<x>"
 
     time: TMin
     type: Type
+
+    @classmethod
+    def engineering(cls, time: TMin):
+        return cls(time, cls.Type.ENGINEERING)
+
+    @classmethod
+    def pathing(cls, time: TMin):
+        return cls(time, cls.Type.PATHING)
+
+    @classmethod
+    def performance(cls, time: TMin):
+        return cls(time, cls.Type.PERFORMANCE)
 
 
 @dataclass(frozen=True)
@@ -57,12 +79,22 @@ class TTime:
 
     @classmethod
     def from_hms(
-        cls, hours: int = 0, minutes: int = 0, seconds: int = 0, passing: bool = False
+        # pylint: disable=too-many-arguments
+        cls,
+        hours: int = 0,
+        minutes: int = 0,
+        seconds: int = 0,
+        passing: bool = False,
+        stop_mode=StopMode.STOPPING,
+        allowances=None,
     ):
         """Create time from arbitrary numbers of hours, minutes, and seconds"""
         seconds = 3600 * hours + 60 * minutes + seconds
-        stop_mode = cls.StopMode.PASSING if passing else cls.StopMode.STOPPING
-        return cls(seconds, stop_mode)
+        if passing is True:
+            stop_mode = cls.StopMode.PASSING
+        if allowances is None:
+            allowances = []
+        return cls(seconds, stop_mode, allowances)
 
     @classmethod
     def from_tmin(cls, tmin: TMin):
@@ -70,22 +102,6 @@ class TTime:
 
         TMin perhaps should be folded into TTime"""
         return cls(seconds=tmin.minute * 60 + tmin.second)
-
-    @classmethod
-    def from_str(cls, text: str):
-        """HH:MM stopping, HH/MM passing, suffix H for +30sec"""
-        ends_with_h = text.endswith("H")
-        if ends_with_h:
-            text = text[:-1]
-        passing = "/" in text
-        if passing:
-            text = text.replace("/", ":")
-        text = text.split(":")
-        text.extend(("0", "0", "0"))
-        h, m, s, *_ = (int(x) for x in text if x.isdigit())
-        if ends_with_h:
-            s += 30
-        return cls.from_hms(h, m, s, passing)
 
     def __str__(self):
         """To timetable format e.g. 20:45H, 03/20"""

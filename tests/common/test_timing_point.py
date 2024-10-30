@@ -3,7 +3,7 @@ import pytest
 from ttbuilder.common.activity import Activity
 from ttbuilder.common.location import Location
 from ttbuilder.common.timing_point import TimingPoint
-from ttbuilder.common.ttime import TTime
+from ttbuilder.common.ttime import Allowance, TMin, TTime
 
 
 def test_stopping_timing_point(xml_test_tools):
@@ -58,10 +58,21 @@ def test_perf_path_times_in_timing_point(xml_test_tools):
 
     tp = TimingPoint(
         location=Location("LCHC", platform="2"),
-        depart=TTime.from_hms(0, 35, passing=True),
-        engineering_allowance=TTime.from_hms(minutes=1),
-        pathing_allowance=TTime.from_hms(minutes=2, seconds=30),
+        depart=TTime.from_hms(
+            0,
+            35,
+            passing=True,
+            allowances=[
+                Allowance.engineering(TMin(1)),
+                Allowance.pathing(TMin(2, True)),
+            ],
+        ),
     )
+
+    print()
+    eng = tp.depart.allowances[0].time
+    print(f"{eng=} {eng.thirty_sec=}")
+    print(xt.pretty(tp.xml()))
 
     xt.assert_equivalent(expected, tp.xml())
 
@@ -80,7 +91,7 @@ def test_request_stop_percent(xml_test_tools):
 
     tp = TimingPoint(
         location="BLKST",
-        depart=TTime.from_str("00:40"),
+        depart=TTime.from_hms(0, 40),
         request_stop_percent=25,
     )
 
@@ -88,102 +99,77 @@ def test_request_stop_percent(xml_test_tools):
 
 
 @pytest.mark.parametrize(
-    "expected,text",
-    [
-        (TimingPoint("FOUROKS", "12:05"), "FOUROKS 12:05"),
-        (TimingPoint("FOUROKS", "12:05:30"), "FOUROKS 12:05H"),
-        (TimingPoint("FOUROKS", "12/05"), "FOUROKS 12/05"),
-        (TimingPoint(Location("FOUROKS", platform="3"), "12:05"), "FOUROKS.3 12:05"),
-        (
-            TimingPoint("FOUROKS", "12:05", engineering_allowance=TTime(90)),
-            "FOUROKS 12:05 [1H]",
-        ),
-        (
-            TimingPoint("FOUROKS", "12:05", pathing_allowance=TTime(30)),
-            "FOUROKS 12:05 (0H)",
-        ),
-        (
-            TimingPoint("FOUROKS", "12:05", performance_allowance=TTime(120)),
-            "FOUROKS 12:05 <2>",
-        ),
-        (TimingPoint("FOUROKS", "12:05"), "FOUROKS 12:05 <0> [0] (0)"),
-        (
-            TimingPoint(
-                "FOUROKS",
-                "12:05",
-                pathing_allowance=TTime(30),
-                engineering_allowance=TTime(90),
-            ),
-            "FOUROKS 12:05 [1H] (0H)",
-        ),
-        (
-            TimingPoint(
-                "FOUROKS",
-                "12:05",
-                pathing_allowance=TTime(30),
-                engineering_allowance=TTime(90),
-            ),
-            "FOUROKS 12:05 (0H) [1H]",
-        ),
-        (
-            TimingPoint("FOUROKS", "12:05", activities=[Activity.next("9Z99")]),
-            "FOUROKS 12:05 N:9Z99",
-        ),
-        (
-            TimingPoint(
-                "FOUROKS",
-                "12:05",
-                activities=[
-                    Activity.detach_engine_front("0A01"),
-                    Activity.join("0A01"),
-                ],
-            ),
-            "FOUROKS 12:05 DEF:0A01 J:0A01",
-        ),
-    ],
-)
-def test_timing_point_from_text(expected, text):
-    assert expected == TimingPoint.from_str(text)
-
-
-@pytest.mark.parametrize(
     "pt,expected",
     [
         (
-            TimingPoint("FOUROKS", "12:05"),
+            TimingPoint("FOUROKS", TTime.from_hms(12, 5)),
             "FOUROKS 12:05",
         ),
         (
-            TimingPoint(Location("FOUROKS", platform="3"), "12:05"),
+            TimingPoint(Location("FOUROKS", platform="3"), TTime.from_hms(12, 5)),
             "FOUROKS.3 12:05",
         ),
         (
-            TimingPoint(Location("FOUROKS", platform="3"), "12:05H"),
+            TimingPoint(Location("FOUROKS", platform="3"), TTime.from_hms(12, 5, 30)),
             "FOUROKS.3 12:05H",
         ),
         (
-            TimingPoint("FOUROKS", "25:05", engineering_allowance=TTime(150)),
+            TimingPoint(
+                "FOUROKS",
+                TTime.from_hms(
+                    hours=25,
+                    minutes=5,
+                    allowances=[
+                        Allowance.engineering(TMin(2, True)),
+                    ],
+                ),
+            ),
             "FOUROKS 25:05 [2H]",
         ),
         (
-            TimingPoint("FOUROKS", "25:05", pathing_allowance=TTime(270)),
+            TimingPoint(
+                "FOUROKS",
+                TTime.from_hms(
+                    hours=25,
+                    minutes=5,
+                    allowances=[
+                        Allowance.pathing(TMin(4, True)),
+                    ],
+                ),
+            ),
             "FOUROKS 25:05 (4H)",
         ),
         (
-            TimingPoint("FOUROKS", "25:05", performance_allowance=TTime(120)),
+            TimingPoint(
+                "FOUROKS",
+                TTime.from_hms(
+                    hours=25,
+                    minutes=5,
+                    allowances=[
+                        Allowance.performance(TMin(2, False)),
+                    ],
+                ),
+            ),
             "FOUROKS 25:05 <2>",
         ),
         (
-            TimingPoint("FOUROKS", "12:05", activities=[Activity.next("2Z99")]),
+            TimingPoint(
+                "FOUROKS", TTime.from_hms(12, 5), activities=[Activity.next("2Z99")]
+            ),
             "FOUROKS 12:05 N:2Z99",
         ),
         (
             TimingPoint(
                 location="FOUROKS",
-                depart=TTime.from_hms(25, 5),
-                engineering_allowance=TTime(150),
-                pathing_allowance=TTime(270),
-                performance_allowance=TTime(120),
+                depart=TTime.from_hms(
+                    hours=25,
+                    minutes=5,
+                    allowances=[
+                        Allowance.engineering(TMin(2, True)),
+                        Allowance.pathing(TMin(4, True)),
+                        Allowance.performance(TMin(2, False)),
+                    ],
+                ),
                 activities=[Activity.next("2Z99")],
             ),
             "FOUROKS 25:05 [2H] (4H) <2> N:2Z99",

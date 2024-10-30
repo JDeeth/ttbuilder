@@ -12,17 +12,12 @@ activities = [
     (Activity.drop_coaches_rear("1A26"), "DCR:1A26"),
     (Activity.drop_coaches_front("1A27"), "DCF:1A27"),
     (Activity.platform_share("1A28"), "PS:1A28"),
-    # (Activity.crew_change("1A29"), "CC:1A29"),
 ]
 
 
 @pytest.mark.parametrize("activity,text", activities)
 def test_activity_from_str_with_parser(text, activity, ttparser):
     assert ttparser.parse_activity(text) == activity
-
-
-def test_invalid_str_makes_null_activity():
-    assert not Activity.from_str("X:0A00")
 
 
 def test_can_provide_uid(ttparser):

@@ -40,7 +40,7 @@ def test_populated_dwell_times(xml_test_tools, populated_dt):
     expected = xt.fromstr(populated_dt)
 
     dt = DwellTimes(
-        red_signal_move_off=TTime.from_str("0:00:10"),
+        red_signal_move_off=TTime.from_hms(seconds=10),
         station_forward=TTime.from_hms(seconds=45),
         station_reverse=TTime.from_hms(minutes=3),
         terminate_forward=TTime.from_hms(seconds=60),
@@ -48,6 +48,6 @@ def test_populated_dwell_times(xml_test_tools, populated_dt):
     )
     dt.join = TTime.from_hms(minutes=5)
     dt.divide = TTime(120)
-    dt.crew_change = TTime.from_str("0:05")
+    dt.crew_change = TTime.from_hms(0, 5)
 
     xt.assert_equivalent(expected, dt.xml())
