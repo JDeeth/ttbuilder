@@ -1,6 +1,6 @@
 import pytest
 
-from ttbuilder.common.ttime import Allowance, TTime
+from ttbuilder.common import allowance, ttime
 
 
 @pytest.mark.parametrize(
@@ -8,69 +8,47 @@ from ttbuilder.common.ttime import Allowance, TTime
     [
         (
             "01:00",
-            TTime.from_hms(
-                hours=1, minutes=0, seconds=0, stop_mode=TTime.StopMode.STOPPING
-            ),
+            ttime.Stopping.from_hms(hours=1, minutes=0, seconds=0),
         ),
         (
             "01/00",
-            TTime.from_hms(
-                hours=1, minutes=0, seconds=0, stop_mode=TTime.StopMode.PASSING
-            ),
+            ttime.Passing.from_hms(hours=1, minutes=0, seconds=0),
         ),
         (
             "01:01",
-            TTime.from_hms(
-                hours=1, minutes=1, seconds=0, stop_mode=TTime.StopMode.STOPPING
-            ),
+            ttime.Stopping.from_hms(hours=1, minutes=1, seconds=0),
         ),
         (
             "27:00",
-            TTime.from_hms(
-                hours=27, minutes=0, seconds=0, stop_mode=TTime.StopMode.STOPPING
-            ),
+            ttime.Stopping.from_hms(hours=27, minutes=0, seconds=0),
         ),
         (
             "01:00H",
-            TTime.from_hms(
-                hours=1, minutes=0, seconds=30, stop_mode=TTime.StopMode.STOPPING
-            ),
+            ttime.Stopping.from_hms(hours=1, minutes=0, seconds=30),
         ),
         (
             "29/59H",
-            TTime.from_hms(
-                hours=29, minutes=59, seconds=30, stop_mode=TTime.StopMode.PASSING
-            ),
+            ttime.Passing.from_hms(hours=29, minutes=59, seconds=30),
         ),
         (
             "29w59H",
-            TTime.from_hms(
-                hours=29, minutes=59, seconds=30, stop_mode=TTime.StopMode.DWELL_TIME
-            ),
+            ttime.DwellTime.from_hms(hours=29, minutes=59, seconds=30),
         ),
         (
             "29*59H",
-            TTime.from_hms(
-                hours=29, minutes=59, seconds=30, stop_mode=TTime.StopMode.IF_REQUIRED
-            ),
+            ttime.IfRequired.from_hms(hours=29, minutes=59, seconds=30),
         ),
         (
             "29r59H",
-            TTime.from_hms(
-                hours=29, minutes=59, seconds=30, stop_mode=TTime.StopMode.REQUEST_STOP
-            ),
+            ttime.RequestStop.from_hms(hours=29, minutes=59, seconds=30),
         ),
         (
             "29d59H",
-            TTime.from_hms(
-                hours=29, minutes=59, seconds=30, stop_mode=TTime.StopMode.SET_DOWN
-            ),
+            ttime.SetDown.from_hms(hours=29, minutes=59, seconds=30),
         ),
         (
             "29t59H",
-            TTime.from_hms(
-                hours=29, minutes=59, seconds=30, stop_mode=TTime.StopMode.THROUGH_LINE
-            ),
+            ttime.ThroughLine.from_hms(hours=29, minutes=59, seconds=30),
         ),
     ],
 )
@@ -81,10 +59,10 @@ def test_time_from_str(text, expected, ttparser):
 @pytest.mark.parametrize(
     "text,expected",
     [
-        ("0", TTime(0)),
-        ("0h", TTime(30)),
-        ("4", TTime(240)),
-        ("59½", TTime.from_hms(minutes=59, seconds=30)),
+        ("0", ttime.TTime(0)),
+        ("0h", ttime.TTime(30)),
+        ("4", ttime.TTime(240)),
+        ("59½", ttime.TTime.from_hms(minutes=59, seconds=30)),
     ],
 )
 def test_tmin_from_str(text, expected, ttparser):
@@ -105,11 +83,11 @@ def test_allowance(text, eng, path, perf, ttparser):
     p = ttparser
     expected = []
     for time, atype in (
-        (eng, Allowance.Type.ENGINEERING),
-        (path, Allowance.Type.PATHING),
-        (perf, Allowance.Type.PERFORMANCE),
+        (eng, allowance.Engineering),
+        (path, allowance.Pathing),
+        (perf, allowance.Performance),
     ):
         if time is None:
             continue
-        expected.append(Allowance(p.parse_tmin(time), atype))
+        expected.append(atype(p.parse_tmin(time)))
     assert expected == ttparser.parse_allowances(text)

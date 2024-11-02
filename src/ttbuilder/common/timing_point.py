@@ -3,7 +3,7 @@ from lxml import etree
 
 from ttbuilder.common.activity import Activity
 from ttbuilder.common.location import Location
-from ttbuilder.common.ttime import Allowance, TTime
+from ttbuilder.common import allowance, ttime
 
 
 @dataclass
@@ -13,8 +13,8 @@ class TimingPoint:
     # pylint: disable=too-many-instance-attributes
 
     location: Location | str
-    depart: TTime | str | None = None
-    allowances: list[Allowance] = field(default_factory=list)
+    depart: ttime.TTime | str | None = None
+    allowances: list[allowance.BaseAllowance] = field(default_factory=list)
     activities: list[Activity] = field(default_factory=list)
     request_stop_percent: int = 100
 
@@ -58,7 +58,7 @@ class TimingPoint:
         subelem("Location", self.location.tiploc)
         if self.depart is not None:
             subelem("DepPassTime", self.depart.seconds)
-            if self.depart.stop_mode == TTime.StopMode.PASSING:
+            if self.depart.stop_mode == ttime.StopMode.PASSING:
                 subelem("IsPassTime", "-1")
         if self.location.platform:
             subelem("Platform", self.location.platform)
@@ -69,9 +69,9 @@ class TimingPoint:
         # allowances are recorded as multiples of 30 seconds
         if self.allowances:
             allowances = {x.type: x.time for x in self.allowances}
-            eng = allowances.get(Allowance.Type.ENGINEERING, TTime(0))
-            perf = allowances.get(Allowance.Type.PERFORMANCE, TTime(0))
-            path = allowances.get(Allowance.Type.PATHING, TTime(0))
+            eng = allowances.get(allowance.Type.ENGINEERING, ttime.TTime(0))
+            perf = allowances.get(allowance.Type.PERFORMANCE, ttime.TTime(0))
+            path = allowances.get(allowance.Type.PATHING, ttime.TTime(0))
             if eng or perf:
                 subelem("EngAllowance", eng.halfminute + perf.halfminute)
             if path:

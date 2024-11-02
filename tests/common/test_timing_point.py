@@ -3,7 +3,7 @@ import pytest
 from ttbuilder.common.activity import Activity
 from ttbuilder.common.location import Location
 from ttbuilder.common.timing_point import TimingPoint
-from ttbuilder.common.ttime import Allowance, TTime
+from ttbuilder.common import allowance, ttime
 
 
 def test_stopping_timing_point(xml_test_tools):
@@ -19,7 +19,7 @@ def test_stopping_timing_point(xml_test_tools):
     expected = xt.fromstr(expected_str)
     tp = TimingPoint(
         location=Location("FOUROKS", platform="3"),
-        depart=TTime.from_hms(0, 15),
+        depart=ttime.Stopping.from_hms(0, 15),
     )
     xt.assert_equivalent(expected, tp.xml())
 
@@ -35,9 +35,7 @@ def test_passing_timing_point(xml_test_tools):
     </Trip>
     """
     expected = xt.fromstr(expected_str)
-    tp = TimingPoint(
-        location="ASTON", depart=TTime.from_hms(0, 30, stop_mode=TTime.StopMode.PASSING)
-    )
+    tp = TimingPoint(location="ASTON", depart=ttime.Passing.from_hms(0, 30))
 
     xt.assert_equivalent(expected, tp.xml())
 
@@ -60,14 +58,10 @@ def test_perf_path_times_in_timing_point(xml_test_tools):
 
     tp = TimingPoint(
         location=Location("LCHC", platform="2"),
-        depart=TTime.from_hms(
-            0,
-            35,
-            stop_mode=TTime.StopMode.PASSING,
-        ),
+        depart=ttime.Passing.from_hms(0, 35),
         allowances=[
-            Allowance.engineering(TTime(60)),
-            Allowance.pathing(TTime(150)),
+            allowance.Engineering(ttime.TTime(60)),
+            allowance.Pathing(ttime.TTime(150)),
         ],
     )
 
@@ -88,7 +82,7 @@ def test_request_stop_percent(xml_test_tools):
 
     tp = TimingPoint(
         location="BLKST",
-        depart=TTime.from_hms(0, 40),
+        depart=ttime.Stopping.from_hms(0, 40),
         request_stop_percent=25,
     )
 
@@ -99,73 +93,61 @@ def test_request_stop_percent(xml_test_tools):
     "pt,expected",
     [
         (
-            TimingPoint("FOUROKS", TTime.from_hms(12, 5)),
+            TimingPoint("FOUROKS", ttime.Stopping.from_hms(12, 5)),
             "FOUROKS 12:05",
         ),
         (
-            TimingPoint(Location("FOUROKS", platform="3"), TTime.from_hms(12, 5)),
+            TimingPoint(
+                Location("FOUROKS", platform="3"), ttime.Stopping.from_hms(12, 5)
+            ),
             "FOUROKS.3 12:05",
         ),
         (
-            TimingPoint(Location("FOUROKS", platform="3"), TTime.from_hms(12, 5, 30)),
+            TimingPoint(
+                Location("FOUROKS", platform="3"), ttime.Stopping.from_hms(12, 5, 30)
+            ),
             "FOUROKS.3 12:05H",
         ),
         (
             TimingPoint(
                 "FOUROKS",
-                TTime.from_hms(
-                    hours=25,
-                    minutes=5,
-                ),
-                allowances=[
-                    Allowance.engineering(TTime(150)),
-                ],
+                ttime.Stopping.from_hms(hours=25, minutes=5),
+                allowances=[allowance.Engineering(ttime.TTime(150))],
             ),
             "FOUROKS 25:05 [2H]",
         ),
         (
             TimingPoint(
                 "FOUROKS",
-                TTime.from_hms(
-                    hours=25,
-                    minutes=5,
-                ),
-                allowances=[
-                    Allowance.pathing(TTime(270)),
-                ],
+                ttime.Stopping.from_hms(hours=25, minutes=5),
+                allowances=[allowance.Pathing(ttime.TTime(270))],
             ),
             "FOUROKS 25:05 (4H)",
         ),
         (
             TimingPoint(
                 "FOUROKS",
-                TTime.from_hms(
-                    hours=25,
-                    minutes=5,
-                ),
-                allowances=[
-                    Allowance.performance(TTime(120)),
-                ],
+                ttime.Stopping.from_hms(hours=25, minutes=5),
+                allowances=[allowance.Performance(ttime.TTime(120))],
             ),
             "FOUROKS 25:05 <2>",
         ),
         (
             TimingPoint(
-                "FOUROKS", TTime.from_hms(12, 5), activities=[Activity.next("2Z99")]
+                "FOUROKS",
+                ttime.Stopping.from_hms(12, 5),
+                activities=[Activity.next("2Z99")],
             ),
             "FOUROKS 12:05 N:2Z99",
         ),
         (
             TimingPoint(
                 location="FOUROKS",
-                depart=TTime.from_hms(
-                    hours=25,
-                    minutes=5,
-                ),
+                depart=ttime.Stopping.from_hms(hours=25, minutes=5),
                 allowances=[
-                    Allowance.engineering(TTime(150)),
-                    Allowance.pathing(TTime(270)),
-                    Allowance.performance(TTime(120)),
+                    allowance.Engineering(ttime.TTime(150)),
+                    allowance.Pathing(ttime.TTime(270)),
+                    allowance.Performance(ttime.TTime(120)),
                 ],
                 activities=[Activity.next("2Z99")],
             ),

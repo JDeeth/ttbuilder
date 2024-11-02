@@ -4,7 +4,7 @@ from ttbuilder.common.activity import Activity
 from ttbuilder.common.location import Location
 from ttbuilder.common.timing_point import TimingPoint
 from ttbuilder.common.train_id import TrainId
-from ttbuilder.common.ttime import Allowance, TTime
+from ttbuilder.common import allowance, ttime
 
 
 class TransformTT(Transformer):
@@ -13,13 +13,13 @@ class TransformTT(Transformer):
     # pylint: disable=missing-function-docstring,invalid-name
 
     def timing_point(self, args):
-        location, ttime, allowances, activities = args
+        location, tt, allowances, activities = args
         allowances = [x for x in allowances or [] if x.time]
-        ttime = TTime(ttime.seconds, ttime.stop_mode)
+        tt = ttime.TTime(tt.seconds, tt.stop_mode)
 
         return TimingPoint(
             location=location,
-            depart=ttime,
+            depart=tt,
             activities=list(activities or []),
             allowances=allowances,
         )
@@ -30,7 +30,7 @@ class TransformTT(Transformer):
 
     def ttime(self, args):
         hour, stopmode, tmin = args
-        return TTime(
+        return ttime.TTime(
             hour * 3600 + tmin.seconds,
             stopmode,
         )
@@ -40,11 +40,13 @@ class TransformTT(Transformer):
 
     def stopmode(self, args):
         (mode,) = args
-        return getattr(TTime.StopMode, mode.type, TTime.StopMode.PASSING)
+        return getattr(ttime.StopMode, mode.type, ttime.StopMode.NOT_DEFINED)
 
     def tmin(self, args):
         minute, halfminute = args
-        return TTime.from_hms(minutes=int(minute), seconds=30 if halfminute else 0)
+        return ttime.TTime.from_hms(
+            minutes=int(minute), seconds=30 if halfminute else 0
+        )
 
     def MINUTE(self, n):
         return int("".join(n))
@@ -57,15 +59,15 @@ class TransformTT(Transformer):
 
     def eng_allowance(self, args):
         (m,) = args
-        return Allowance(m, Allowance.Type.ENGINEERING)
+        return allowance.Engineering(m)
 
     def path_allowance(self, args):
         (m,) = args
-        return Allowance(m, Allowance.Type.PATHING)
+        return allowance.Pathing(m)
 
     def perf_allowance(self, args):
         (m,) = args
-        return Allowance(m, Allowance.Type.PERFORMANCE)
+        return allowance.Performance(m)
 
     def train_id(self, args):
         return "".join(args)

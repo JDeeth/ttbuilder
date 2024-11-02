@@ -2,77 +2,65 @@ import pytest
 from ttbuilder.common.activity import Activity
 from ttbuilder.common.location import Location
 from ttbuilder.common.timing_point import TimingPoint
-from ttbuilder.common.ttime import Allowance, TTime
+from ttbuilder.common import allowance, ttime
 
 
 @pytest.mark.parametrize(
     "expected,text",
     [
         (
-            TimingPoint("FOUROKS", TTime.from_hms(12, 5)),
+            TimingPoint("FOUROKS", ttime.Stopping.from_hms(12, 5)),
             "FOUROKS 12:05",
         ),
         (
-            TimingPoint("FOUROKS", TTime.from_hms(12, 5, 30)),
+            TimingPoint("FOUROKS", ttime.Stopping.from_hms(12, 5, 30)),
             "FOUROKS 12:05H",
         ),
         (
-            TimingPoint(
-                "FOUROKS", TTime.from_hms(12, 5, stop_mode=TTime.StopMode.PASSING)
-            ),
+            TimingPoint("FOUROKS", ttime.Passing.from_hms(12, 5)),
             "FOUROKS 12/05",
         ),
         (
-            TimingPoint(Location("FOUROKS", platform="3"), TTime.from_hms(12, 5)),
+            TimingPoint(
+                Location("FOUROKS", platform="3"), ttime.Stopping.from_hms(12, 5)
+            ),
             "FOUROKS.3 12:05",
         ),
         (
             TimingPoint(
                 "FOUROKS",
-                TTime.from_hms(
-                    12,
-                    5,
-                ),
-                allowances=[Allowance.engineering(TTime(90))],
+                ttime.Stopping.from_hms(12, 5),
+                allowances=[allowance.Engineering(ttime.TTime(90))],
             ),
             "FOUROKS 12:05 [1H]",
         ),
         (
             TimingPoint(
                 "FOUROKS",
-                TTime.from_hms(
-                    12,
-                    5,
-                ),
-                allowances=[Allowance.pathing(TTime(30))],
+                ttime.Stopping.from_hms(12, 5),
+                allowances=[allowance.Pathing(ttime.TTime(30))],
             ),
             "FOUROKS 12:05 (0H)",
         ),
         (
             TimingPoint(
                 "FOUROKS",
-                TTime.from_hms(
-                    12,
-                    5,
-                ),
-                allowances=[Allowance.performance(TTime(120))],
+                ttime.Stopping.from_hms(12, 5),
+                allowances=[allowance.Performance(ttime.TTime(120))],
             ),
             "FOUROKS 12:05 <2>",
         ),
         (
-            TimingPoint("FOUROKS", TTime.from_hms(12, 5)),
+            TimingPoint("FOUROKS", ttime.Stopping.from_hms(12, 5)),
             "FOUROKS 12:05 <0> [0] (0)",
         ),
         (
             TimingPoint(
                 "FOUROKS",
-                TTime.from_hms(
-                    12,
-                    5,
-                ),
+                ttime.Stopping.from_hms(12, 5),
                 allowances=[
-                    Allowance.engineering(TTime(90)),
-                    Allowance.pathing(TTime(30)),
+                    allowance.Engineering(ttime.TTime(90)),
+                    allowance.Pathing(ttime.TTime(30)),
                 ],
             ),
             "FOUROKS 12:05 [1H] (0H)",
@@ -80,27 +68,26 @@ from ttbuilder.common.ttime import Allowance, TTime
         (
             TimingPoint(
                 "FOUROKS",
-                TTime.from_hms(
-                    12,
-                    5,
-                ),
+                ttime.Stopping.from_hms(12, 5),
                 allowances=[
-                    Allowance.pathing(TTime(30)),
-                    Allowance.engineering(TTime(90)),
+                    allowance.Pathing(ttime.TTime(30)),
+                    allowance.Engineering(ttime.TTime(90)),
                 ],
             ),
             "FOUROKS 12:05 (0H) [1H]",
         ),
         (
             TimingPoint(
-                "FOUROKS", TTime.from_hms(12, 5), activities=[Activity.next("9Z99")]
+                "FOUROKS",
+                ttime.Stopping.from_hms(12, 5),
+                activities=[Activity.next("9Z99")],
             ),
             "FOUROKS 12:05 N:9Z99",
         ),
         (
             TimingPoint(
                 "FOUROKS",
-                TTime.from_hms(12, 5),
+                ttime.Stopping.from_hms(12, 5),
                 activities=[
                     Activity.detach_engine_front("0A01"),
                     Activity.join("0A01"),

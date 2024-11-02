@@ -1,7 +1,7 @@
 import networkx as nx
 
 from ttbuilder.common.timing_point import TimingPoint
-from ttbuilder.common.ttime import TTime
+from ttbuilder.common import ttime
 
 
 class NoPath(Exception):
@@ -73,9 +73,7 @@ class LinkGraph:
                     len(missing_tiplocs) + 1
                 )
                 for i, tiploc in enumerate(missing_tiplocs, start=1):
-                    depart = TTime.from_hms(
-                        seconds=start + interval * i, stop_mode=TTime.StopMode.PASSING
-                    )
+                    depart = ttime.Passing.from_hms(seconds=start + interval * i)
                     result.append(TimingPoint(location=tiploc, depart=depart))
             if self.has_tiploc(b.location.tiploc):
                 result.append(b)
