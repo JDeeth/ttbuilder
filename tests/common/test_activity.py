@@ -1,85 +1,80 @@
 import pytest
 
-from ttbuilder.common.activity import Activity
+from ttbuilder.common import activity
 from ttbuilder.common.train_id import TrainId
 
 
 def test_activity_type_syntax():
-    n = Activity.Type.DETACH_ENGINE_REAR
+    n = activity.Type.DETACH_ENGINE_REAR
     assert n.value == (4, "DER")
     assert n.xml_code == 4
     assert n.label == "DER"
 
 
 activities = [
-    (Activity.next("1A20"), "N:1A20"),
-    (Activity.join("1A21"), "J:1A21"),
-    (Activity.divide_rear("1A22"), "DR:1A22"),
-    (Activity.divide_front("1A23"), "DF:1A23"),
-    (Activity.detach_engine_rear("1A24"), "DER:1A24"),
-    (Activity.detach_engine_front("1A25"), "DEF:1A25"),
-    (Activity.drop_coaches_rear("1A26"), "DCR:1A26"),
-    (Activity.drop_coaches_front("1A27"), "DCF:1A27"),
-    (Activity.platform_share("1A28"), "PS:1A28"),
-    # (Activity.crew_change("1A29"), "CC:1A29"),
+    (activity.Next("1A20"), "N:1A20"),
+    (activity.Join("1A21"), "J:1A21"),
+    (activity.DivideRear("1A22"), "DR:1A22"),
+    (activity.DivideFront("1A23"), "DF:1A23"),
+    (activity.DetachEngineRear("1A24"), "DER:1A24"),
+    (activity.DetachEngineFront("1A25"), "DEF:1A25"),
+    (activity.DropCoachesRear("1A26"), "DCR:1A26"),
+    (activity.DropCoachesFront("1A27"), "DCF:1A27"),
+    (activity.PlatformShare("1A28"), "PS:1A28"),
 ]
 
 
-@pytest.mark.parametrize("activity,text", activities)
-def test_activity_to_str(activity, text):
-    assert str(activity) == text
+@pytest.mark.parametrize("act,text", activities)
+def test_activity_to_str(act, text):
+    assert str(act) == text
 
 
 @pytest.mark.parametrize(
-    "activity,xml_str",
+    "act,xml_str",
     [
         (
-            Activity.next(TrainId(id="0A00")),
+            activity.Next(TrainId(id="0A00")),
             "<Activity><Activity>0</Activity><AssociatedTrain>0A00</AssociatedTrain></Activity>",
         ),
         (
-            Activity.next(TrainId(id="0A00", uid="ABC123")),
+            activity.Next(TrainId(id="0A00", uid="ABC123")),
             "<Activity><Activity>0</Activity><AssociatedUID>ABC123</AssociatedUID></Activity>",
         ),
         (
-            Activity.join(TrainId(id="0A00")),
+            activity.Join(TrainId(id="0A00")),
             "<Activity><Activity>3</Activity><AssociatedTrain>0A00</AssociatedTrain></Activity>",
         ),
         (
-            Activity.divide_rear(TrainId(id="0A00", uid="ABC123")),
+            activity.DivideRear(TrainId(id="0A00", uid="ABC123")),
             "<Activity><Activity>1</Activity><AssociatedUID>ABC123</AssociatedUID></Activity>",
         ),
         (
-            Activity.divide_front(TrainId(id="0A00")),
+            activity.DivideFront(TrainId(id="0A00")),
             "<Activity><Activity>2</Activity><AssociatedTrain>0A00</AssociatedTrain></Activity>",
         ),
         (
-            Activity.detach_engine_rear(TrainId(id="0A00", uid="ABC123")),
+            activity.DetachEngineRear(TrainId(id="0A00", uid="ABC123")),
             "<Activity><Activity>4</Activity><AssociatedUID>ABC123</AssociatedUID></Activity>",
         ),
         (
-            Activity.detach_engine_front(TrainId(id="0A00")),
+            activity.DetachEngineFront(TrainId(id="0A00")),
             "<Activity><Activity>5</Activity><AssociatedTrain>0A00</AssociatedTrain></Activity>",
         ),
         (
-            Activity.drop_coaches_rear(TrainId(id="0A00", uid="ABC123")),
+            activity.DropCoachesRear(TrainId(id="0A00", uid="ABC123")),
             "<Activity><Activity>6</Activity><AssociatedUID>ABC123</AssociatedUID></Activity>",
         ),
         (
-            Activity.drop_coaches_front(TrainId(id="0A00")),
+            activity.DropCoachesFront(TrainId(id="0A00")),
             "<Activity><Activity>7</Activity><AssociatedTrain>0A00</AssociatedTrain></Activity>",
         ),
         (
-            Activity.platform_share(TrainId(id="0A00", uid="ABC123")),
+            activity.PlatformShare(TrainId(id="0A00", uid="ABC123")),
             "<Activity><Activity>9</Activity><AssociatedUID>ABC123</AssociatedUID></Activity>",
         ),
-        # (
-        #     Activity.crew_change(TrainId(id="0A00")),
-        #     "<Activity><Activity>10</Activity><AssociatedTrain>0A00</AssociatedTrain></Activity>",
-        # ),
     ],
 )
-def test_activity_to_xml(xml_test_tools, activity, xml_str):
+def test_activity_to_xml(xml_test_tools, act, xml_str):
     xt = xml_test_tools
     expected = xt.fromstr(xml_str)
-    xt.assert_equivalent(expected, activity.xml())
+    xt.assert_equivalent(expected, act.xml())

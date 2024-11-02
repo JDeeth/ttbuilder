@@ -1,10 +1,9 @@
 from lark import Lark, Transformer
 
-from ttbuilder.common.activity import Activity
 from ttbuilder.common.location import Location
 from ttbuilder.common.timing_point import TimingPoint
 from ttbuilder.common.train_id import TrainId
-from ttbuilder.common import allowance, ttime
+from ttbuilder.common import activity, allowance, ttime
 
 
 class TransformTT(Transformer):
@@ -82,10 +81,11 @@ class TransformTT(Transformer):
 
     def activity_type(self, args):
         (atype,) = args
-        return getattr(Activity.Type, atype.type, Activity.Type.INVALID)
+        return getattr(activity.Type, atype.type, activity.Type.INVALID)
 
     def activity(self, args):
-        return Activity(*args)
+        atype, train_id = args
+        return activity.Activity(associated_train_id=train_id, activity_type=atype)
 
     def activities(self, args):
         return list(args)

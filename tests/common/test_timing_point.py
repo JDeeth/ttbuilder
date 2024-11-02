@@ -1,9 +1,8 @@
 import pytest
 
-from ttbuilder.common.activity import Activity
 from ttbuilder.common.location import Location
 from ttbuilder.common.timing_point import TimingPoint
-from ttbuilder.common import allowance, ttime
+from ttbuilder.common import activity, allowance, ttime
 
 
 def test_stopping_timing_point(xml_test_tools):
@@ -136,7 +135,7 @@ def test_request_stop_percent(xml_test_tools):
             TimingPoint(
                 "FOUROKS",
                 ttime.Stopping.from_hms(12, 5),
-                activities=[Activity.next("2Z99")],
+                activities=[activity.Next("2Z99")],
             ),
             "FOUROKS 12:05 N:2Z99",
         ),
@@ -149,7 +148,7 @@ def test_request_stop_percent(xml_test_tools):
                     allowance.Pathing(ttime.TTime(270)),
                     allowance.Performance(ttime.TTime(120)),
                 ],
-                activities=[Activity.next("2Z99")],
+                activities=[activity.Next("2Z99")],
             ),
             "FOUROKS 25:05 [2H] (4H) <2> N:2Z99",
         ),

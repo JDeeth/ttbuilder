@@ -1,8 +1,7 @@
 import pytest
-from ttbuilder.common.activity import Activity
 from ttbuilder.common.location import Location
 from ttbuilder.common.timing_point import TimingPoint
-from ttbuilder.common import allowance, ttime
+from ttbuilder.common import activity, allowance, ttime
 
 
 @pytest.mark.parametrize(
@@ -80,7 +79,7 @@ from ttbuilder.common import allowance, ttime
             TimingPoint(
                 "FOUROKS",
                 ttime.Stopping.from_hms(12, 5),
-                activities=[Activity.next("9Z99")],
+                activities=[activity.Next("9Z99")],
             ),
             "FOUROKS 12:05 N:9Z99",
         ),
@@ -89,8 +88,8 @@ from ttbuilder.common import allowance, ttime
                 "FOUROKS",
                 ttime.Stopping.from_hms(12, 5),
                 activities=[
-                    Activity.detach_engine_front("0A01"),
-                    Activity.join("0A01"),
+                    activity.DetachEngineFront("0A01"),
+                    activity.Join("0A01"),
                 ],
             ),
             "FOUROKS 12:05 DEF:0A01 J:0A01",

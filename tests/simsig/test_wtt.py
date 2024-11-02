@@ -2,7 +2,7 @@ import zipfile
 from lxml import etree
 import pytest
 
-from ttbuilder.common.activity import Activity
+from ttbuilder.common import activity
 from ttbuilder.common.location import Location
 from ttbuilder.common.timing_point import TimingPoint
 from ttbuilder.common.train_id import TrainId
@@ -123,7 +123,7 @@ def test_basic_wtt(xml_test_tools, ttparser):
             TimingPoint(
                 location=Location(tiploc="FOUROKS", platform="3"),
                 depart=TTime(2100),
-                activities=[Activity.next(tt_2a04.train_id)],
+                activities=[activity.Next(tt_2a04.train_id)],
             )
         ],
     )
