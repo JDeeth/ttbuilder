@@ -4,7 +4,7 @@ from ttbuilder.common.activity import Activity
 from ttbuilder.common.location import Location
 from ttbuilder.common.timing_point import TimingPoint
 from ttbuilder.common.train_id import TrainId
-from ttbuilder.common.ttime import Allowance, TMin, TTime
+from ttbuilder.common.ttime import Allowance, TTime
 
 
 class TransformTT(Transformer):
@@ -15,12 +15,13 @@ class TransformTT(Transformer):
     def timing_point(self, args):
         location, ttime, allowances, activities = args
         allowances = [x for x in allowances or [] if x.time]
-        ttime = TTime(ttime.seconds, ttime.stop_mode, allowances)
+        ttime = TTime(ttime.seconds, ttime.stop_mode)
 
         return TimingPoint(
             location=location,
             depart=ttime,
             activities=list(activities or []),
+            allowances=allowances,
         )
 
     def location(self, args):
@@ -30,7 +31,7 @@ class TransformTT(Transformer):
     def ttime(self, args):
         hour, stopmode, tmin = args
         return TTime(
-            hour * 3600 + tmin.minute * 60 + tmin.second,
+            hour * 3600 + tmin.seconds,
             stopmode,
         )
 
@@ -43,7 +44,7 @@ class TransformTT(Transformer):
 
     def tmin(self, args):
         minute, halfminute = args
-        return TMin(minute, bool(halfminute))
+        return TTime.from_hms(minutes=int(minute), seconds=30 if halfminute else 0)
 
     def MINUTE(self, n):
         return int("".join(n))

@@ -3,7 +3,7 @@ from lxml import etree
 
 from ttbuilder.common.activity import Activity
 from ttbuilder.common.location import Location
-from ttbuilder.common.ttime import Allowance, TMin, TTime
+from ttbuilder.common.ttime import Allowance, TTime
 
 
 @dataclass
@@ -14,6 +14,7 @@ class TimingPoint:
 
     location: Location | str
     depart: TTime | str | None = None
+    allowances: list[Allowance] = field(default_factory=list)
     activities: list[Activity] = field(default_factory=list)
     request_stop_percent: int = 100
 
@@ -27,12 +28,11 @@ class TimingPoint:
         if self.location.platform:
             location += f".{self.location.platform}"
         rem = []
-        if self.depart is not None and self.depart.allowances:
-            allowances = {x.type: x for x in self.depart.allowances}
+        if self.allowances:
+            allowances = {x.type: x for x in self.allowances}
             for a in allowances.values():
                 start, _, end = a.type.value.partition("x")
-                ttime = TTime.from_tmin(a.time)
-                rem.append(f"{start}{ttime:MH}{end}")
+                rem.append(f"{start}{a.time:MH}{end}")
         rem.extend(str(act) for act in self.activities)
         rem = " ".join(x for x in rem if x)
         return f"{location:10} {self.depart:6} {rem}".strip()
@@ -58,7 +58,7 @@ class TimingPoint:
         subelem("Location", self.location.tiploc)
         if self.depart is not None:
             subelem("DepPassTime", self.depart.seconds)
-            if self.depart.passing:
+            if self.depart.stop_mode == TTime.StopMode.PASSING:
                 subelem("IsPassTime", "-1")
         if self.location.platform:
             subelem("Platform", self.location.platform)
@@ -67,15 +67,15 @@ class TimingPoint:
             for a in self.activities:
                 acts.append(a.xml())
         # allowances are recorded as multiples of 30 seconds
-        if self.depart is not None and self.depart.allowances:
-            allowances = {x.type: x.time for x in self.depart.allowances}
-            eng = allowances.get(Allowance.Type.ENGINEERING, TMin(0))
-            perf = allowances.get(Allowance.Type.PERFORMANCE, TMin(0))
-            path = allowances.get(Allowance.Type.PATHING, TMin(0))
+        if self.allowances:
+            allowances = {x.type: x.time for x in self.allowances}
+            eng = allowances.get(Allowance.Type.ENGINEERING, TTime(0))
+            perf = allowances.get(Allowance.Type.PERFORMANCE, TTime(0))
+            path = allowances.get(Allowance.Type.PATHING, TTime(0))
             if eng or perf:
-                subelem("EngAllowance", eng.thirty_sec + perf.thirty_sec)
+                subelem("EngAllowance", eng.halfminute + perf.halfminute)
             if path:
-                subelem("PathAllowance", path.thirty_sec)
+                subelem("PathAllowance", path.halfminute)
         if self.request_stop_percent in range(0, 100):  # excludes 100%
             subelem("RequestPercent", self.request_stop_percent)
 

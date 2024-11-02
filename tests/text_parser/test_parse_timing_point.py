@@ -2,7 +2,7 @@ import pytest
 from ttbuilder.common.activity import Activity
 from ttbuilder.common.location import Location
 from ttbuilder.common.timing_point import TimingPoint
-from ttbuilder.common.ttime import Allowance, TMin, TTime
+from ttbuilder.common.ttime import Allowance, TTime
 
 
 @pytest.mark.parametrize(
@@ -30,15 +30,21 @@ from ttbuilder.common.ttime import Allowance, TMin, TTime
             TimingPoint(
                 "FOUROKS",
                 TTime.from_hms(
-                    12, 5, allowances=[Allowance.engineering(TMin(1, True))]
+                    12,
+                    5,
                 ),
+                allowances=[Allowance.engineering(TTime(90))],
             ),
             "FOUROKS 12:05 [1H]",
         ),
         (
             TimingPoint(
                 "FOUROKS",
-                TTime.from_hms(12, 5, allowances=[Allowance.pathing(TMin(0, True))]),
+                TTime.from_hms(
+                    12,
+                    5,
+                ),
+                allowances=[Allowance.pathing(TTime(30))],
             ),
             "FOUROKS 12:05 (0H)",
         ),
@@ -46,8 +52,10 @@ from ttbuilder.common.ttime import Allowance, TMin, TTime
             TimingPoint(
                 "FOUROKS",
                 TTime.from_hms(
-                    12, 5, allowances=[Allowance.performance(TMin(2, False))]
+                    12,
+                    5,
                 ),
+                allowances=[Allowance.performance(TTime(120))],
             ),
             "FOUROKS 12:05 <2>",
         ),
@@ -61,11 +69,11 @@ from ttbuilder.common.ttime import Allowance, TMin, TTime
                 TTime.from_hms(
                     12,
                     5,
-                    allowances=[
-                        Allowance.engineering(TMin(1, True)),
-                        Allowance.pathing(TMin(0, True)),
-                    ],
                 ),
+                allowances=[
+                    Allowance.engineering(TTime(90)),
+                    Allowance.pathing(TTime(30)),
+                ],
             ),
             "FOUROKS 12:05 [1H] (0H)",
         ),
@@ -75,11 +83,11 @@ from ttbuilder.common.ttime import Allowance, TMin, TTime
                 TTime.from_hms(
                     12,
                     5,
-                    allowances=[
-                        Allowance.pathing(TMin(0, True)),
-                        Allowance.engineering(TMin(1, True)),
-                    ],
                 ),
+                allowances=[
+                    Allowance.pathing(TTime(30)),
+                    Allowance.engineering(TTime(90)),
+                ],
             ),
             "FOUROKS 12:05 (0H) [1H]",
         ),

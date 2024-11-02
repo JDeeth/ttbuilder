@@ -1,17 +1,77 @@
 import pytest
 
-from ttbuilder.common.ttime import Allowance, TMin, TTime
+from ttbuilder.common.ttime import Allowance, TTime
 
 
 @pytest.mark.parametrize(
     "text,expected",
     [
-        ("01:00", TTime.from_hms(hours=1, minutes=0, seconds=0, passing=False)),
-        ("01/00", TTime.from_hms(hours=1, minutes=0, seconds=0, passing=True)),
-        ("01:01", TTime.from_hms(hours=1, minutes=1, seconds=0, passing=False)),
-        ("27:00", TTime.from_hms(hours=27, minutes=0, seconds=0, passing=False)),
-        ("01:00H", TTime.from_hms(hours=1, minutes=0, seconds=30, passing=False)),
-        ("29/59H", TTime.from_hms(hours=29, minutes=59, seconds=30, passing=True)),
+        (
+            "01:00",
+            TTime.from_hms(
+                hours=1, minutes=0, seconds=0, stop_mode=TTime.StopMode.STOPPING
+            ),
+        ),
+        (
+            "01/00",
+            TTime.from_hms(
+                hours=1, minutes=0, seconds=0, stop_mode=TTime.StopMode.PASSING
+            ),
+        ),
+        (
+            "01:01",
+            TTime.from_hms(
+                hours=1, minutes=1, seconds=0, stop_mode=TTime.StopMode.STOPPING
+            ),
+        ),
+        (
+            "27:00",
+            TTime.from_hms(
+                hours=27, minutes=0, seconds=0, stop_mode=TTime.StopMode.STOPPING
+            ),
+        ),
+        (
+            "01:00H",
+            TTime.from_hms(
+                hours=1, minutes=0, seconds=30, stop_mode=TTime.StopMode.STOPPING
+            ),
+        ),
+        (
+            "29/59H",
+            TTime.from_hms(
+                hours=29, minutes=59, seconds=30, stop_mode=TTime.StopMode.PASSING
+            ),
+        ),
+        (
+            "29w59H",
+            TTime.from_hms(
+                hours=29, minutes=59, seconds=30, stop_mode=TTime.StopMode.DWELL_TIME
+            ),
+        ),
+        (
+            "29*59H",
+            TTime.from_hms(
+                hours=29, minutes=59, seconds=30, stop_mode=TTime.StopMode.IF_REQUIRED
+            ),
+        ),
+        (
+            "29r59H",
+            TTime.from_hms(
+                hours=29, minutes=59, seconds=30, stop_mode=TTime.StopMode.REQUEST_STOP
+            ),
+        ),
+        (
+            "29d59H",
+            TTime.from_hms(
+                hours=29, minutes=59, seconds=30, stop_mode=TTime.StopMode.SET_DOWN
+            ),
+        ),
+        (
+            "29t59H",
+            TTime.from_hms(
+                hours=29, minutes=59, seconds=30, stop_mode=TTime.StopMode.THROUGH_LINE
+            ),
+        ),
     ],
 )
 def test_time_from_str(text, expected, ttparser):
@@ -21,10 +81,10 @@ def test_time_from_str(text, expected, ttparser):
 @pytest.mark.parametrize(
     "text,expected",
     [
-        ("0", TMin(0)),
-        ("0h", TMin(0, True)),
-        ("4", TMin(4, False)),
-        ("59½", TMin(59, True)),
+        ("0", TTime(0)),
+        ("0h", TTime(30)),
+        ("4", TTime(240)),
+        ("59½", TTime.from_hms(minutes=59, seconds=30)),
     ],
 )
 def test_tmin_from_str(text, expected, ttparser):

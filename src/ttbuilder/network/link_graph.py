@@ -73,7 +73,9 @@ class LinkGraph:
                     len(missing_tiplocs) + 1
                 )
                 for i, tiploc in enumerate(missing_tiplocs, start=1):
-                    depart = TTime.from_hms(seconds=start + interval * i, passing=True)
+                    depart = TTime.from_hms(
+                        seconds=start + interval * i, stop_mode=TTime.StopMode.PASSING
+                    )
                     result.append(TimingPoint(location=tiploc, depart=depart))
             if self.has_tiploc(b.location.tiploc):
                 result.append(b)

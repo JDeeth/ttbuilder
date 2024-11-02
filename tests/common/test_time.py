@@ -30,11 +30,17 @@ def test_float_seconds_are_converted_to_int():
     assert str(time) == "01:02H"
 
 
-def test_time_to_half_minutes():
-    assert f"{TTime.from_hms(minutes=5):MH}" == "5"
-    assert f"{TTime.from_hms(minutes=5, seconds=15):MH}" == "5"
-    assert f"{TTime.from_hms(minutes=5, seconds=30):MH}" == "5H"
-    assert f"{TTime.from_hms(minutes=5, seconds=45):MH}" == "5H"
+@pytest.mark.parametrize(
+    "minutes,seconds,expected",
+    [
+        (5, 0, "5"),
+        (5, 15, "5"),
+        (5, 30, "5H"),
+        (5, 45, "5H"),
+    ],
+)
+def test_time_to_half_minutes(minutes, seconds, expected):
+    assert f"{TTime.from_hms(minutes=minutes,seconds=seconds):MH}" == expected
 
 
 def test_time_truthy():

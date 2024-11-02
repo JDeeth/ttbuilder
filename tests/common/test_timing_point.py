@@ -3,7 +3,7 @@ import pytest
 from ttbuilder.common.activity import Activity
 from ttbuilder.common.location import Location
 from ttbuilder.common.timing_point import TimingPoint
-from ttbuilder.common.ttime import Allowance, TMin, TTime
+from ttbuilder.common.ttime import Allowance, TTime
 
 
 def test_stopping_timing_point(xml_test_tools):
@@ -35,7 +35,9 @@ def test_passing_timing_point(xml_test_tools):
     </Trip>
     """
     expected = xt.fromstr(expected_str)
-    tp = TimingPoint(location="ASTON", depart=TTime.from_hms(0, 30, passing=True))
+    tp = TimingPoint(
+        location="ASTON", depart=TTime.from_hms(0, 30, stop_mode=TTime.StopMode.PASSING)
+    )
 
     xt.assert_equivalent(expected, tp.xml())
 
@@ -61,18 +63,13 @@ def test_perf_path_times_in_timing_point(xml_test_tools):
         depart=TTime.from_hms(
             0,
             35,
-            passing=True,
-            allowances=[
-                Allowance.engineering(TMin(1)),
-                Allowance.pathing(TMin(2, True)),
-            ],
+            stop_mode=TTime.StopMode.PASSING,
         ),
+        allowances=[
+            Allowance.engineering(TTime(60)),
+            Allowance.pathing(TTime(150)),
+        ],
     )
-
-    print()
-    eng = tp.depart.allowances[0].time
-    print(f"{eng=} {eng.thirty_sec=}")
-    print(xt.pretty(tp.xml()))
 
     xt.assert_equivalent(expected, tp.xml())
 
@@ -119,10 +116,10 @@ def test_request_stop_percent(xml_test_tools):
                 TTime.from_hms(
                     hours=25,
                     minutes=5,
-                    allowances=[
-                        Allowance.engineering(TMin(2, True)),
-                    ],
                 ),
+                allowances=[
+                    Allowance.engineering(TTime(150)),
+                ],
             ),
             "FOUROKS 25:05 [2H]",
         ),
@@ -132,10 +129,10 @@ def test_request_stop_percent(xml_test_tools):
                 TTime.from_hms(
                     hours=25,
                     minutes=5,
-                    allowances=[
-                        Allowance.pathing(TMin(4, True)),
-                    ],
                 ),
+                allowances=[
+                    Allowance.pathing(TTime(270)),
+                ],
             ),
             "FOUROKS 25:05 (4H)",
         ),
@@ -145,10 +142,10 @@ def test_request_stop_percent(xml_test_tools):
                 TTime.from_hms(
                     hours=25,
                     minutes=5,
-                    allowances=[
-                        Allowance.performance(TMin(2, False)),
-                    ],
                 ),
+                allowances=[
+                    Allowance.performance(TTime(120)),
+                ],
             ),
             "FOUROKS 25:05 <2>",
         ),
@@ -164,12 +161,12 @@ def test_request_stop_percent(xml_test_tools):
                 depart=TTime.from_hms(
                     hours=25,
                     minutes=5,
-                    allowances=[
-                        Allowance.engineering(TMin(2, True)),
-                        Allowance.pathing(TMin(4, True)),
-                        Allowance.performance(TMin(2, False)),
-                    ],
                 ),
+                allowances=[
+                    Allowance.engineering(TTime(150)),
+                    Allowance.pathing(TTime(270)),
+                    Allowance.performance(TTime(120)),
+                ],
                 activities=[Activity.next("2Z99")],
             ),
             "FOUROKS 25:05 [2H] (4H) <2> N:2Z99",
