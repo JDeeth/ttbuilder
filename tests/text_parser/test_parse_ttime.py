@@ -6,72 +6,17 @@ from ttbuilder.common.ttime import Allowance, TTime
 @pytest.mark.parametrize(
     "text,expected",
     [
-        (
-            "01:00",
-            TTime.from_hms(
-                hours=1, minutes=0, seconds=0, stop_mode=TTime.StopMode.STOPPING
-            ),
-        ),
-        (
-            "01/00",
-            TTime.from_hms(
-                hours=1, minutes=0, seconds=0, stop_mode=TTime.StopMode.PASSING
-            ),
-        ),
-        (
-            "01:01",
-            TTime.from_hms(
-                hours=1, minutes=1, seconds=0, stop_mode=TTime.StopMode.STOPPING
-            ),
-        ),
-        (
-            "27:00",
-            TTime.from_hms(
-                hours=27, minutes=0, seconds=0, stop_mode=TTime.StopMode.STOPPING
-            ),
-        ),
-        (
-            "01:00H",
-            TTime.from_hms(
-                hours=1, minutes=0, seconds=30, stop_mode=TTime.StopMode.STOPPING
-            ),
-        ),
-        (
-            "29/59H",
-            TTime.from_hms(
-                hours=29, minutes=59, seconds=30, stop_mode=TTime.StopMode.PASSING
-            ),
-        ),
-        (
-            "29w59H",
-            TTime.from_hms(
-                hours=29, minutes=59, seconds=30, stop_mode=TTime.StopMode.DWELL_TIME
-            ),
-        ),
-        (
-            "29*59H",
-            TTime.from_hms(
-                hours=29, minutes=59, seconds=30, stop_mode=TTime.StopMode.IF_REQUIRED
-            ),
-        ),
-        (
-            "29r59H",
-            TTime.from_hms(
-                hours=29, minutes=59, seconds=30, stop_mode=TTime.StopMode.REQUEST_STOP
-            ),
-        ),
-        (
-            "29d59H",
-            TTime.from_hms(
-                hours=29, minutes=59, seconds=30, stop_mode=TTime.StopMode.SET_DOWN
-            ),
-        ),
-        (
-            "29t59H",
-            TTime.from_hms(
-                hours=29, minutes=59, seconds=30, stop_mode=TTime.StopMode.THROUGH_LINE
-            ),
-        ),
+        ("01:00", TTime.stopping(1, 0)),
+        ("01/00", TTime.passing(1, 0)),
+        ("01:01", TTime.stopping(1, 1)),
+        ("27:00", TTime.stopping(27, 0)),
+        ("01:00H", TTime.stopping(1, 0, 30)),
+        ("29/59H", TTime.passing(29, 59, 30)),
+        ("29w59H", TTime.from_hms(29, 59, 30, TTime.StopMode.DWELL_TIME)),
+        ("29*59H", TTime.from_hms(29, 59, 30, TTime.StopMode.IF_REQUIRED)),
+        ("29r59H", TTime.from_hms(29, 59, 30, TTime.StopMode.REQUEST_STOP)),
+        ("29d59H", TTime.from_hms(29, 59, 30, TTime.StopMode.SET_DOWN)),
+        ("29t59H", TTime.from_hms(29, 59, 30, TTime.StopMode.THROUGH_LINE)),
     ],
 )
 def test_time_from_str(text, expected, ttparser):
@@ -102,7 +47,6 @@ def test_tmin_from_str(text, expected, ttparser):
     ],
 )
 def test_allowance(text, eng, path, perf, ttparser):
-    p = ttparser
     expected = []
     for time, atype in (
         (eng, Allowance.Type.ENGINEERING),
@@ -111,5 +55,6 @@ def test_allowance(text, eng, path, perf, ttparser):
     ):
         if time is None:
             continue
-        expected.append(Allowance(p.parse_tmin(time), atype))
+        tmin = ttparser.parse_tmin(time)
+        expected.append(Allowance(tmin, atype))
     assert expected == ttparser.parse_allowances(text)

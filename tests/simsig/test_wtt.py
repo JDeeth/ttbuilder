@@ -85,7 +85,7 @@ def test_wtt_compilation(tmp_path, aston_none, xml_test_tools):
             xt.assert_equivalent(expected, result)
 
 
-def test_basic_wtt(xml_test_tools, ttparser):
+def test_basic_wtt(xml_test_tools):
     xt = xml_test_tools
     expected = xt.fromfile("tests/sample/basic_SavedTimetable.xml")
 
@@ -106,11 +106,11 @@ def test_basic_wtt(xml_test_tools, ttparser):
         timing_points=[
             TimingPoint(
                 location=Location(tiploc="FOUROKS", platform="3"),
-                depart=TTime(2100),
+                depart=TTime.stopping(0, 35),
             ),
             TimingPoint(
                 location=Location(tiploc="ASTON"),
-                depart=ttparser.parse_ttime("00/45"),
+                depart=TTime.passing(0, 45),
             ),
         ],
     )
@@ -118,11 +118,11 @@ def test_basic_wtt(xml_test_tools, ttparser):
         train_id=TrainId("2A03", "ZBD037"),
         train_type=dmu,
         entry_point=Location(tiploc="EASTON"),
-        depart_time=TTime(1200),
+        depart_time=TTime.from_hms(0, 20),
         timing_points=[
             TimingPoint(
                 location=Location(tiploc="FOUROKS", platform="3"),
-                depart=TTime(2100),
+                depart=TTime.stopping(0, 35),
                 activities=[Activity.next(tt_2a04.train_id)],
             )
         ],
@@ -132,15 +132,15 @@ def test_basic_wtt(xml_test_tools, ttparser):
         train_type=dmu,
         description="Entry with 3-car DMU type",
         entry_point=Location(tiploc="EASTON"),
-        depart_time=TTime(60),
+        depart_time=TTime.from_hms(0, 1),
         timing_points=[
             TimingPoint(
                 location=Location(tiploc="FOUROKS", platform="3"),
-                depart=TTime(900),
+                depart=TTime.stopping(0, 15),
             ),
             TimingPoint(
                 location=Location(tiploc="ASTON"),
-                depart=ttparser.parse_ttime("00/30"),
+                depart=TTime.passing(0, 30),
             ),
         ],
     )

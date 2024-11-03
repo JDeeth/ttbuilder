@@ -14,6 +14,8 @@ class TimingPoint:
 
     location: Location | str
     depart: TTime | str | None = None
+    line: str = ""
+    path: str = ""
     allowances: list[Allowance] = field(default_factory=list)
     activities: list[Activity] = field(default_factory=list)
     request_stop_percent: int = 100
@@ -56,6 +58,10 @@ class TimingPoint:
             etree.SubElement(result, tag).text = str(value)
 
         subelem("Location", self.location.tiploc)
+        if self.line:
+            subelem("Line", self.line)
+        if self.path:
+            subelem("Path", self.path)
         if self.depart is not None:
             subelem("DepPassTime", self.depart.seconds)
             if self.depart.stop_mode == TTime.StopMode.PASSING:
