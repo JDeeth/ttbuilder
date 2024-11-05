@@ -29,8 +29,13 @@ class LocalTimetable:
     delay_min: int | None = None
     seeding_gap_m: int = 15
 
+    origin: Location | None = None
+    origin_dep: TTime | None = None
+    destination: Location | None = None
+    destination_arr: TTime | None = None
+
     def __post_init__(self):
-        if self.initial_power is None:
+        if self.initial_power is None and isinstance(self.train_type, TrainCategory):
             for pt in PowerType:
                 if pt & self.train_type.power_type:
                     self.initial_power = pt

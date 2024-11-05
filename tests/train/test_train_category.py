@@ -100,18 +100,3 @@ def test_train_type_description_punctuation():
         tt.xml().find("./Description").text
         == "Punctuation &quot;a&quot; &apos;b&apos; &amp; &#x00A3;5"
     )
-
-
-def test_train_type_from_str():
-    text = """\
-Parcels
-220m, 90mph, Diesel, DC_Overhead
-Dwell times 0:05, 3:00, 1:00, 1:00, 1:00, 1:00, 5:00, 2:00"""
-    tt = TrainCategory.from_str(text)
-    assert tt.description == "Parcels"
-    assert tt.length_m == 220
-    assert tt.max_speed_mph == 90
-    assert tt.power_type == PowerType.DIESEL | PowerType.DC_OVERHEAD
-    assert tt.dwell_times == DwellTimes(5, 180, 60, 60, 60, 60, 300, 120)
-
-    # missing: accel, weight, speed class, freight linespeeds

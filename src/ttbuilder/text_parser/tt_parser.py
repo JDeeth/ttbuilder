@@ -1,3 +1,4 @@
+from functools import reduce
 from lark import Lark, Transformer
 
 from ttbuilder.common.activity import Activity
@@ -5,6 +6,9 @@ from ttbuilder.common.location import Location
 from ttbuilder.common.timing_point import TimingPoint
 from ttbuilder.common.train_id import TrainId
 from ttbuilder.common.ttime import Allowance, TTime
+from ttbuilder.simsig.local_timetable import LocalTimetable
+from ttbuilder.train.power_type import PowerType
+from ttbuilder.train.train_category import TrainCategory
 
 
 class TransformTT(Transformer):
@@ -88,6 +92,31 @@ class TransformTT(Transformer):
     def activities(self, args):
         return list(args)
 
+    def train_category(self, args):
+        name, length, speed, *power_types = args
+        power_types = [
+            getattr(PowerType, pt.value.upper(), PowerType.NONE) for pt in power_types
+        ]
+        power_types = reduce(lambda x, y: x | y, power_types)
+        return TrainCategory(
+            description=name.value,
+            length_m=int(length.value),
+            max_speed_mph=int(speed.value),
+            power_type=power_types,
+        )
+
+    def timetable(self, args):
+        train_id, train_desc, *timing_points = args
+        origin_dep, origin, dest, tc_name = train_desc.children
+        return LocalTimetable(
+            train_id=train_id,
+            train_type=tc_name,
+            origin=origin,
+            origin_dep=origin_dep,
+            destination=dest,
+            timing_points=timing_points,
+        )
+
 
 class TTParser:
     """Parser for timetable elements"""
@@ -114,6 +143,10 @@ class TTParser:
         """Parse for train ID[/UID]"""
         return self._parse(text, "train_full_id")
 
+    def parse_train_category(self, text):
+        """Parse for train category description"""
+        return self._parse(text, "train_category")
+
     def parse_timing_point(self, text):
         """Parse for timing point line"""
         return self._parse(text, "timing_point")
@@ -133,3 +166,7 @@ class TTParser:
     def parse_activity(self, text):
         """Parse for timing point activity e.g. N:1A01"""
         return self._parse(text, "activity")
+
+    def parse_timetable(self, text):
+        """Parse train timetable"""
+        return self._parse(text, "timetable")

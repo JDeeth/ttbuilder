@@ -1,6 +1,17 @@
 // Timetable time and minutes
 ?start          : train_full_id | timing_point | ttime | tmin | allowances | activity
 
+// Timetable (one train)
+timetable       : train_full_id "\n" train_desc "\n" (timing_point "\n")+
+train_desc      : ttime TT_ORIGIN "-" TT_DEST "(" TC_NAME ")"
+TT_ORIGIN       : ALPHANUMERIC+
+TT_DEST         : ALPHANUMERIC+
+
+// Train category
+train_category  : TC_NAME "\n" DIGITS "m," DIGITS "mph," POWER_TYPE ("," POWER_TYPE)*
+TC_NAME         : ALPHANUMERIC+
+POWER_TYPE      : (ALPHANUMERIC | "_")+
+
 // Train ID
 train_full_id   : train_id ["/" train_uid]
 train_uid       : ALPHANUMERIC+
@@ -18,8 +29,8 @@ TIPLOC          : LETTER ALPHANUMERIC*
 PLATFORM        : ALPHANUMERIC+
 
 // Times
-?ttime          : HOUR stopmode tmin
-?tmin           : MINUTE [HALFMINUTE]
+ttime           : HOUR stopmode tmin
+tmin.2          : MINUTE [HALFMINUTE]
 
 HOUR            : ("0".."2")? DIGIT
 MINUTE          : ("0".."5")? DIGIT
@@ -64,6 +75,7 @@ DROP_COACHES_FRONT  : "DCF"i
 PLATFORM_SHARE      : "PS"i
 
 ALPHANUMERIC        : DIGIT | LETTER
+DIGITS              : DIGIT+
 
-%import common (DIGIT, LETTER, WS)
-%ignore WS
+%import common (DIGIT, LETTER, WS_INLINE)
+%ignore WS_INLINE | "\r" | "\f"

@@ -110,6 +110,14 @@ from ttbuilder.common.ttime import Allowance, TTime
             ),
             "FOUROKS 12:05 DEF:0A01 J:0A01",
         ),
+        (
+            TimingPoint(
+                "STSNJN",
+                TTime.passing(0, 47, 30),
+                allowances=[Allowance.engineering(TTime(30))],
+            ),
+            "STSNJN  00/47H [0H]",
+        ),
     ],
 )
 def test_parse_timing_point_from_text(expected, text, ttparser):
