@@ -17,8 +17,8 @@ train_full_id   : train_id ["/" train_uid]
 train_uid       : ALPHANUMERIC+
 ?train_id       : BR_TRAIN_ID | LU_TRAIN_ID | MISC_TRAIN_ID
 
-BR_TRAIN_ID.1   : DIGIT LETTER DIGIT DIGIT
-LU_TRAIN_ID.1   : LETTER DIGIT DIGIT DIGIT
+BR_TRAIN_ID     : DIGIT LETTER DIGIT DIGIT
+LU_TRAIN_ID     : LETTER DIGIT DIGIT DIGIT
 MISC_TRAIN_ID   : ALPHANUMERIC~4
 
 // Timing point
@@ -30,11 +30,11 @@ PLATFORM        : ALPHANUMERIC+
 
 // Times
 ttime           : HOUR stopmode tmin
-tmin.2          : MINUTE [HALFMINUTE]
+tmin            : MINUTE [HALFMINUTE]
 
 HOUR            : ("0".."2")? DIGIT
 MINUTE          : ("0".."5")? DIGIT
-HALFMINUTE      : "h" | "H" | "½"
+HALFMINUTE.5    : "h" | "H" | "½"
 
 stopmode:       STOPPING | PASSING | SET_DOWN | IF_REQUIRED
                 | REQUEST_STOP | DWELL_TIME | THROUGH_LINE
