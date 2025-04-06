@@ -15,10 +15,7 @@ class Ssg:
 
     @classmethod
     def from_xml(cls, xml_root):
-        """Parse from an XML object
-
-        This method mostly exists to avoid excessive indentation in `from_file`
-        """
+        """Parse from an XML object"""
         entry_points = set(x.attrib["ID"] for x in xml_root if x.tag == "TENT")
         timing_points = set(x.attrib["ID"] for x in xml_root if x.tag == "TLOC")
         timetables_elem = xml_root.find("Timetables")

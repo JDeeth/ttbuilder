@@ -33,6 +33,7 @@ class LocalTimetable:
     origin_dep: TTime | None = None
     destination: Location | None = None
     destination_arr: TTime | None = None
+    notes: str | None = None
 
     def __post_init__(self):
         if self.initial_power is None and isinstance(self.train_type, TrainCategory):
@@ -48,12 +49,26 @@ class LocalTimetable:
         def findtext(match, default=""):
             return xml_root.findtext(match, default=default)
 
+        def findtime(match):
+            t = findtext(match)
+            return TTime(int(t)) if t else None
+
         return cls(
             train_id=TrainId(findtext("ID"), findtext("UID")),
             train_type=TrainCategory(),
-            description=findtext("Description"),
             timing_points=[TimingPoint.from_xml(x) for x in xml_root.find("Trips")],
             entry_point=Location(tiploc=findtext("EntryPoint")) or None,
+            depart_time=findtime("DepartTime"),
+            # initial_power
+            description=findtext("Description"),
+            # as_required_pc
+            # delay_min
+            # seeding_gap_m
+            origin=findtext("OriginName"),
+            origin_dep=findtime("OriginTime"),
+            destination=findtext("DestinationName"),
+            destination_arr=findtime("DestinationTime"),
+            notes=findtext("Notes"),
         )
 
     def xml(self):

@@ -81,6 +81,23 @@ def test_wtt_compilation(tmp_path, aston_none, xt):
             xt.assert_equivalent(expected, result)
 
 
+def test_parse_empty_wtt():
+    wtt = Wtt.from_file("tests/sample/aston_empty.WTT")
+    assert wtt.sim == Sim(name="aston", version=Version(5, 23, 4))
+    assert wtt.name == "empty"
+    assert wtt.start_time == TTime(seconds=0)
+    assert wtt.end_time == TTime(seconds=97200)
+    assert wtt.version == Version(0, 0, 0)
+
+    # implemented but not tested (requires non-empty sample WTT):
+    # wtt.description
+    # wtt.td_template
+    # wtt.working
+
+    # not yet implemented:
+    # train_types
+
+
 def test_basic_wtt(xt):
     expected = xt.fromfile("tests/sample/basic_SavedTimetable.xml")
 

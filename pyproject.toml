@@ -34,7 +34,7 @@ Issues = "https://github.com/jdeeth/ttbuilder/issues"
 
 [project.scripts]
 ttbuilder = "ttbuilder.ttbuilder:main"
-
+origin_dest_export = "ttbuilder.origin_dest:export"
 
 [build-system]
 requires = ["setuptools"]

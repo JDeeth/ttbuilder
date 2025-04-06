@@ -148,7 +148,7 @@ ANGLESEA_OUT_AND_BACK = """\
 """.strip()
 
 
-def test_from_xml(xt):
+def test_basic_from_xml(xt):
     xml_root = xt.fromstr(ANGLESEA_OUT_AND_BACK)
 
     lt = LocalTimetable.from_xml(xml_root)
@@ -158,3 +158,61 @@ def test_from_xml(xt):
     assert [
         pt.location.tiploc for pt in lt.timing_points
     ] == "LCHC LCHCAS LCHC LCHCCS LCHC ANGLSDG".split()
+
+
+ASTON_1M45_HEADER = """
+<Timetable>
+    <ID>1M45</ID>
+    <UID>ZCB858</UID>
+    <AccelBrakeIndex>2</AccelBrakeIndex>
+    <AsRequiredPercent>50</AsRequiredPercent>
+    <DepartTime>3510</DepartTime>
+    <Description>$template</Description>
+    <SeedingGap>15</SeedingGap>
+    <EntryPoint>EWICHNRJ</EntryPoint>
+    <EntryDecision>decision</EntryDecision>
+    <EntryChoice>choice</EntryChoice>
+    <MaxSpeed>90</MaxSpeed>
+    <Started>-1</Started>
+    <TrainLength>220</TrainLength>
+    <Electrification>D</Electrification>
+    <OriginName>Peterborough</OriginName>
+    <DestinationName>Carlisle</DestinationName>
+    <OriginTime>81000</OriginTime>
+    <DestinationTime>108000</DestinationTime>
+    <OperatorCode>operator</OperatorCode>
+    <Notes>These are some notes</Notes>
+    <StartTraction>D</StartTraction>
+    <Category>8933A9B3</Category>
+    <RedSignalMoveOff>5</RedSignalMoveOff>
+    <StationForward>60</StationForward>
+    <StationReverse>60</StationReverse>
+    <TerminateForward>60</TerminateForward>
+    <TerminateReverse>60</TerminateReverse>
+    <Join>300</Join>
+    <Divide>120</Divide>
+    <CrewChange>180</CrewChange>
+    <Trips />
+</Timetable>
+"""
+
+
+def test_header_from_xml(xt):
+    xml_root = xt.fromstr(ASTON_1M45_HEADER)
+    lt = LocalTimetable.from_xml(xml_root)
+
+    assert lt.depart_time == TTime(3510)
+    # not implemented:
+    # decision
+    # choice
+    # assert lt.initial_power == PowerType.DIESEL
+    # assert lt.as_required_pc == 50
+    # assert lt.delay_min ==
+    # assert lt.seeding_gap_m == 15
+    # operator code
+
+    assert lt.origin == "Peterborough"
+    assert lt.destination == "Carlisle"
+    assert lt.origin_dep == TTime(81000)
+    assert lt.destination_arr == TTime(108000)
+    assert lt.notes == "These are some notes"

@@ -85,3 +85,43 @@ class Wtt:
                 "SavedTimetable.xml",
                 etree.tostring(self.xml(), pretty_print=True).decode(),
             )
+
+    @classmethod
+    def from_xml(cls, xml_root):
+        """Parse from an XML object"""
+
+        def findtext(match, default=""):
+            return xml_root.findtext(match, default=default)
+
+        timetables_elem = xml_root.find("Timetables")
+        if timetables_elem is None:
+            timetables = []
+        else:
+            timetables = [LocalTimetable.from_xml(x) for x in timetables_elem]
+        return cls(
+            sim=Sim(
+                xml_root.xpath("./@ID")[0],
+                Version(*(int(x) for x in xml_root.xpath("./@Version")[0].split("."))),
+            ),
+            name=xml_root.findtext("Name", default=""),
+            start_time=TTime(int(findtext("StartTime", "0"))),
+            end_time=TTime(int(findtext("FinishTime", "0"))),
+            description=findtext("Description", ""),
+            version=Version(
+                major=int(findtext("VMajor", "0")),
+                minor=int(findtext("VMinor", "0")),
+                build=int(findtext("VBuild", "0")),
+            ),
+            td_template=findtext("TrainDescriptionTemplate"),
+            # train_types = ...,
+            workings=timetables,
+        )
+
+    @classmethod
+    def from_file(cls, filepath):
+        """Parse from a .WTT file"""
+        with ZipFile(filepath, "r") as zipfile:
+            with zipfile.open("SavedTimetable.xml", "r") as timetable_file:
+                parser = etree.XMLParser(remove_blank_text=True)
+                xml_root = etree.parse(timetable_file, parser=parser).getroot()
+                return cls.from_xml(xml_root)

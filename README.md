@@ -3,6 +3,12 @@
 This will be a SimSig timetable builder, intended to allow chained timetables
 to be built easily.
 
+It is also a .WTT and .SSG (SimSig saved game) parser - behaviour which should probably be hived
+off into a separate project.
+
+May provide a facility to review/update WTT working metadata e.g. to bulk-update the Origin
+and Destination fields
+
 ## Example - 1M45
 
 1M45 was a night train, which the Railtrack Sept 1995 WTT shows ran from
@@ -77,7 +83,22 @@ location (e.g. signal Derby 404 for 1M45 at 00:00) would be nice.
 - SimSig Gateway integration for timing performance
 - Make new/altered workings in TUI and generate .wtt files for host to import?
 
+## Cleaning up existing WTTs
+
+Working on an application to clean up WTTs e.g. to add the origin and destination fields
+(relatively recent additions). It's in <src/ttbuilder/origin_dest.py>.
+
+Currently the `origin_dest_export` endpoint will run an exporter which prompts for a WTT,
+loads the trains, tries to work out origin, origin departure, and destination from a
+hand-written description. It writes the results to a .CSV alongside the .WTT (overwriting
+if necessary)
+
 ## Development notes
 
 - Configure your computer to [open .WTT files as .zip](https://superuser.com/a/1858317/677515)
-- To activate virtual environment in Powershell: `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned`
+- To activate virtual environments in Powershell: `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned`, then:
+```bash
+py -m venv .venv
+.venv/Scripts/activate
+pip install -e .[dev]
+```
