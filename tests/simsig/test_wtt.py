@@ -27,8 +27,7 @@ def fixture_aston_none():
     )
 
 
-def test_make_xml_header(xml_test_tools, aston_none):
-    xt = xml_test_tools
+def test_make_xml_header(xt, aston_none):
     expected = xt.fromfile("tests/sample/aston_empty_TimetableHeader.xml")
 
     header = aston_none.xml_header()
@@ -44,8 +43,7 @@ def test_xml_header_empty_description_is_empty_element_not_empty_tag(aston_none)
     assert "<Description></Description>" in header_str
 
 
-def test_make_savedtimetable_xml(xml_test_tools, aston_none):
-    xt = xml_test_tools
+def test_make_savedtimetable_xml(xt, aston_none):
     expected = xt.fromfile("tests/sample/aston_empty_SavedTimetable.xml")
 
     saved_timetable = aston_none.xml()
@@ -66,9 +64,7 @@ def test_header_description_escaped():
     )
 
 
-def test_wtt_compilation(tmp_path, aston_none, xml_test_tools):
-    xt = xml_test_tools
-
+def test_wtt_compilation(tmp_path, aston_none, xt):
     filename = f"{tmp_path}.wtt"
     aston_none.compile_wtt(filename)
     assert zipfile.is_zipfile(filename)
@@ -85,8 +81,7 @@ def test_wtt_compilation(tmp_path, aston_none, xml_test_tools):
             xt.assert_equivalent(expected, result)
 
 
-def test_basic_wtt(xml_test_tools):
-    xt = xml_test_tools
+def test_basic_wtt(xt):
     expected = xt.fromfile("tests/sample/basic_SavedTimetable.xml")
 
     dmu = TrainCategory(

@@ -20,8 +20,7 @@ def fixture_populated_dt():
 """
 
 
-def test_default_dwell_times(xml_test_tools):
-    xt = xml_test_tools
+def test_default_dwell_times(xt):
     expected = xt.fromstr("<DwellTimes/>")
 
     dt = DwellTimes()
@@ -35,8 +34,7 @@ def test_dwell_time_can_populate_from_int():
     assert dt.terminate_forward == expected
 
 
-def test_populated_dwell_times(xml_test_tools, populated_dt):
-    xt = xml_test_tools
+def test_populated_dwell_times(xt, populated_dt):
     expected = xt.fromstr(populated_dt)
 
     dt = DwellTimes(

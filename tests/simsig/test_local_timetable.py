@@ -48,8 +48,7 @@ ASTON     00/30
     }
 
 
-def test_out_and_back_tt(xml_test_tools, args_2a01):
-    xt = xml_test_tools
+def test_out_and_back_tt(xt, args_2a01):
     expected = xt.fromfile("tests/sample/aston_2A01.xml")
 
     tt = LocalTimetable(**args_2a01)
@@ -73,8 +72,7 @@ def test_starting_power_assumed_if_ambiguous():
     assert tt.initial_power == PowerType.DIESEL
 
 
-def test_train_starting_in_sim(xml_test_tools, dmu_train_type, ttparser):
-    xt = xml_test_tools
+def test_train_starting_in_sim(xt, dmu_train_type, ttparser):
     expected = xt.fromfile("tests/sample/aston_2A04.xml")
 
     tt = LocalTimetable(
@@ -88,8 +86,7 @@ def test_train_starting_in_sim(xml_test_tools, dmu_train_type, ttparser):
     xt.assert_equivalent(expected, tt.xml())
 
 
-def test_train_terminating_in_sim(xml_test_tools, dmu_train_type, ttparser):
-    xt = xml_test_tools
+def test_train_terminating_in_sim(xt, dmu_train_type, ttparser):
     expected = xt.fromfile("tests/sample/aston_2A03.xml")
 
     train_id = TrainId(id="2A03", uid="ZBD037")
@@ -151,8 +148,7 @@ ANGLESEA_OUT_AND_BACK = """\
 """.strip()
 
 
-def test_from_xml(xml_test_tools):
-    xt = xml_test_tools
+def test_from_xml(xt):
     xml_root = xt.fromstr(ANGLESEA_OUT_AND_BACK)
 
     lt = LocalTimetable.from_xml(xml_root)

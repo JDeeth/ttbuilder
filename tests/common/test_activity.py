@@ -79,7 +79,6 @@ def test_activity_to_str(activity, text):
         # ),
     ],
 )
-def test_activity_to_xml(xml_test_tools, activity, xml_str):
-    xt = xml_test_tools
+def test_activity_to_xml(xt, activity, xml_str):
     expected = xt.fromstr(xml_str)
     xt.assert_equivalent(expected, activity.xml())

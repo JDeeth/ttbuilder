@@ -15,7 +15,6 @@ def test_train_id_to_str():
         (TrainId(id="2A04", uid="ZDC316"), "<AssociatedUID>ZDC316</AssociatedUID>"),
     ],
 )
-def test_train_id_to_activity_xml(xml_test_tools, train_id, expected_xml):
-    xt = xml_test_tools
+def test_train_id_to_activity_xml(xt, train_id, expected_xml):
     expected = xt.fromstr(expected_xml)
     xt.assert_equivalent(expected, train_id.activity_xml())

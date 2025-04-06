@@ -40,8 +40,7 @@ def test_train_types_get_unique_default_ids():
     assert tt1.id != tt2.id
 
 
-def test_make_dmu_train_type(xml_test_tools, dmu_traintype):
-    xt = xml_test_tools
+def test_make_dmu_train_type(xt, dmu_traintype):
     expected = xt.fromstr(dmu_traintype)
 
     dmu_dwell_times = DwellTimes(10, 45, 180, 60, 240, 300, 120, 300)
@@ -75,8 +74,7 @@ def fixture_no_power_traintype():
 """
 
 
-def test_no_power_train_type(xml_test_tools, no_power_traintype):
-    xt = xml_test_tools
+def test_no_power_train_type(xt, no_power_traintype):
     expected = xt.fromstr(no_power_traintype)
 
     tt = TrainCategory(

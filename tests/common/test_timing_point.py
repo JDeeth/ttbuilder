@@ -6,9 +6,7 @@ from ttbuilder.common.timing_point import TimingPoint
 from ttbuilder.common.ttime import Allowance, TTime
 
 
-def test_stopping_timing_point(xml_test_tools):
-    xt = xml_test_tools
-
+def test_stopping_timing_point(xt):
     expected_str = """
     <Trip>
         <Location>FOUROKS</Location>
@@ -24,9 +22,7 @@ def test_stopping_timing_point(xml_test_tools):
     xt.assert_equivalent(expected, tp.xml())
 
 
-def test_passing_timing_point(xml_test_tools):
-    xt = xml_test_tools
-
+def test_passing_timing_point(xt):
     expected_str = """
     <Trip>
         <Location>ASTON</Location>
@@ -40,9 +36,7 @@ def test_passing_timing_point(xml_test_tools):
     xt.assert_equivalent(expected, tp.xml())
 
 
-def test_line_path(xml_test_tools):
-    xt = xml_test_tools
-
+def test_line_path(xt):
     expected_str = """
         <Trip>
           <Location>QTRDBAT</Location>
@@ -64,9 +58,7 @@ def test_line_path(xml_test_tools):
     xt.assert_equivalent(expected, tp.xml())
 
 
-def test_perf_path_times_in_timing_point(xml_test_tools):
-    xt = xml_test_tools
-
+def test_perf_path_times_in_timing_point(xt):
     # Allowance times recorded in multiples of 30 seconds
     expected_str = """
         <Trip>
@@ -92,9 +84,7 @@ def test_perf_path_times_in_timing_point(xml_test_tools):
     xt.assert_equivalent(expected, tp.xml())
 
 
-def test_request_stop_percent(xml_test_tools):
-    xt = xml_test_tools
-
+def test_request_stop_percent(xt):
     expected_str = """
         <Trip>
           <Location>BLKST</Location>
@@ -195,8 +185,7 @@ LCHC_TIMING_POINT = """\
 """.strip()
 
 
-def test_from_xml(xml_test_tools):
-    xt = xml_test_tools
+def test_from_xml(xt):
     xml_root = xt.fromstr(LCHC_TIMING_POINT)
 
     tp = TimingPoint.from_xml(xml_root)

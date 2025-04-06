@@ -12,6 +12,7 @@ class XMLTestTools:
 
     @staticmethod
     def sort(data):
+        """Sort data alphabetically by tag"""
         data = copy.deepcopy(data)
         for parent in data.xpath("//*[./*]"):
             parent[:] = sorted(
@@ -21,6 +22,8 @@ class XMLTestTools:
 
     @staticmethod
     def strip_empty_str(data):
+        """replace emptystr values with None
+        i.e. <a></a> becomes <a />"""
         data = copy.deepcopy(data)
         for x in data.xpath("//*"):
             if x.text == "":
@@ -29,6 +32,7 @@ class XMLTestTools:
 
     @classmethod
     def unordered_diff(cls, left, right):
+        """perform sort on both before comparing"""
         left = cls.sort(left)
         right = cls.sort(right)
         result = xd.diff_trees(left, right)
@@ -36,6 +40,7 @@ class XMLTestTools:
 
     @classmethod
     def agnostic_diff(cls, left, right, ignore_uid=False):
+        """sort and strip nulls before comparing"""
         left = cls.strip_empty_str(left)
         right = cls.strip_empty_str(right)
         result = cls.unordered_diff(left, right)
@@ -45,27 +50,31 @@ class XMLTestTools:
 
     @classmethod
     def fromfile(cls, path: str, **parser_args):
+        """load XML from file"""
         parser_args.setdefault("remove_blank_text", True)
         parser = etree.XMLParser(**parser_args)
         return etree.parse(path, parser=parser)
 
     @classmethod
     def fromstr(cls, xml_text: str, **parser_args):
+        """load XML from string"""
         parser_args.setdefault("remove_blank_text", True)
         parser = etree.XMLParser(**parser_args)
         return etree.XML(xml_text, parser=parser)
 
     @classmethod
     def pretty(cls, xml):
+        """convert XML to pretty-print string"""
         return etree.tostring(xml, pretty_print=True, encoding="unicode")
 
     @classmethod
     def assert_equivalent(cls, left, right, ignore_uid=False):
+        """ignore element ordering and empty/null distinction"""
         assert cls.agnostic_diff(left, right, ignore_uid) == []
 
 
-@pytest.fixture
-def xml_test_tools():
+@pytest.fixture(name="xt")
+def fixture_xml_test_tools():
     return XMLTestTools()
 
 

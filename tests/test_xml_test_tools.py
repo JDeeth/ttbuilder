@@ -1,20 +1,20 @@
 from lxml import etree
 
 
-def test_sort(xml_test_tools):
+def test_sort(xt):
     unsorted_xml = etree.XML("<root><d/><b/><c/><a><a3/><a2>hi</a2><a1/></a></root>")
     sorted_str = "<root><a><a1/><a2>hi</a2><a3/></a><b/><c/><d/></root>"
-    assert etree.tostring(xml_test_tools.sort(unsorted_xml)).decode() == sorted_str
+    assert etree.tostring(xt.sort(unsorted_xml)).decode() == sorted_str
 
 
-def test_sort_does_not_mutate_in_place(xml_test_tools):
+def test_sort_does_not_mutate_in_place(xt):
     xml_str = "<root><B/><A/></root>"
     unsorted = etree.XML(xml_str)
-    xml_test_tools.sort(unsorted)
+    xt.sort(unsorted)
     assert etree.tostring(unsorted).decode() == xml_str
 
 
-def test_strip(xml_test_tools):
+def test_strip(xt):
     # all <X></X> should be replaced with <X/>
     initial = etree.Element("root")
     etree.SubElement(initial, "A")
@@ -23,7 +23,7 @@ def test_strip(xml_test_tools):
     etree.SubElement(c, "C1")
     etree.SubElement(c, "C2").text = ""
 
-    stripped = xml_test_tools.strip_empty_str(initial)
+    stripped = xt.strip_empty_str(initial)
     assert (
         etree.tostring(initial).decode()
         == "<root><A/><B></B><C><C1/><C2></C2></C></root>"
@@ -31,7 +31,7 @@ def test_strip(xml_test_tools):
     assert etree.tostring(stripped).decode() == "<root><A/><B/><C><C1/><C2/></C></root>"
 
 
-def test_xml_unordered_diff(xml_test_tools):
+def test_xml_unordered_diff(xt):
     unsorted_xml = etree.Element("root")
     etree.SubElement(unsorted_xml, "C")
     b = etree.SubElement(unsorted_xml, "B")
@@ -48,10 +48,10 @@ def test_xml_unordered_diff(xml_test_tools):
     etree.SubElement(b, "B3")
     etree.SubElement(sorted_xml, "C")
 
-    assert xml_test_tools.unordered_diff(sorted_xml, unsorted_xml) == []
+    assert xt.unordered_diff(sorted_xml, unsorted_xml) == []
 
 
-def test_agnostic_diff(xml_test_tools):
+def test_agnostic_diff(xt):
     left = etree.Element("root")
     etree.SubElement(left, "A")
     b = etree.SubElement(left, "B")
@@ -66,11 +66,11 @@ def test_agnostic_diff(xml_test_tools):
     etree.SubElement(right, "A")
     etree.SubElement(right, "C")
 
-    assert xml_test_tools.agnostic_diff(left, right) == []
-    xml_test_tools.assert_equivalent(left, right)
+    assert xt.agnostic_diff(left, right) == []
+    xt.assert_equivalent(left, right)
 
 
-def test_ignore_uid_change_diff(xml_test_tools):
+def test_ignore_uid_change_diff(xt):
     left = etree.Element("root")
     etree.SubElement(left, "ID").text = "2A01"
     etree.SubElement(left, "UID").text = "AAA111"
@@ -79,5 +79,5 @@ def test_ignore_uid_change_diff(xml_test_tools):
     etree.SubElement(right, "ID").text = "2A01"
     etree.SubElement(right, "UID").text = "BBB222"
 
-    assert xml_test_tools.agnostic_diff(left, right, ignore_uid=True) == []
-    xml_test_tools.assert_equivalent(left, right, ignore_uid=True)
+    assert xt.agnostic_diff(left, right, ignore_uid=True) == []
+    xt.assert_equivalent(left, right, ignore_uid=True)
